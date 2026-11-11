@@ -1,33 +1,34 @@
 # Kiểm chứng thực tế
 
-11/11/2026 Asia/Saigon; Windows, Node22.22.2.
+11/11/2026, Asia/Saigon; Windows, Node v22.22.2.
 
 | Kiểm tra đã chạy | Kết quả |
 | --- | --- |
-| Nguồn | 4APK đã lấy, 2SQLite giải mã integrity_check=ok, dùng texture25, đủ600 giải thích |
-| npm test | 15 nhóm pass,0 fail |
-| Data | 600 ID/option/topic/reference hợp lệ,60 global critical |
-| Pool/critical | A1/A250/20, B1300/30, B592/56, C1+600/60 |
-| Random | 100×15hạng=1.500 bài, count/unique/pool/one-critical đúng |
-| Fixed | 233 bài đủcount/unique/reference; giữ ngoại lệ critical theo nguồn |
-| Grade | Critical sai/bỏ trống không đạt dù đủ tổngđiểm |
-| Progress | Roundtrip/skipped0/full history; import tính lại correct, lọc ID/option lỗi |
+| Nguồn | 4 APK đã lấy, 2 SQLite giải mã integrity_check=ok, dùng texture25, đủ 600 giải thích |
+| npm test | 15 nhóm pass, 0 fail |
+| Data | 600 ID/option/topic/reference hợp lệ, 60 global critical |
+| Pool/critical | A1/A: 250/20; B1: 300/30; B: 592/56; C1 trở lên: 600/60 |
+| Random | 100 × 15 hạng = 1.500 bài, đúng số câu, không trùng, trong pool, một critical |
+| Fixed | 233 bài đủ số câu, ID không trùng, reference hợp lệ; giữ ngoại lệ critical nguồn |
+| Grade | Critical sai/bỏ trống không đạt dù đủ tổng điểm |
+| Progress | Roundtrip, skipped=0, full history; import tính lại correct, lọc ID/option lỗi |
 | Restore | Deadline cố định, lọc đáp án lỗi, clamp index, từ chối ID trùng/deadline sai |
-| Storage/search | Lỗi/quota an toàn, không dấu, skipped/new, escapeHTML, ngày VN |
-| Manifest | Dataset hash/633 URL/byte sum đúng, mọi ảnh được phủ; PNG192/512 |
-| Worker Node VM | Shell/module/font/data subpath; marker sau đủảnh; lỗi/retry; HTML giảảnh/module bị từ chối; không xóa cache GPLX trước |
-| Syntax | node --check app.js,sw.js thành công |
-| Output scan | 661 file,29.548.304byte, lớnnhất787.889byte, không forbiddenfile, dưới25 MiB/file |
-| HTTP | 662 URL gồm root + mọi filedist, tấtcả200/body khôngrỗng, MIMEảnh/module/font đúng;29.551.320byte≈28,2MiB |
-| Comparison | 139text/147options, gộp242;0answer-ID/globalcritical;600explanation khác |
+| Storage/search | Lỗi/quota an toàn, không dấu, skipped/new, escape HTML, ngày Việt Nam |
+| Manifest | Hash, 633 URL và byte sum đúng, mọi ảnh được phủ; PNG 192/512 |
+| Worker Node VM | Shell/module/font/data subpath; marker sau đủ ảnh; lỗi/retry; HTML giả ảnh/module bị từ chối; không xóa cache GPLX trước |
+| Syntax | node --check app.js, sw.js thành công |
+| Output scan | 661 file, 29.548.304 byte, lớn nhất 787.889 byte, không file cấm, dưới 25 MiB/file |
+| HTTP | 662 URL gồm root + mọi file dist, tất cả 200, không rỗng, MIME ảnh/module/font đúng; 29.551.320 byte ≈ 28,2 MiB |
+| Comparison | 139 text/147 options, gộp 242; 0 answer-ID/global critical đổi; 600 giải thích khác |
+| Triển khai | Sites private succeeded, runtime commit 033d63e; GitHub main push thành công, xem DEPLOYMENT |
 
 ## Chưa xác nhận
 
-Công cụ browser tại nhiệm vụ này trả **browsers:[] / The browser access host is unavailable**. Phiên trước nativeChrome bị từ chối vì không xác định currentURL đủ tin cậy. Không dùng đường điều khiển khác để vượt giới hạn. **Chưa có browser end-to-end, screenshot hoặc visualQA**.
+Công cụ browser tại nhiệm vụ này trả **browsers:[] / The browser access host is unavailable**. Phiên trước native Chrome bị từ chối vì không xác định current URL đủ tin cậy. Không dùng đường điều khiển khác để vượt giới hạn. **Chưa có browser end-to-end, screenshot hoặc visual QA**.
 
-Chưa xác nhận responsive thật, DOM/dialog/focus/keyboard/screen reader, worker cài thật, offline/reload thật, AndroidPWA hoặc xác thực hosting private khi mất mạng. Worker tests chỉ NodeVM; HTTP không chứng minh JavaScript chạy đúng trong DOM.
+Chưa xác nhận responsive thật, DOM/dialog/focus/keyboard/screen reader, worker cài thật, offline/reload thật, Android PWA hoặc xác thực hosting private khi mất mạng. Worker tests chỉ Node VM; HTTP không chứng minh JavaScript chạy đúng trong DOM.
 
-Chưa đối chiếu chính thức nội dung/đáp án/pool/critical/quota hoặc xác nhận quyền tái phân phối. Không gọi snapshot là bộ chuẩn2026.
+Chưa đối chiếu chính thức nội dung/đáp án/pool/critical/quota hoặc xác nhận quyền tái phân phối. Không gọi snapshot là bộ chuẩn 2026.
 
 ## Checklist thủ công tiếp tục
 

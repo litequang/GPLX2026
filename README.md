@@ -4,6 +4,8 @@ PWA tiếng Việt phục vụ ôn tập cá nhân từ **Ôn thi GPLX 2025 v2.0
 
 Repository: https://github.com/litequang/GPLX2026
 
+Web riêng tư đã triển khai: https://gplx2026-on-thi-quang.quartzcello4.chatgpt.site
+
 ## Chạy
 
 Cần Node ≥22.13; không cần npm install, database server hoặc backend.
