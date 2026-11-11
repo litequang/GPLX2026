@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#2457df">
+  <meta name="description" content="Không gian ôn tập GPLX cá nhân: 600 câu hỏi, bài luyện, biển báo và sa hình. Lưu tiến độ, học ngoại tuyến.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="icon" type="image/svg+xml" href="./icons/icon.svg">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="stylesheet" href="./fonts/fonts.css">
+  <link rel="stylesheet" href="./styles.css">
+  <title>GPLX 2026 · Học vững, thi tự tin</title>
+</head>
+<body>
+  <a class="skip-link" href="#main">Bỏ qua menu, đến nội dung</a>
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="#home" data-go="home"><img src="./icons/icon.svg" alt="" width="42" height="42"><span>GPLX <b>2026</b><small>HỌC VỮNG · THI TỰ TIN</small></span></a>
+    <div id="desktop-nav"></div>
+    <div class="sidebar-note"><span class="online-dot"></span><span id="connection-text">Đang trực tuyến</span><p>Không gian học tập của riêng bạn.</p></div>
+  </aside>
+  <div class="app-shell">
+    <header class="topbar">
+      <button class="icon-button mobile-only" data-action="menu" aria-label="Mở điều hướng" id="menu-trigger"></button>
+      <div class="breadcrumb"><span>Góc học tập</span><span class="slash">/</span><strong id="breadcrumb-current">Tổng quan</strong></div>
+      <div class="topbar-actions"><button class="button button-quiet desktop-install" id="install-button" hidden>Cài ứng dụng</button><div class="license-field"><label for="license-select">Hạng bằng</label><select id="license-select" aria-label="Chọn hạng bằng"></select></div><button class="avatar" data-action="settings" aria-label="Cài đặt và sao lưu tiến độ">Q</button></div>
+    </header>
+    <main id="main" tabindex="-1"><div class="loading"><span class="loading-circle"></span><h1>Đang mở góc học tập…</h1><p>Chuẩn bị câu hỏi và nội dung cho bạn.</p></div></main>
+    <footer><span>GPLX 2026 <span class="footer-dot">·</span> Học từng chút, vững từng ngày.</span><button class="text-button" data-action="source">Dữ liệu từ đâu?</button></footer>
+  </div>
+  <nav class="bottom-nav" id="bottom-nav" aria-label="Điều hướng trên điện thoại"></nav>
+  <dialog id="menu-dialog" class="menu-dialog"><div class="dialog-heading"><h2>Góc học tập</h2><button class="icon-button" data-action="close-menu" aria-label="Đóng điều hướng">×</button></div><div id="mobile-nav"></div></dialog>
+  <dialog id="dialog"><div id="dialog-content"></div></dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

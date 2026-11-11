@@ -1,0 +1,15 @@
+node_modules/
+.tools/
+raw/
+*.apk
+*.db
+*.sqlite*
+*.imeg
+*.so
+*.zip
+*.tar.gz
+*.log
+.env*
+!.env.example
+.openai/local*
+coverage/

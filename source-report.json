@@ -1,0 +1,1682 @@
+{
+  "app": "Ôn thi GPLX 2025",
+  "package": "com.daotaogplx.vn_driving_theory",
+  "versionName": "2.0.3",
+  "versionCode": 10,
+  "extractedOn": "2026-11-11",
+  "database": "texture25.imeg",
+  "databaseSha256": "006dbd4b003c193aadc492f0f0fb832a9a9d81ca58395de0b99a45d7e48c28c1",
+  "encryptedSha256": "e162dee6bf94a145b20720fab9843e35192df5da925fb4bf243625112a01ee73",
+  "nativeSha256": "a3735464019fb5bdb6c887581bfe6258b08371a290d3012705d8c6e277a628b3",
+  "note": "Nội dung giữ theo ứng dụng nguồn; chưa đối chiếu độc lập với bộ đề và quy định sát hạch hiện hành.",
+  "decoder": {
+    "algorithm": "AES-128-CBC/PKCS7",
+    "keyLiteralOffset": 419723,
+    "keyLength": 16,
+    "keySha256": "a451bb7c8a24ca798c1c4496005d32253ad2cdf4ece274bf64dd5132870ae179",
+    "ivDerivedFrom": "known SQLite header and first ciphertext block"
+  },
+  "counts": {
+    "questions": 600,
+    "explanations": 600,
+    "critical": 60,
+    "licenses": 15,
+    "signs": 332,
+    "fixedExams": 233,
+    "theoryTips": 56,
+    "practicalLessons": 11,
+    "practicalSections": 33,
+    "images": 632
+  },
+  "pools": {
+    "A1": 250,
+    "A": 250,
+    "B1": 300,
+    "B": 592,
+    "C1": 600,
+    "C": 600,
+    "D1": 600,
+    "D2": 600,
+    "D": 600,
+    "BE": 600,
+    "C1E": 600,
+    "CE": 600,
+    "D1E": 600,
+    "D2E": 600,
+    "DE": 600
+  },
+  "fixedSummary": [
+    {
+      "id": 1,
+      "license": "A1",
+      "count": 25,
+      "criticalCount": 2,
+      "outsidePool": 0
+    },
+    {
+      "id": 2,
+      "license": "A1",
+      "count": 25,
+      "criticalCount": 0,
+      "outsidePool": 0
+    },
+    {
+      "id": 3,
+      "license": "A1",
+      "count": 25,
+      "criticalCount": 2,
+      "outsidePool": 0
+    },
+    {
+      "id": 4,
+      "license": "A1",
+      "count": 25,
+      "criticalCount": 3,
+      "outsidePool": 0
+    },
+    {
+      "id": 5,
+      "license": "A1",
+      "count": 25,
+      "criticalCount": 1,
+      "outsidePool": 0
+    },
+    {
+      "id": 6,
+      "license": "A1",
+      "count": 25,
+      "criticalCount": 2,
+      "outsidePool": 0
+    },
+    {
+      "id": 7,
+      "license": "A1",
+      "count": 25,
+      "criticalCount": 2,
+      "outsidePool": 0
+    },
+    {
+      "id": 8,
+      "license": "A1",
+      "count": 25,
+      "criticalCount": 2,
+      "outsidePool": 0
+    },
+    {
+      "id": 9,
+      "license": "A1",
+      "count": 25,
+      "criticalCount": 3,
+      "outsidePool": 0
+    },
+    {
+      "id": 10,
+      "license": "A1",
+      "count": 25,
+      "criticalCount": 3,
+      "outsidePool": 0
+    },
+    {
+      "id": 11,
+      "license": "A1",
+      "count": 25,
+      "criticalCount": 1,
+      "outsidePool": 0
+    },
+    {
+      "id": 12,
+      "license": "A1",
+      "count": 25,
+      "criticalCount": 1,
+      "outsidePool": 0
+    },
+    {
+      "id": 13,
+      "license": "A1",
+      "count": 25,
+      "criticalCount": 1,
+      "outsidePool": 0
+    },
+    {
+      "id": 14,
+      "license": "A1",
+      "count": 25,
+      "criticalCount": 1,
+      "outsidePool": 0
+    },
+    {
+      "id": 15,
+      "license": "A",
+      "count": 25,
+      "criticalCount": 2,
+      "outsidePool": 0
+    },
+    {
+      "id": 16,
+      "license": "A",
+      "count": 25,
+      "criticalCount": 0,
+      "outsidePool": 0
+    },
+    {
+      "id": 17,
+      "license": "A",
+      "count": 25,
+      "criticalCount": 2,
+      "outsidePool": 0
+    },
+    {
+      "id": 18,
+      "license": "A",
+      "count": 25,
+      "criticalCount": 3,
+      "outsidePool": 0
+    },
+    {
+      "id": 19,
+      "license": "A",
+      "count": 25,
+      "criticalCount": 1,
+      "outsidePool": 0
+    },
+    {
+      "id": 20,
+      "license": "A",
+      "count": 25,
+      "criticalCount": 2,
+      "outsidePool": 0
+    },
+    {
+      "id": 21,
+      "license": "A",
+      "count": 25,
+      "criticalCount": 2,
+      "outsidePool": 0
+    },
+    {
+      "id": 22,
+      "license": "A",
+      "count": 25,
+      "criticalCount": 2,
+      "outsidePool": 0
+    },
+    {
+      "id": 23,
+      "license": "A",
+      "count": 25,
+      "criticalCount": 3,
+      "outsidePool": 0
+    },
+    {
+      "id": 24,
+      "license": "A",
+      "count": 25,
+      "criticalCount": 3,
+      "outsidePool": 0
+    },
+    {
+      "id": 25,
+      "license": "A",
+      "count": 25,
+      "criticalCount": 1,
+      "outsidePool": 0
+    },
+    {
+      "id": 26,
+      "license": "A",
+      "count": 25,
+      "criticalCount": 1,
+      "outsidePool": 0
+    },
+    {
+      "id": 27,
+      "license": "B1",
+      "count": 25,
+      "criticalCount": 2,
+      "outsidePool": 0
+    },
+    {
+      "id": 28,
+      "license": "B1",
+      "count": 25,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 29,
+      "license": "B1",
+      "count": 25,
+      "criticalCount": 3,
+      "outsidePool": 0
+    },
+    {
+      "id": 30,
+      "license": "B1",
+      "count": 25,
+      "criticalCount": 3,
+      "outsidePool": 0
+    },
+    {
+      "id": 31,
+      "license": "B1",
+      "count": 25,
+      "criticalCount": 1,
+      "outsidePool": 0
+    },
+    {
+      "id": 32,
+      "license": "B1",
+      "count": 25,
+      "criticalCount": 1,
+      "outsidePool": 0
+    },
+    {
+      "id": 33,
+      "license": "B1",
+      "count": 25,
+      "criticalCount": 3,
+      "outsidePool": 0
+    },
+    {
+      "id": 34,
+      "license": "B1",
+      "count": 25,
+      "criticalCount": 2,
+      "outsidePool": 0
+    },
+    {
+      "id": 35,
+      "license": "B1",
+      "count": 25,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 36,
+      "license": "B1",
+      "count": 25,
+      "criticalCount": 2,
+      "outsidePool": 0
+    },
+    {
+      "id": 37,
+      "license": "B1",
+      "count": 25,
+      "criticalCount": 3,
+      "outsidePool": 0
+    },
+    {
+      "id": 38,
+      "license": "B1",
+      "count": 25,
+      "criticalCount": 2,
+      "outsidePool": 0
+    },
+    {
+      "id": 39,
+      "license": "B1",
+      "count": 25,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 40,
+      "license": "B1",
+      "count": 25,
+      "criticalCount": 3,
+      "outsidePool": 0
+    },
+    {
+      "id": 41,
+      "license": "B1",
+      "count": 25,
+      "criticalCount": 1,
+      "outsidePool": 0
+    },
+    {
+      "id": 42,
+      "license": "B1",
+      "count": 25,
+      "criticalCount": 2,
+      "outsidePool": 0
+    },
+    {
+      "id": 43,
+      "license": "B1",
+      "count": 25,
+      "criticalCount": 2,
+      "outsidePool": 0
+    },
+    {
+      "id": 44,
+      "license": "B1",
+      "count": 25,
+      "criticalCount": 3,
+      "outsidePool": 0
+    },
+    {
+      "id": 45,
+      "license": "B1",
+      "count": 25,
+      "criticalCount": 3,
+      "outsidePool": 0
+    },
+    {
+      "id": 46,
+      "license": "B1",
+      "count": 25,
+      "criticalCount": 3,
+      "outsidePool": 0
+    },
+    {
+      "id": 47,
+      "license": "B",
+      "count": 30,
+      "criticalCount": 2,
+      "outsidePool": 0
+    },
+    {
+      "id": 48,
+      "license": "B",
+      "count": 30,
+      "criticalCount": 1,
+      "outsidePool": 1
+    },
+    {
+      "id": 49,
+      "license": "B",
+      "count": 30,
+      "criticalCount": 3,
+      "outsidePool": 0
+    },
+    {
+      "id": 50,
+      "license": "B",
+      "count": 30,
+      "criticalCount": 2,
+      "outsidePool": 1
+    },
+    {
+      "id": 51,
+      "license": "B",
+      "count": 30,
+      "criticalCount": 4,
+      "outsidePool": 1
+    },
+    {
+      "id": 52,
+      "license": "B",
+      "count": 30,
+      "criticalCount": 5,
+      "outsidePool": 1
+    },
+    {
+      "id": 53,
+      "license": "B",
+      "count": 30,
+      "criticalCount": 6,
+      "outsidePool": 0
+    },
+    {
+      "id": 54,
+      "license": "B",
+      "count": 30,
+      "criticalCount": 5,
+      "outsidePool": 0
+    },
+    {
+      "id": 55,
+      "license": "B",
+      "count": 30,
+      "criticalCount": 3,
+      "outsidePool": 0
+    },
+    {
+      "id": 56,
+      "license": "B",
+      "count": 30,
+      "criticalCount": 3,
+      "outsidePool": 0
+    },
+    {
+      "id": 57,
+      "license": "B",
+      "count": 30,
+      "criticalCount": 3,
+      "outsidePool": 1
+    },
+    {
+      "id": 58,
+      "license": "B",
+      "count": 30,
+      "criticalCount": 3,
+      "outsidePool": 1
+    },
+    {
+      "id": 59,
+      "license": "B",
+      "count": 30,
+      "criticalCount": 3,
+      "outsidePool": 1
+    },
+    {
+      "id": 60,
+      "license": "B",
+      "count": 30,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 61,
+      "license": "B",
+      "count": 30,
+      "criticalCount": 2,
+      "outsidePool": 0
+    },
+    {
+      "id": 62,
+      "license": "B",
+      "count": 30,
+      "criticalCount": 1,
+      "outsidePool": 0
+    },
+    {
+      "id": 63,
+      "license": "B",
+      "count": 30,
+      "criticalCount": 2,
+      "outsidePool": 0
+    },
+    {
+      "id": 64,
+      "license": "B",
+      "count": 30,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 65,
+      "license": "B",
+      "count": 30,
+      "criticalCount": 3,
+      "outsidePool": 1
+    },
+    {
+      "id": 66,
+      "license": "B",
+      "count": 30,
+      "criticalCount": 1,
+      "outsidePool": 0
+    },
+    {
+      "id": 67,
+      "license": "C1",
+      "count": 35,
+      "criticalCount": 6,
+      "outsidePool": 0
+    },
+    {
+      "id": 68,
+      "license": "C1",
+      "count": 35,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 69,
+      "license": "C1",
+      "count": 35,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 70,
+      "license": "C1",
+      "count": 35,
+      "criticalCount": 2,
+      "outsidePool": 0
+    },
+    {
+      "id": 71,
+      "license": "C1",
+      "count": 35,
+      "criticalCount": 2,
+      "outsidePool": 0
+    },
+    {
+      "id": 72,
+      "license": "C1",
+      "count": 35,
+      "criticalCount": 1,
+      "outsidePool": 0
+    },
+    {
+      "id": 73,
+      "license": "C1",
+      "count": 35,
+      "criticalCount": 2,
+      "outsidePool": 0
+    },
+    {
+      "id": 74,
+      "license": "C1",
+      "count": 35,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 75,
+      "license": "C1",
+      "count": 35,
+      "criticalCount": 3,
+      "outsidePool": 0
+    },
+    {
+      "id": 76,
+      "license": "C1",
+      "count": 35,
+      "criticalCount": 3,
+      "outsidePool": 0
+    },
+    {
+      "id": 77,
+      "license": "C1",
+      "count": 35,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 78,
+      "license": "C1",
+      "count": 35,
+      "criticalCount": 5,
+      "outsidePool": 0
+    },
+    {
+      "id": 79,
+      "license": "C1",
+      "count": 35,
+      "criticalCount": 2,
+      "outsidePool": 0
+    },
+    {
+      "id": 80,
+      "license": "C1",
+      "count": 35,
+      "criticalCount": 3,
+      "outsidePool": 0
+    },
+    {
+      "id": 81,
+      "license": "C1",
+      "count": 35,
+      "criticalCount": 1,
+      "outsidePool": 0
+    },
+    {
+      "id": 82,
+      "license": "C1",
+      "count": 35,
+      "criticalCount": 3,
+      "outsidePool": 0
+    },
+    {
+      "id": 83,
+      "license": "C1",
+      "count": 35,
+      "criticalCount": 6,
+      "outsidePool": 0
+    },
+    {
+      "id": 84,
+      "license": "C1",
+      "count": 35,
+      "criticalCount": 5,
+      "outsidePool": 0
+    },
+    {
+      "id": 85,
+      "license": "C",
+      "count": 40,
+      "criticalCount": 2,
+      "outsidePool": 0
+    },
+    {
+      "id": 86,
+      "license": "C",
+      "count": 40,
+      "criticalCount": 5,
+      "outsidePool": 0
+    },
+    {
+      "id": 87,
+      "license": "C",
+      "count": 40,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 88,
+      "license": "C",
+      "count": 40,
+      "criticalCount": 3,
+      "outsidePool": 0
+    },
+    {
+      "id": 89,
+      "license": "C",
+      "count": 40,
+      "criticalCount": 6,
+      "outsidePool": 0
+    },
+    {
+      "id": 90,
+      "license": "C",
+      "count": 40,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 91,
+      "license": "C",
+      "count": 40,
+      "criticalCount": 3,
+      "outsidePool": 0
+    },
+    {
+      "id": 92,
+      "license": "C",
+      "count": 40,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 93,
+      "license": "C",
+      "count": 40,
+      "criticalCount": 2,
+      "outsidePool": 0
+    },
+    {
+      "id": 94,
+      "license": "C",
+      "count": 40,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 95,
+      "license": "C",
+      "count": 40,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 96,
+      "license": "C",
+      "count": 40,
+      "criticalCount": 6,
+      "outsidePool": 0
+    },
+    {
+      "id": 97,
+      "license": "C",
+      "count": 40,
+      "criticalCount": 5,
+      "outsidePool": 0
+    },
+    {
+      "id": 98,
+      "license": "C",
+      "count": 40,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 99,
+      "license": "C",
+      "count": 40,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 100,
+      "license": "D1",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 101,
+      "license": "D1",
+      "count": 45,
+      "criticalCount": 7,
+      "outsidePool": 0
+    },
+    {
+      "id": 102,
+      "license": "D1",
+      "count": 45,
+      "criticalCount": 3,
+      "outsidePool": 0
+    },
+    {
+      "id": 103,
+      "license": "D1",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 104,
+      "license": "D1",
+      "count": 45,
+      "criticalCount": 5,
+      "outsidePool": 0
+    },
+    {
+      "id": 105,
+      "license": "D1",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 106,
+      "license": "D1",
+      "count": 45,
+      "criticalCount": 6,
+      "outsidePool": 0
+    },
+    {
+      "id": 107,
+      "license": "D1",
+      "count": 45,
+      "criticalCount": 5,
+      "outsidePool": 0
+    },
+    {
+      "id": 108,
+      "license": "D1",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 109,
+      "license": "D1",
+      "count": 45,
+      "criticalCount": 5,
+      "outsidePool": 0
+    },
+    {
+      "id": 110,
+      "license": "D1",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 111,
+      "license": "D1",
+      "count": 45,
+      "criticalCount": 2,
+      "outsidePool": 0
+    },
+    {
+      "id": 112,
+      "license": "D1",
+      "count": 45,
+      "criticalCount": 3,
+      "outsidePool": 0
+    },
+    {
+      "id": 113,
+      "license": "D1",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 114,
+      "license": "D2",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 115,
+      "license": "D2",
+      "count": 45,
+      "criticalCount": 7,
+      "outsidePool": 0
+    },
+    {
+      "id": 116,
+      "license": "D2",
+      "count": 45,
+      "criticalCount": 3,
+      "outsidePool": 0
+    },
+    {
+      "id": 117,
+      "license": "D2",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 118,
+      "license": "D2",
+      "count": 45,
+      "criticalCount": 5,
+      "outsidePool": 0
+    },
+    {
+      "id": 119,
+      "license": "D2",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 120,
+      "license": "D2",
+      "count": 45,
+      "criticalCount": 6,
+      "outsidePool": 0
+    },
+    {
+      "id": 121,
+      "license": "D2",
+      "count": 45,
+      "criticalCount": 5,
+      "outsidePool": 0
+    },
+    {
+      "id": 122,
+      "license": "D2",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 123,
+      "license": "D2",
+      "count": 45,
+      "criticalCount": 5,
+      "outsidePool": 0
+    },
+    {
+      "id": 124,
+      "license": "D2",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 125,
+      "license": "D2",
+      "count": 45,
+      "criticalCount": 2,
+      "outsidePool": 0
+    },
+    {
+      "id": 126,
+      "license": "D2",
+      "count": 45,
+      "criticalCount": 3,
+      "outsidePool": 0
+    },
+    {
+      "id": 127,
+      "license": "D2",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 128,
+      "license": "D",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 129,
+      "license": "D",
+      "count": 45,
+      "criticalCount": 7,
+      "outsidePool": 0
+    },
+    {
+      "id": 130,
+      "license": "D",
+      "count": 45,
+      "criticalCount": 3,
+      "outsidePool": 0
+    },
+    {
+      "id": 131,
+      "license": "D",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 132,
+      "license": "D",
+      "count": 45,
+      "criticalCount": 5,
+      "outsidePool": 0
+    },
+    {
+      "id": 133,
+      "license": "D",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 134,
+      "license": "D",
+      "count": 45,
+      "criticalCount": 6,
+      "outsidePool": 0
+    },
+    {
+      "id": 135,
+      "license": "D",
+      "count": 45,
+      "criticalCount": 5,
+      "outsidePool": 0
+    },
+    {
+      "id": 136,
+      "license": "D",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 137,
+      "license": "D",
+      "count": 45,
+      "criticalCount": 5,
+      "outsidePool": 0
+    },
+    {
+      "id": 138,
+      "license": "D",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 139,
+      "license": "D",
+      "count": 45,
+      "criticalCount": 2,
+      "outsidePool": 0
+    },
+    {
+      "id": 140,
+      "license": "D",
+      "count": 45,
+      "criticalCount": 3,
+      "outsidePool": 0
+    },
+    {
+      "id": 141,
+      "license": "D",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 142,
+      "license": "BE",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 143,
+      "license": "BE",
+      "count": 45,
+      "criticalCount": 7,
+      "outsidePool": 0
+    },
+    {
+      "id": 144,
+      "license": "BE",
+      "count": 45,
+      "criticalCount": 3,
+      "outsidePool": 0
+    },
+    {
+      "id": 145,
+      "license": "BE",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 146,
+      "license": "BE",
+      "count": 45,
+      "criticalCount": 5,
+      "outsidePool": 0
+    },
+    {
+      "id": 147,
+      "license": "BE",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 148,
+      "license": "BE",
+      "count": 45,
+      "criticalCount": 6,
+      "outsidePool": 0
+    },
+    {
+      "id": 149,
+      "license": "BE",
+      "count": 45,
+      "criticalCount": 5,
+      "outsidePool": 0
+    },
+    {
+      "id": 150,
+      "license": "BE",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 151,
+      "license": "BE",
+      "count": 45,
+      "criticalCount": 5,
+      "outsidePool": 0
+    },
+    {
+      "id": 152,
+      "license": "BE",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 153,
+      "license": "BE",
+      "count": 45,
+      "criticalCount": 2,
+      "outsidePool": 0
+    },
+    {
+      "id": 154,
+      "license": "BE",
+      "count": 45,
+      "criticalCount": 3,
+      "outsidePool": 0
+    },
+    {
+      "id": 155,
+      "license": "BE",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 156,
+      "license": "C1E",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 157,
+      "license": "C1E",
+      "count": 45,
+      "criticalCount": 7,
+      "outsidePool": 0
+    },
+    {
+      "id": 158,
+      "license": "C1E",
+      "count": 45,
+      "criticalCount": 3,
+      "outsidePool": 0
+    },
+    {
+      "id": 159,
+      "license": "C1E",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 160,
+      "license": "C1E",
+      "count": 45,
+      "criticalCount": 5,
+      "outsidePool": 0
+    },
+    {
+      "id": 161,
+      "license": "C1E",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 162,
+      "license": "C1E",
+      "count": 45,
+      "criticalCount": 6,
+      "outsidePool": 0
+    },
+    {
+      "id": 163,
+      "license": "C1E",
+      "count": 45,
+      "criticalCount": 5,
+      "outsidePool": 0
+    },
+    {
+      "id": 164,
+      "license": "C1E",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 165,
+      "license": "C1E",
+      "count": 45,
+      "criticalCount": 5,
+      "outsidePool": 0
+    },
+    {
+      "id": 166,
+      "license": "C1E",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 167,
+      "license": "C1E",
+      "count": 45,
+      "criticalCount": 2,
+      "outsidePool": 0
+    },
+    {
+      "id": 168,
+      "license": "C1E",
+      "count": 45,
+      "criticalCount": 3,
+      "outsidePool": 0
+    },
+    {
+      "id": 169,
+      "license": "C1E",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 170,
+      "license": "CE",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 171,
+      "license": "CE",
+      "count": 45,
+      "criticalCount": 7,
+      "outsidePool": 0
+    },
+    {
+      "id": 172,
+      "license": "CE",
+      "count": 45,
+      "criticalCount": 3,
+      "outsidePool": 0
+    },
+    {
+      "id": 173,
+      "license": "CE",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 174,
+      "license": "CE",
+      "count": 45,
+      "criticalCount": 5,
+      "outsidePool": 0
+    },
+    {
+      "id": 175,
+      "license": "CE",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 176,
+      "license": "CE",
+      "count": 45,
+      "criticalCount": 6,
+      "outsidePool": 0
+    },
+    {
+      "id": 177,
+      "license": "CE",
+      "count": 45,
+      "criticalCount": 5,
+      "outsidePool": 0
+    },
+    {
+      "id": 178,
+      "license": "CE",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 179,
+      "license": "CE",
+      "count": 45,
+      "criticalCount": 5,
+      "outsidePool": 0
+    },
+    {
+      "id": 180,
+      "license": "CE",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 181,
+      "license": "CE",
+      "count": 45,
+      "criticalCount": 2,
+      "outsidePool": 0
+    },
+    {
+      "id": 182,
+      "license": "CE",
+      "count": 45,
+      "criticalCount": 3,
+      "outsidePool": 0
+    },
+    {
+      "id": 183,
+      "license": "CE",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 184,
+      "license": "D1E",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 185,
+      "license": "D1E",
+      "count": 45,
+      "criticalCount": 7,
+      "outsidePool": 0
+    },
+    {
+      "id": 186,
+      "license": "D1E",
+      "count": 45,
+      "criticalCount": 3,
+      "outsidePool": 0
+    },
+    {
+      "id": 187,
+      "license": "D1E",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 188,
+      "license": "D1E",
+      "count": 45,
+      "criticalCount": 5,
+      "outsidePool": 0
+    },
+    {
+      "id": 189,
+      "license": "D1E",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 190,
+      "license": "D1E",
+      "count": 45,
+      "criticalCount": 6,
+      "outsidePool": 0
+    },
+    {
+      "id": 191,
+      "license": "D1E",
+      "count": 45,
+      "criticalCount": 5,
+      "outsidePool": 0
+    },
+    {
+      "id": 192,
+      "license": "D1E",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 193,
+      "license": "D1E",
+      "count": 45,
+      "criticalCount": 5,
+      "outsidePool": 0
+    },
+    {
+      "id": 194,
+      "license": "D1E",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 195,
+      "license": "D1E",
+      "count": 45,
+      "criticalCount": 2,
+      "outsidePool": 0
+    },
+    {
+      "id": 196,
+      "license": "D1E",
+      "count": 45,
+      "criticalCount": 3,
+      "outsidePool": 0
+    },
+    {
+      "id": 197,
+      "license": "D1E",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 198,
+      "license": "D2E",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 199,
+      "license": "D2E",
+      "count": 45,
+      "criticalCount": 7,
+      "outsidePool": 0
+    },
+    {
+      "id": 200,
+      "license": "D2E",
+      "count": 45,
+      "criticalCount": 3,
+      "outsidePool": 0
+    },
+    {
+      "id": 201,
+      "license": "D2E",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 202,
+      "license": "D2E",
+      "count": 45,
+      "criticalCount": 5,
+      "outsidePool": 0
+    },
+    {
+      "id": 203,
+      "license": "D2E",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 204,
+      "license": "D2E",
+      "count": 45,
+      "criticalCount": 6,
+      "outsidePool": 0
+    },
+    {
+      "id": 205,
+      "license": "D2E",
+      "count": 45,
+      "criticalCount": 5,
+      "outsidePool": 0
+    },
+    {
+      "id": 206,
+      "license": "D2E",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 207,
+      "license": "D2E",
+      "count": 45,
+      "criticalCount": 5,
+      "outsidePool": 0
+    },
+    {
+      "id": 208,
+      "license": "D2E",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 209,
+      "license": "D2E",
+      "count": 45,
+      "criticalCount": 2,
+      "outsidePool": 0
+    },
+    {
+      "id": 210,
+      "license": "D2E",
+      "count": 45,
+      "criticalCount": 3,
+      "outsidePool": 0
+    },
+    {
+      "id": 211,
+      "license": "D2E",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 212,
+      "license": "DE",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 213,
+      "license": "DE",
+      "count": 45,
+      "criticalCount": 7,
+      "outsidePool": 0
+    },
+    {
+      "id": 214,
+      "license": "DE",
+      "count": 45,
+      "criticalCount": 3,
+      "outsidePool": 0
+    },
+    {
+      "id": 215,
+      "license": "DE",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 216,
+      "license": "DE",
+      "count": 45,
+      "criticalCount": 5,
+      "outsidePool": 0
+    },
+    {
+      "id": 217,
+      "license": "DE",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 218,
+      "license": "DE",
+      "count": 45,
+      "criticalCount": 6,
+      "outsidePool": 0
+    },
+    {
+      "id": 219,
+      "license": "DE",
+      "count": 45,
+      "criticalCount": 5,
+      "outsidePool": 0
+    },
+    {
+      "id": 220,
+      "license": "DE",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 221,
+      "license": "DE",
+      "count": 45,
+      "criticalCount": 5,
+      "outsidePool": 0
+    },
+    {
+      "id": 222,
+      "license": "DE",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 223,
+      "license": "DE",
+      "count": 45,
+      "criticalCount": 2,
+      "outsidePool": 0
+    },
+    {
+      "id": 224,
+      "license": "DE",
+      "count": 45,
+      "criticalCount": 3,
+      "outsidePool": 0
+    },
+    {
+      "id": 225,
+      "license": "DE",
+      "count": 45,
+      "criticalCount": 4,
+      "outsidePool": 0
+    },
+    {
+      "id": 226,
+      "license": "B",
+      "count": 30,
+      "criticalCount": 1,
+      "outsidePool": 0
+    },
+    {
+      "id": 227,
+      "license": "B",
+      "count": 30,
+      "criticalCount": 1,
+      "outsidePool": 0
+    },
+    {
+      "id": 228,
+      "license": "B",
+      "count": 30,
+      "criticalCount": 1,
+      "outsidePool": 0
+    },
+    {
+      "id": 229,
+      "license": "B",
+      "count": 30,
+      "criticalCount": 1,
+      "outsidePool": 0
+    },
+    {
+      "id": 230,
+      "license": "B",
+      "count": 30,
+      "criticalCount": 1,
+      "outsidePool": 1
+    },
+    {
+      "id": 231,
+      "license": "B",
+      "count": 30,
+      "criticalCount": 1,
+      "outsidePool": 0
+    },
+    {
+      "id": 232,
+      "license": "A",
+      "count": 25,
+      "criticalCount": 1,
+      "outsidePool": 0
+    },
+    {
+      "id": 233,
+      "license": "A",
+      "count": 25,
+      "criticalCount": 1,
+      "outsidePool": 0
+    }
+  ],
+  "baseApkSha256": "4d8f1bae2c375d61f3fb466a0c18d1cbe188cc7196edbbc5054e252e106741eb"
+}

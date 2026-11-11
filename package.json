@@ -1,0 +1,16 @@
+{
+  "name": "gplx2026-pwa",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "PWA từ dữ liệu Ôn thi GPLX 2025 v2.0.3",
+  "engines": { "node": ">=22.13" },
+  "scripts": {
+    "start": "node scripts/serve.mjs",
+    "dev": "node scripts/serve.mjs",
+    "extract": "node --experimental-sqlite scripts/extract-data.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "test:http": "node scripts/check-http.mjs",
+    "check:deploy": "node scripts/check-deploy.mjs"
+  }
+}
