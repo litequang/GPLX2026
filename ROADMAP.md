@@ -43,3 +43,8 @@
 - [x] 15testgroups/1.500random/662HTTP/outputscan.
 - [x] Map/data/design/validation/AGENTS/handoffdocs.
 - [x] Shell v2: auto-hide không idle timer, màn học gọn, native install header mobile/standalone; 21 nhóm test, chưa browser thật.
+
+## Thanh Home Android — cần dữ liệu thiết bị
+
+- [ ] Người dùng xác nhận đang ở v4. Lấy version Chrome/Android, kiểm tra meta thực tế và edge-to-edge trên thiết bị. Không kết luận cập nhật lại web sẽ tự hết. Chưa có bản vá web bổ sung đáng tin; xem kết quả rà Chromium trong THEME.md.
+- [ ] Nếu yêu cầu điều khiển native ổn định trên thiết bị không theo meta: thống nhất phương án Android wrapper/bridge theme trước khi xây dựng; PWA không có API đặt màu Window native trực tiếp.

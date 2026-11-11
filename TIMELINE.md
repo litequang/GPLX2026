@@ -64,3 +64,7 @@ Browser inventory vẫn báo The browser access host is unavailable; không coi 
 Chi tiết cho AI tiếp theo: OFFICIAL_AUDIT.md, OFFLINE.md, PROJECT_MAP.md, VALIDATION.md; còn119 ứng viên text và QA browser/Android.
 
 Người dùng gửi ảnh PWA sau cài lại: giao diện sáng hết xanh và nền dưới đồng bộ; giao diện tối native gesture/Home bar còn trắng. Ảnh còn0/592, chưa có icon offline nên chưa kiểm chứng runtime v4. Không ghi lỗi màu native đã được giải quyết hoàn toàn.
+
+## Rà thanh Home dark sau xác nhận bản mới — 11/11/2026
+
+Người dùng xác nhận v4. Đã đọc Chromium CL8077818 và controller hiện hành: màu native phụ thuộc nhánh manifest/edge-to-edge và bản Chrome. Cấu hình web cần thiết đã có ở v4; chưa tìm được sửa runtime bổ sung có cơ sở. ADB rỗng; cần version Chrome/Android và tái hiện thiết bị. Không đổi palette/manifest tối cố định hoặc fullscreen để che triệu chứng. Chỉ cập nhật tài liệu, không triển khai lại runtime.

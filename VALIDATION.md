@@ -67,3 +67,5 @@ Scan lần đầu phát hiện dist/index.zip 28.495.820 byte; giữ nguyên fil
 - Chưa có browser/visual/Android QA mới trong đợt này; hạn chế công cụ đã ghi phía trên vẫn còn.
 
 Ảnh người dùng gửi sau cài lại xác nhận phần nền native dưới ở chế độ sáng đồng bộ, nhưng chế độ tối vẫn sáng. Ảnh đang dùng bộ lọcB592, không có icon offline; chưa xác nhận sau runtimev4. Đây là bằng chứng do người dùng cung cấp, không phải browser automation/QA do agent thực hiện.
+
+11/11/2026: người dùng đã xác nhận bản mới v4; không còn coi web cũ là giả thuyết đủ để giải thích thanh Home dark. ADB vẫn không thấy thiết bị, chưa có version Chrome/Android hoặc QA native. Rà mã Chromium cho thấy nhánh manifest khác nhánh page-theme/edge-to-edge, xem THEME. Không có sửa runtime mới hoặc tuyên bố đã fix.
