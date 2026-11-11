@@ -585,6 +585,12 @@ main[data-view="study"], main[data-view="exam"] { padding-top: 16px; }
 .explanation-heading .text-button { flex-shrink: 0; min-height: 44px; padding: 8px; }
 @media(max-width:760px) {
   .topbar-actions { gap: 8px; }
+  main[data-view="home"] { padding-top: 15px; }
+  main[data-view="home"] > .page-heading { display: block; margin-bottom: 15px; }
+  main[data-view="home"] > .page-heading h1 { font-size: 19px; line-height: 1.35; letter-spacing: -.3px; }
+  main[data-view="home"] > .page-heading .subtitle { font-size: 11px; line-height: 1.55; margin-top: 5px; }
+  main[data-view="home"] > .page-heading .eyebrow { font-size: 7px; margin-bottom: 6px; }
+  main[data-view="home"] > .page-heading > .eyebrow-chip { display: none; }
   .install-button { font-size: 11px; padding: 9px 10px; gap: 5px; }
   .breadcrumb { font-size: 11px; }
   .license-field { padding-inline: 5px; }

@@ -5,7 +5,7 @@
 | Kiểm tra đã chạy | Kết quả |
 | --- | --- |
 | Nguồn | 4 APK đã lấy, 2 SQLite giải mã integrity_check=ok, dùng texture25, đủ 600 giải thích |
-| npm test | 36 nhóm pass, 0 fail (official overlay, quota, tải nền/consent/resume, manifest refresh, theme resume) |
+| npm test | 40 nhóm pass, 0 fail; thêm canonical root/307, retry worker, manifest theo theme/ack/restart |
 | Data | 600 ID/option/topic/reference hợp lệ, 60 global critical |
 | Pool/critical | A1/A: 250/20; B1: 300/30; B: 600/60; C1 trở lên: 600/60 |
 | Random | 100 × 15 hạng = 1.500 bài, đúng số câu, không trùng, trong pool, một critical và đúng từng quota chủ đề CV2262 |
@@ -21,8 +21,8 @@
 | Theme giả lập | Mặc định/system/saved preference, toggle tức thì/meta/aria/storage, bootstrap trước DOM ready, storage lỗi, sync tab và giữ progress riêng |
 | Palette | Một số cặp ink/muted/primary/success/error/warning và button được tính contrast ≥4,5; không thay visual/WCAG audit |
 | Syntax | node --check app.js, sw.js, theme-init.js và các module/script đã sửa thành công |
-| Output scan | 666 file, 29.577.339 byte, lớn nhất 790.894 byte, không file cấm, dưới 25 MiB/file |
-| HTTP | 674 URL gồm root + mọi file dist + app/CSS/theme/core/data versioned v4, tất cả 200, không rỗng, MIME đúng; 30.509.739 byte ≈ 29,1 MiB |
+| Output scan | 666 file, 29.581.984 byte, lớn nhất 790.894 byte, không file cấm, dưới 25 MiB/file |
+| HTTP local | 675 URL gồm root + mọi file dist + app/CSS/theme/core/offline/data v5, 200/nonempty/MIME đúng; 30.519.944 byte |
 | Comparison | 139 text/147 options, gộp 242; 0 answer-ID/global critical đổi; 600 giải thích khác |
 | Triển khai | Sites private shell v4 succeeded, runtime a7c30f1a5db001966b36ec3e2c2586ad818a9e8c; GitHub main đã push, xem DEPLOYMENT |
 
@@ -69,3 +69,9 @@ Scan lần đầu phát hiện dist/index.zip 28.495.820 byte; giữ nguyên fil
 Ảnh người dùng gửi sau cài lại xác nhận phần nền native dưới ở chế độ sáng đồng bộ, nhưng chế độ tối vẫn sáng. Ảnh đang dùng bộ lọcB592, không có icon offline; chưa xác nhận sau runtimev4. Đây là bằng chứng do người dùng cung cấp, không phải browser automation/QA do agent thực hiện.
 
 11/11/2026: người dùng đã xác nhận bản mới v4; không còn coi web cũ là giả thuyết đủ để giải thích thanh Home dark. ADB vẫn không thấy thiết bị, chưa có version Chrome/Android hoặc QA native. Rà mã Chromium cho thấy nhánh manifest khác nhánh page-theme/edge-to-edge, xem THEME. Không có sửa runtime mới hoặc tuyên bố đã fix.
+
+## Shell v5 — bằng chứng hosting và giới hạn
+
+Đã kiểm tra HTTPS của Site private bằng service access đúng Site: /index.html307, /200; SW/JSON/CSS/JS/ảnh đúng loại, WOFF2 hosting application/octet-stream (worker cho phép). Các URL này được kiểm qua HTTP, không phải browser. Đây là nguyên nhân install v4 thất bại; local server không chuyển hướng nên HTTP local trước đây không bắt được. Worker test v5 tái hiện alias307 và dùng root chuẩn.
+
+Browser inventory mới: browsers:[] / The browser access host is unavailable. Chưa có responsive visual, cài worker/browser thật, native Android Home hoặc đóng/mở/offline thật. Không coi 40 nhóm Node/VM hoặc script live-worker (nếu chạy) là bằng chứng native/PWA đã qua.

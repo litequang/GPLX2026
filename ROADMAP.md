@@ -48,3 +48,11 @@
 
 - [ ] Người dùng xác nhận đang ở v4. Lấy version Chrome/Android, kiểm tra meta thực tế và edge-to-edge trên thiết bị. Không kết luận cập nhật lại web sẽ tự hết. Chưa có bản vá web bổ sung đáng tin; xem kết quả rà Chromium trong THEME.md.
 - [ ] Nếu yêu cầu điều khiển native ổn định trên thiết bị không theo meta: thống nhất phương án Android wrapper/bridge theme trước khi xây dựng; PWA không có API đặt màu Window native trực tiếp.
+
+## Đợt v5
+
+- [x] Loại index.html redirect307 khỏi SHELL, dùng root canonical, retry worker + thông báo đúng lỗi.
+- [x] Manifest qua worker theo lựa chọn light/dark với URL/id ổn định, ack và cache preference riêng; chưa xác nhận màu native.
+- [x] Thu nhỏ heading/mô tả chào trên mobile, bỏ badge cạnh heading ở dưới760px; chưa visual QA.
+- [ ] QA PC/Android tải đủ rồi reload offline trên hosting private; đăng nhập lại có thể cần mạng.
+- [ ] Kiểm tra Chrome đọc manifest dark sau chọn tối/cài lại/cập nhật, và đổi về light; không hứa đổi native ngay.

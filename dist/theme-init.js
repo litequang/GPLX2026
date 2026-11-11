@@ -6,8 +6,25 @@
   const system = window.matchMedia?.('(prefers-color-scheme: dark)');
   const valid = value => value === 'light' || value === 'dark';
   let preference = null, current, button;
+  let manifestWorker, manifestTheme, manifestSequence = 0;
+  const workers = window.navigator?.serviceWorker;
   try { const value = window.localStorage.getItem(key); if (valid(value)) preference = value; } catch {}
   const systemTheme = () => system?.matches ? 'dark' : 'light';
+  function syncManifest() {
+    const worker = workers?.controller;
+    if (!worker || !window.MessageChannel || (worker === manifestWorker && current === manifestTheme)) return;
+    const theme = current, sequence = ++manifestSequence, channel = new window.MessageChannel();
+    const close = () => { clearTimeout(timer); channel.port1.close(); channel.port2.close(); };
+    const timer = setTimeout(close, 4000);
+    channel.port1.onmessage = event => {
+      close();
+      if (event.data?.type !== 'theme-saved' || event.data.theme !== theme || current !== theme || sequence !== manifestSequence) return;
+      // Keep the manifest URL/id stable; re-discover it after the worker saves the colors.
+      const link = document.querySelector('link[rel="manifest"]');
+      if (link) { manifestWorker = worker; manifestTheme = theme; link.replaceWith(link.cloneNode()); }
+    };
+    try { worker.postMessage({ type: 'set-theme', theme }, [channel.port2]); } catch { close(); }
+  }
   function updateButton() {
     if (!button) return;
     const label = current === 'dark' ? 'Chuyển sang giao diện sáng' : 'Chuyển sang giao diện tối';
@@ -25,6 +42,7 @@
     document.querySelector('meta[name="color-scheme"]')?.setAttribute('content', theme);
     document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')?.setAttribute('content', theme === 'dark' ? 'black-translucent' : 'default');
     updateButton();
+    syncManifest();
   }
   apply(preference || systemTheme());
   function bind() {
@@ -49,4 +67,5 @@
   // Android can restore the native chrome after returning from another app/BFCache.
   window.addEventListener('pageshow', () => apply(current));
   document.addEventListener('visibilitychange', () => { if (!document.hidden) apply(current); });
+  workers?.addEventListener('controllerchange', () => { manifestWorker = null; syncManifest(); });
 })();

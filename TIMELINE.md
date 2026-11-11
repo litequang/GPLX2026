@@ -68,3 +68,15 @@ Người dùng gửi ảnh PWA sau cài lại: giao diện sáng hết xanh và 
 ## Rà thanh Home dark sau xác nhận bản mới — 11/11/2026
 
 Người dùng xác nhận v4. Đã đọc Chromium CL8077818 và controller hiện hành: màu native phụ thuộc nhánh manifest/edge-to-edge và bản Chrome. Cấu hình web cần thiết đã có ở v4; chưa tìm được sửa runtime bổ sung có cơ sở. ADB rỗng; cần version Chrome/Android và tái hiện thiết bị. Không đổi palette/manifest tối cố định hoặc fullscreen để che triệu chứng. Chỉ cập nhật tài liệu, không triển khai lại runtime.
+
+## Sửa lỗi tải, manifest theo theme và lời chào — 11/11/2026
+
+| Chặng | Trạng thái |
+| --- | --- |
+| Chẩn đoán hosting thật | index.html307→/; root200. Worker cũ từ chối redirect nên cài thất bại |
+| Sửa worker | Canonical root, retry registration, lỗi không còn suy ra thiếu HTTPS |
+| Manifest theo theme | Cache preference riêng, ack/re-read cùng URL, giữ identity; chưa Android native |
+| Lời chào mobile | 19px, mô tả11px, ít khoảng trống, bỏ badge cạnh heading |
+| Kiểm tra | 40 nhóm Node/VM;675 HTTP local;666 outputfiles qua |
+| Browser | Host vẫn unavailable; chưa visual/native QA |
+| GitHub/Sites | Đang đóng gói, ghi kết quả sau khi tool trả success |

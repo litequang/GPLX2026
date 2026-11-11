@@ -111,7 +111,7 @@ Keys: `gplx2026-progress-v1`, `gplx2026-active-exam-v1`. Active dùng localStora
 
 ## Cache / cập nhật
 
-Shell `gplx2026-shell-v4` có HTML/CSS/modules/data/fonts/icons cùng theme-init.js/themes.css. HTML tham chiếu app/CSS/theme với `?v=4`, URL thường và version đều precache để tránh worker cũ trả code/CSS cũ khi mở online. Tăng version cần cập nhật HTML/SHELL/HTTP check đồng bộ. Data `gplx2026-data-<revision>` không đổi nếu nội dung không đổi. Manifest đọc từ shell hiện hành để không trộn phiên bản. Tải lô 6; marker `offline-ready` chỉ ghi sau đủ 633 URL. Sai MIME/redirect/network/quota không đánh dấu ready, retry dùng phần đã lưu. Activate chỉ xóa shell GPLX2026 cũ; tải data mới hoàn tất mới xóa data cũ.
+Shell `gplx2026-shell-v5` có HTML/CSS/modules/data/fonts/icons cùng theme-init.js/themes.css. HTML tham chiếu app/CSS/theme với `?v=5`, URL thường và version đều precache để tránh worker cũ trả code/CSS cũ khi mở online. Tăng version cần cập nhật HTML/SHELL/HTTP check đồng bộ. Data `gplx2026-data-<revision>` không đổi nếu nội dung không đổi. Manifest đọc từ shell hiện hành để không trộn phiên bản. Tải lô 6; marker `offline-ready` chỉ ghi sau đủ 633 URL. Sai MIME/redirect/network/quota không đánh dấu ready, retry dùng phần đã lưu. Activate chỉ xóa shell GPLX2026 cũ; tải data mới hoàn tất mới xóa data cũ.
 
 Sửa shell phải tăng APP_REVISION; sửa dataset/ảnh dùng extractor + manifest. Thêm module/font phải thêm precache. Không auto-reload khi controllerchange. Private hosting có thể cần mạng để xác thực; chưa kiểm chứng browser/PWA/offline thật.
 
@@ -132,3 +132,13 @@ Theme một chạm, key gplx2026-theme-v1 và giới hạn màu thanh native c�
 Header icon → offlineDialog xác nhận → createOfflineDownload nhớ consent → activeWorker đợi activated → worker download-offline theo revision → lô6 ảnh → marker đủ633 → icon tick. Progress chỉ cập nhật header/dialog, không renderHome/câu hỏi. Key gplx2026-offline-v1 độc lập progress/theme; online/mở lại tiếp tục sau consent, clearOffline tắt consent. Android có thể dừng worker.
 
 Versioned app/core/dataset/offline URL tránh worker cũ trộn dữ liệu trong lần online đầu; đăng ký sw.js?v=4, updateViaCache:none. Manifest URL/id giữ nguyên, fetch network-first có MIME/fallback; theme-init đặt cả html/body/meta/color-scheme, reapply pageshow/visible. themes.css dùng max safe-area + offset cho Android edge-to-edge. Không có API web bảo đảm đổi ngay màu thanh Back/Home/Recents trên mọi Chrome/WebAPK.
+
+## Shell v5: sửa cài worker, manifest theo theme, lời chào mobile
+
+SHELL chỉ precache URL gốc ./ (hosting chuyển index.html → / bằng307); navigation offline dùng chính bản ./ đã lưu. Không nới kiểm MIME/redirect toàn cục. modules/offline.js thêm createWorkerConnection: gộp register đang chạy, bỏ promise cũ khi xong/lỗi, retry tạo worker mới nếu lần trước precache thất bại. activeWorker chờ tối đa45s; lỗi chưa có worker không còn đổ cho HTTPS. App tải offline hiển thị thông báo lỗi cụ thể trong dialog.
+
+Theme-init → MessageChannel set-theme → worker xác nhận ghi CacheStorage gplx2026-settings-v1/__theme → theme-init thay node link manifest cùng URL để Chrome đọc lại. Worker trả manifest.webmanifest với theme_color/background_color theo preference; giữ id/name/start_url/scope/icons. Có kiểm client cùng scope, ack/sequence để không áp phản hồi cũ khi bấm nhanh; preferences sống qua worker restart và không bị clearOffline xóa. Static manifest vẫn light nếu worker không tham gia; không hứa native đổi ngay hoặc mọi quy trình cài đều đi qua worker.
+
+Home gán main[data-view=home]; CSS dưới760px h1=19px, subtitle11px/line-height1.55, headingblock và ẩn badge600 cạnh chào. Không tác động tiêu đề câu hỏi.
+
+scripts/check-hosted-worker.mjs nhận base/token qua hidden JSON stdin, chạy worker local trong Node VM với tài nguyên HTTPS thật và cache mô phỏng. Không coi là browser/PWA/native QA. Không đưa token vào args/env/file/output.

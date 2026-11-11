@@ -9,3 +9,11 @@ Icon tải xuống luôn ở header sau khi dữ liệu khởi tạo, thay banne
 App khởi tạo shell/core/dataset/offline manifest với URL v4, worker precache cả URL thường và versioned. Nếu nâng version tiếp, đổi đồng bộ HTML/import/fetch/worker/register/HTTP tests. Manifest PWA giữ nguyên URL/id/start_url/scope để Chrome tiếp tục cập nhật WebAPK đã cài; fetch manifest network-first có kiểm MIME và fallback bản hợp lệ khi offline/lỗi xác thực.
 
 Đã kiểm thử 5 nhóm controller với mock và worker VM; **chưa** kiểm chứng tải nền/đóng mở/quota/tiết kiệm pin/offline trên Chrome Android thật. Hosting private có thể cần mạng để xác thực trước khi vào app. Checklist: xác nhận/hủy, học và làm timed trong lúc tải, mất mạng giữa chừng, reload, đóng/mở app, cập nhật dữ liệu, lỗi quota, xóa cache rồi mở lại; label/focus và header 320/375/390 khi nút Cài app hiện.
+
+## Sửa lỗi khởi tạo worker — shell v5
+
+Đã kiểm tra trực tiếp hosting private bằng service-access token trong bộ nhớ: index.html trả307 về /, trong khi / trả200 HTML. Worker v4 đưa cả hai vào SHELL rồi từ chối response.redirected; browser fetch tự theo307 khiến install thất bại, registration.active về null. Thông báo cũ “cần HTTPS hoặc localhost” đánh lạc hướng trên cả PC/Android.
+
+V5 bỏ alias index.html khỏi precache và dùng ./ cho fallback navigation; vẫn chặn redirect/auth HTML sai loại cho assets. Kiểm thử worker hiện mô phỏng index.html trả307 và dùng danh sách font thật có OFL.txt. createWorkerConnection retry register khi cài trước đó hỏng, gộp các lần bấm đồng thời; lỗi active rỗng báo worker chưa hoạt động. Dialog hiện lỗi thực, không suy ra thiếu HTTPS từ registration rỗng. Chờ install tối đa45s.
+
+Manifest URL ổn định nhưng worker cá nhân hóa hai màu theo CacheStorage preference; cần worker cài thành công trước khi chọn theme/cài PWA để nhận màu mong muốn. Cache settings tách khỏi data và tiến độ.

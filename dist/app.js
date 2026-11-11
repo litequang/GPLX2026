@@ -1,8 +1,8 @@
-import { getLicense, poolFor, isCritical, randomExam, grade, filterQuestions, statistics, createProgress, parseProgress } from './modules/core.js?v=4';
+import { getLicense, poolFor, isCritical, randomExam, grade, filterQuestions, statistics, createProgress, parseProgress } from './modules/core.js?v=5';
 import { readProgress, readExam, writeProgress, writeExam } from './modules/storage.js';
 import { escape as e, icon, dateLabel, dayKey, durationLabel, progressBar } from './modules/ui.js';
 import { setupAutoHideBars } from './modules/chrome.js';
-import { createOfflineDownload, activeWorker } from './modules/offline.js';
+import { createOfflineDownload, createWorkerConnection } from './modules/offline.js?v=5';
 import { setupInstall } from './modules/install.js';
 
 const $ = selector => document.querySelector(selector);
@@ -79,7 +79,7 @@ function updateOfflineUI() {
   control.setAttribute('aria-label', label); control.title = label;
   control.innerHTML = icon(offline.status === 'ready' ? 'check' : offline.status === 'error' ? 'triangle-alert' : 'download', 19) + (offline.status === 'downloading' ? `<small class="offline-percent">${percent}%</small>` : '');
   const detail = $('#offline-detail');
-  if (detail) detail.textContent = offline.status === 'ready' ? 'Đã lưu đủ câu hỏi, cẩm nang và hình ảnh.' : offline.status === 'downloading' ? `Đã tải ${offline.completed}/${offline.total} mục. Bạn có thể đóng hộp này để tiếp tục học.` : offline.status === 'error' ? 'Tải chưa hoàn tất. Bấm icon để thử lại khi có mạng.' : '';
+  if (detail) detail.textContent = offline.status === 'ready' ? 'Đã lưu đủ câu hỏi, cẩm nang và hình ảnh.' : offline.status === 'downloading' ? `Đã tải ${offline.completed}/${offline.total} mục. Bạn có thể đóng hộp này để tiếp tục học.` : offline.status === 'error' ? offline.error || 'Tải chưa hoàn tất. Bấm icon để thử lại khi có mạng.' : '';
 }
 function offlineDialog() {
   if (!offlineManifest) return;
@@ -88,6 +88,7 @@ function offlineDialog() {
   updateOfflineUI();
 }
 function renderHome() {
+  $('#main').dataset.view = 'home';
   const p = currentPool(), l = currentLicense(), stats = statistics(p, progress), critical = p.filter(q => isCritical(q, l));
   const today = dayKey(Date.now()), daily = Object.values(progress.answers).filter(a => a.selected > 0 && dayKey(a.at) === today).length;
   const topicIcons = { 1: 'book-open', 2: 'shield-check', 3: 'car', 4: 'settings', 5: 'traffic-cone', 6: 'route' };
@@ -347,12 +348,14 @@ addEventListener('online', connectionChanged); addEventListener('offline', conne
 addEventListener('hashchange', () => { if (data) applyRoute(); });
 
 async function setupWorker() {
+  const connect = navigator.serviceWorker && createWorkerConnection(navigator.serviceWorker, './sw.js?v=5');
   let storage; try { storage = localStorage; } catch {}
   offlineDownload = createOfflineDownload({
     revision: offlineManifest.revision, total: offlineManifest.urls.length, storage,
     getWorker: async () => {
-      if (!registration) throw new Error('Ngoại tuyến chưa sẵn sàng. Hãy thử lại sau một chút.');
-      return activeWorker(registration);
+      if (!window.isSecureContext) throw new Error('Học ngoại tuyến cần mở app qua HTTPS hoặc localhost.');
+      if (!connect) throw new Error('Trình duyệt chưa hỗ trợ học ngoại tuyến.');
+      const result = await connect(); registration = result.registration; return result.worker;
     },
     hasReady: async () => {
       const cache = await caches.open('gplx2026-data-' + offlineManifest.revision);
@@ -367,15 +370,14 @@ async function setupWorker() {
   if (!('serviceWorker' in navigator)) { $('#offline-button').disabled = true; $('#offline-button').title = 'Trình duyệt chưa hỗ trợ học ngoại tuyến'; return; }
   navigator.serviceWorker.addEventListener('message', event => offlineDownload.message(event.data));
   try {
-    registration = await navigator.serviceWorker.register('./sw.js?v=4', { updateViaCache: 'none' });
-    await activeWorker(registration);
+    registration = (await connect()).registration;
     await offlineDownload.restore();
     addEventListener('online', () => offlineDownload.start());
-  } catch { offline = { ...offline, status: 'error' }; updateOfflineUI(); }
+  } catch (error) { offline = { ...offline, status: 'error', error: error.message }; updateOfflineUI(); }
 }
 async function init() {
   try {
-    const responses = await Promise.all([fetch('./data/dataset.json?v=4'), fetch('./data/offline.json?v=4')]);
+    const responses = await Promise.all([fetch('./data/dataset.json?v=5'), fetch('./data/offline.json?v=5')]);
     if (responses.some(r => !r.ok || r.redirected)) throw new Error('Chưa tải được bộ dữ liệu.');
     [data, offlineManifest] = await Promise.all(responses.map(r => r.json()));
     questionMap = new Map(data.questions.map(q => [q.id, q])); progress = readProgress(data); activeExam = readExam(data);

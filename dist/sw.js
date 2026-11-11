@@ -1,10 +1,29 @@
 // Increase this revision whenever a shell, module or font changes.
-const APP_REVISION = 'gplx2026-shell-v4';
+const APP_REVISION = 'gplx2026-shell-v5';
 const DATA_PREFIX = 'gplx2026-data-';
-const SHELL = ['./', 'index.html', 'styles.css', 'styles.css?v=4', 'themes.css', 'themes.css?v=4', 'theme-init.js', 'theme-init.js?v=4', 'app.js', 'app.js?v=4', 'modules/core.js', 'modules/core.js?v=4', 'modules/storage.js', 'modules/ui.js', 'modules/icons.js', 'modules/chrome.js', 'modules/install.js', 'modules/offline.js', 'manifest.webmanifest', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'data/dataset.json', 'data/dataset.json?v=4', 'data/offline.json', 'data/offline.json?v=4', 'fonts/manifest.json'];
+const SETTINGS_CACHE = 'gplx2026-settings-v1';
+const SHELL = ['./', 'styles.css', 'styles.css?v=5', 'themes.css', 'themes.css?v=5', 'theme-init.js', 'theme-init.js?v=5', 'app.js', 'app.js?v=5', 'modules/core.js', 'modules/core.js?v=5', 'modules/storage.js', 'modules/ui.js', 'modules/icons.js', 'modules/chrome.js', 'modules/install.js', 'modules/offline.js', 'modules/offline.js?v=5', 'manifest.webmanifest', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'data/dataset.json', 'data/dataset.json?v=5', 'data/offline.json', 'data/offline.json?v=5', 'fonts/manifest.json'];
 const scope = new URL(self.registration.scope);
 const absolute = path => new URL(path, scope);
 let manifestTask, downloadTask;
+let savedTheme, themeTask = Promise.resolve();
+async function readTheme() {
+  await themeTask.catch(() => {});
+  if (savedTheme) return savedTheme;
+  try {
+    const cache = await caches.open(SETTINGS_CACHE);
+    const response = await cache.match(absolute('__theme'));
+    const value = response && await response.text();
+    if (value === 'light' || value === 'dark') savedTheme = value;
+  } catch {}
+  return savedTheme || 'light';
+}
+async function themedManifest(response) {
+  const manifest = await response.json();
+  if (!manifest || typeof manifest !== 'object' || Array.isArray(manifest) || typeof manifest.id !== 'string' || typeof manifest.start_url !== 'string' || !Array.isArray(manifest.icons)) throw new Error('Invalid PWA manifest');
+  const color = await readTheme() === 'dark' ? '#0b1220' : '#f5f7fc';
+  return new Response(JSON.stringify({ ...manifest, theme_color: color, background_color: color }), { headers: { 'content-type': 'application/manifest+json', 'cache-control': 'no-store' } });
+}
 function valid(response, path) {
   path = path.split(/[?#]/, 1)[0];
   const mime = response.headers.get('content-type') || '';
@@ -50,16 +69,21 @@ self.addEventListener('fetch', event => {
     const shell = await caches.open(APP_REVISION);
     if (event.request.mode === 'navigate') {
       try { const response = await fetch(event.request); if (valid(response, 'index.html')) return response; } catch {}
-      return await shell.match(absolute('index.html')) || Response.error();
+      return await shell.match(absolute('./')) || Response.error();
     }
     // Let Chrome/WebAPK see new colors instead of retaining a cached blue manifest.
     const relative = url.pathname.slice(scope.pathname.length);
     if (relative === 'manifest.webmanifest') {
       try {
         const response = await fetch(event.request, { cache: 'no-cache' });
-        if (valid(response, relative)) { await shell.put(absolute(relative), response.clone()); return response; }
+        if (valid(response, relative)) {
+          const themed = await themedManifest(response.clone());
+          await shell.put(absolute(relative), response);
+          return themed;
+        }
       } catch {}
-      return await shell.match(absolute(relative)) || Response.error();
+      const cachedManifest = await shell.match(absolute(relative));
+      try { return cachedManifest ? await themedManifest(cachedManifest) : Response.error(); } catch { return Response.error(); }
     }
     const cached = await shell.match(event.request);
     if (cached) return cached;
@@ -98,6 +122,19 @@ async function cacheDataset() {
   await broadcast({ type: 'offline-done', revision: manifest.revision, total: completed });
 }
 self.addEventListener('message', event => {
+  if (event.data?.type === 'set-theme') {
+    const theme = event.data.theme;
+    if (theme !== 'light' && theme !== 'dark') return;
+    const clientURL = event.source?.url && new URL(event.source.url);
+    if (!clientURL || clientURL.origin !== scope.origin || !clientURL.pathname.startsWith(scope.pathname)) return;
+    themeTask = themeTask.catch(() => {}).then(async () => {
+      const cache = await caches.open(SETTINGS_CACHE);
+      await cache.put(absolute('__theme'), new Response(theme));
+      savedTheme = theme;
+    });
+    event.waitUntil(themeTask.then(() => event.ports?.[0]?.postMessage({ type: 'theme-saved', theme })).catch(() => event.ports?.[0]?.postMessage({ type: 'theme-error' })));
+    return;
+  }
   if (event.data?.type !== 'download-offline') return;
   if (!downloadTask) downloadTask = cacheDataset().catch(error => broadcast({ type: 'offline-error', revision: event.data.revision, message: error.message })).finally(() => { downloadTask = null; });
   event.waitUntil(downloadTask);

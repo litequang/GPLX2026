@@ -4,17 +4,21 @@ import vm from 'node:vm';
 import { readFileSync } from 'node:fs';
 const source = readFileSync(new URL('../dist/theme-init.js', import.meta.url), 'utf8');
 const key = 'gplx2026-theme-v1';
-function harness({ preference = null, dark = false, blocked = false, loading = false } = {}) {
+function harness({ preference = null, dark = false, blocked = false, loading = false, workerSync = false } = {}) {
   const win = new EventTarget(), doc = new EventTarget(), media = Object.assign(new EventTarget(), { matches: dark });
   const values = new Map([['gplx2026-progress-v1', 'keep-progress']]); if (preference !== null) values.set(key, preference);
   const attrs = () => ({ values: new Map(), setAttribute(name, value) { this.values.set(name, value); } });
   const meta = attrs(), scheme = attrs(), apple = attrs(), button = Object.assign(new EventTarget(), attrs());
   const root = { dataset: {}, style: {} };
+  const posts = [], workers = new EventTarget(); let replacements = 0;
+  workers.controller = { postMessage: (message, ports) => posts.push({ message, reply: value => ports[0].peer.onmessage({ data: value }) }) };
+  const link = { cloneNode() { return link; }, replaceWith() { replacements++; } };
+  if (workerSync) Object.assign(win, { navigator: { serviceWorker: workers }, MessageChannel: class { constructor() { this.port1 = { close() {} }; this.port2 = { peer: this.port1, close() {} }; } } });
   Object.assign(win, { matchMedia: () => media });
   Object.defineProperty(win, 'localStorage', { get() { if (blocked) throw new Error('storage blocked'); return { getItem: k => values.get(k) ?? null, setItem: (k, value) => values.set(k, value) }; } });
-  Object.assign(doc, { documentElement: root, body: { style: {} }, readyState: loading ? 'loading' : 'complete', querySelector: selector => selector.includes('apple-mobile') ? apple : selector.includes('color-scheme') ? scheme : selector.includes('meta') ? meta : button });
-  vm.runInNewContext(source, { window: win, document: doc });
-  return { root, meta, scheme, apple, body: doc.body, button, values, resume() { win.dispatchEvent(new Event('pageshow')); doc.dispatchEvent(new Event('visibilitychange')); }, hydrate() { doc.dispatchEvent(new Event('DOMContentLoaded')); }, system(value) { media.matches = value; media.dispatchEvent(new Event('change')); }, storage(k, value) { const event = new Event('storage'); event.key = k; event.newValue = value; win.dispatchEvent(event); } };
+  Object.assign(doc, { documentElement: root, body: { style: {} }, readyState: loading ? 'loading' : 'complete', querySelector: selector => selector.startsWith('link') ? link : selector.includes('apple-mobile') ? apple : selector.includes('color-scheme') ? scheme : selector.includes('meta') ? meta : button });
+  vm.runInNewContext(source, { window: win, document: doc, setTimeout, clearTimeout });
+  return { root, meta, scheme, apple, body: doc.body, button, values, posts, workers, get replacements() { return replacements; }, resume() { win.dispatchEvent(new Event('pageshow')); doc.dispatchEvent(new Event('visibilitychange')); }, hydrate() { doc.dispatchEvent(new Event('DOMContentLoaded')); }, system(value) { media.matches = value; media.dispatchEvent(new Event('change')); }, storage(k, value) { const event = new Event('storage'); event.key = k; event.newValue = value; win.dispatchEvent(event); } };
 }
 test('first visit follows the system, saved explicit theme wins, invalid preferences are ignored', () => {
   assert.equal(harness().root.dataset.theme, 'light');
@@ -22,6 +26,26 @@ test('first visit follows the system, saved explicit theme wins, invalid prefere
   assert.equal(harness({ dark: true, preference: 'light' }).root.dataset.theme, 'light');
   assert.equal(harness({ preference: 'dark' }).root.dataset.theme, 'dark');
   assert.equal(harness({ dark: true, preference: 'invalid' }).root.dataset.theme, 'dark');
+});
+
+test('manifest is re-discovered only after the current theme is saved; stale rapid-toggle acknowledgements are ignored', () => {
+  const h = harness({ workerSync: true });
+  h.button.dispatchEvent(new Event('click'));
+  const latest = h.posts.at(-1); assert.equal(latest.message.theme, 'dark');
+  for (const post of h.posts.slice(0, -1)) post.reply({ type: 'theme-saved', theme: post.message.theme });
+  assert.equal(h.replacements, 0);
+  latest.reply({ type: 'theme-saved', theme: 'dark' }); assert.equal(h.replacements, 1);
+  const before = h.posts.length; h.resume(); assert.equal(h.posts.length, before);
+  h.button.dispatchEvent(new Event('click')); h.posts.at(-1).reply({ type: 'theme-saved', theme: 'light' });
+  assert.equal(h.replacements, 2); assert.equal(h.values.get('gplx2026-progress-v1'), 'keep-progress');
+});
+
+test('theme sync retries on a new controller and leaves UI usable when persistence is rejected', () => {
+  const h = harness({ workerSync: true, preference: 'dark' });
+  for (const post of h.posts) post.reply({ type: 'theme-error' });
+  assert.equal(h.replacements, 0); assert.equal(h.root.dataset.theme, 'dark');
+  const before = h.posts.length; h.workers.dispatchEvent(new Event('controllerchange'));
+  assert.equal(h.posts.length, before + 1); h.posts.at(-1).reply({ type: 'theme-saved', theme: 'dark' }); assert.equal(h.replacements, 1);
 });
 test('one tap immediately toggles theme, browser chrome color, accessible label and storage without touching progress', () => {
   const h = harness();
@@ -74,7 +98,7 @@ test('static manifest and initial meta match the light canvas; bootstrap precede
   const dark = palette(themes.match(/:root\[data-theme="dark"\]\s*\{([^}]+)/)[1]);
   assert.equal(manifest.theme_color, light.bg); assert.equal(manifest.background_color, light.bg);
   assert.ok(html.includes(`name="theme-color" content="${light.bg}"`));
-  assert.ok(html.indexOf('src="./theme-init.js?v=4"') < html.indexOf('rel="stylesheet"'));
+  assert.ok(html.indexOf('src="./theme-init.js?v=5"') < html.indexOf('rel="stylesheet"'));
   assert.equal(harness({ preference: 'dark' }).meta.values.get('content'), dark.bg);
   const luminance = hex => {
     const rgb = [1, 3, 5].map(index => parseInt(hex.slice(index, index + 2), 16) / 255).map(c => c <= .04045 ? c / 12.92 : ((c + .055) / 1.055) ** 2.4);

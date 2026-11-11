@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createOfflineDownload, activeWorker } from '../dist/modules/offline.js';
+import { createOfflineDownload, activeWorker, createWorkerConnection } from '../dist/modules/offline.js';
 function harness({ enabled = false, ready = false, failed = false, blocked = false } = {}) {
   const values = new Map(enabled ? [['gplx2026-offline-v1', 'enabled']] : []), posts = [], states = [], errors = [];
   let complete = 0;
@@ -41,5 +41,12 @@ test('download waits for replacement worker activation instead of using a stale 
   const registration = { active: old, installing: pending };
   const task = activeWorker(registration); registration.active = next; pending.state = 'activated'; pending.dispatchEvent(new Event('statechange'));
   assert.equal(await task, next);
-  await assert.rejects(activeWorker({ active: null }), /HTTPS/);
+  await assert.rejects(activeWorker({ active: null }), /chưa hoạt động/);
+});
+
+test('a failed install registration is retried; concurrent requests share the retry, not a dead registration', async () => {
+  let attempts = 0; const worker = {};
+  const connect = createWorkerConnection({ register: async () => { attempts++; return { active: attempts === 1 ? null : worker }; } }, './sw.js?v=5');
+  await assert.rejects(connect(), /chưa hoạt động/);
+  const [a, b] = await Promise.all([connect(), connect()]); assert.equal(attempts, 2); assert.equal(a.worker, worker); assert.equal(b.worker, worker);
 });
