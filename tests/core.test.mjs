@@ -17,9 +17,9 @@ test('600 questions have valid answers, decoded explanations, topics and image r
     if (q.image) assert.ok(existsSync(new URL('../dist/' + q.image, import.meta.url)));
   }
 });
-test('native license pools and critical flags remain distinct; B is 592', () => {
+test('official license pools and critical flags match CV 2262; B is 600/60', () => {
   assert.equal(data.licenses.length, 15);
-  for (const [name, total, critical] of [['A1', 250, 20], ['A', 250, 20], ['B1', 300, 30], ['B', 592, 56], ['C1', 600, 60]]) {
+  for (const [name, total, critical] of [['A1', 250, 20], ['A', 250, 20], ['B1', 300, 30], ['B', 600, 60], ['C1', 600, 60]]) {
     const pool = poolFor(data, name), l = getLicense(data, name);
     assert.equal(pool.length, total); assert.equal(pool.filter(q => isCritical(q, l)).length, critical);
   }
@@ -32,6 +32,7 @@ test('1,500 random practice exams have exact lengths, unique in-pool IDs and one
       const questions = randomExam(data, l.name);
       assert.equal(questions.length, l.count); assert.equal(new Set(questions.map(q => q.id)).size, l.count);
       assert.ok(questions.every(q => ids.has(q.id))); assert.equal(questions.filter(q => isCritical(q, l)).length, 1);
+      for (const quota of l.topicQuotas) assert.equal(questions.filter(q => !isCritical(q, l) && quota.categories.includes(q.category)).length, quota.count);
     }
   }
 });

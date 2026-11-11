@@ -1,13 +1,35 @@
 /* The page canvas, safe areas and browser theme use the same background. */
-:root { color-scheme: light; }
+:root { color-scheme: light; --bottom-safe-area: env(safe-area-max-inset-bottom, env(safe-area-inset-bottom, 0px)); }
 html, body { background-color: var(--bg); }
+html { min-height: 100%; }
+body { min-height: 100vh; min-height: 100dvh; }
 body { color: var(--ink); }
 body::before, body::after { content: ''; position: fixed; left: 0; right: 0; z-index: 35; background: var(--bg); pointer-events: none; }
 body::before { top: 0; height: env(safe-area-inset-top, 0px); }
 body::after { bottom: 0; height: env(safe-area-inset-bottom, 0px); }
 .topbar, .bottom-nav { background: var(--bg); }
+@media (max-width: 760px) {
+  .app-shell { padding-bottom: calc(68px + var(--bottom-safe-area)); }
+  .bottom-nav {
+    padding-bottom: calc(8px + var(--bottom-safe-area));
+    bottom: calc(env(safe-area-inset-bottom, 0px) - var(--bottom-safe-area));
+  }
+}
 .theme-toggle { position: relative; background: transparent; border-color: transparent; color: var(--ink); }
 .theme-toggle:hover { background: var(--primary-soft); border-color: var(--line); }
+.offline-button { position: relative; flex-shrink: 0; color: var(--ink); background: transparent; border-color: transparent; }
+.offline-button[data-status="ready"] { color: var(--green); }
+.offline-button[data-status="error"] { color: var(--amber); }
+.offline-percent { position: absolute; bottom: 0; right: -3px; padding: 1px 3px; border-radius: 4px; font-size: 8px; line-height: 1.3; color: var(--ink); background: var(--bg); font-variant-numeric: tabular-nums; }
+@media (max-width: 760px) {
+  .breadcrumb { display: none; }
+  .topbar-actions { margin-left: auto; gap: 4px; }
+  .topbar { gap: 4px; }
+}
+@media (max-width: 370px) {
+  .install-button span { display: none; }
+  .install-button { width: 44px; height: 44px; padding: 8px; }
+}
 .theme-toggle svg { position: absolute; width: 20px; height: 20px; transition: opacity 180ms ease, transform 220ms ease; }
 .theme-sun { opacity: 0; transform: rotate(-75deg) scale(.6); }
 .theme-moon { opacity: 1; transform: rotate(0) scale(1); }

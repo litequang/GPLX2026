@@ -1,3 +1,4 @@
+import { applyOfficialCorrections } from './official-overlay.mjs';
 import { DatabaseSync } from 'node:sqlite';
 import { createHash, createDecipheriv } from 'node:crypto';
 import { readFileSync, writeFileSync, mkdirSync, existsSync, copyFileSync } from 'node:fs';
@@ -74,12 +75,6 @@ const dataset = {
   source: { app: 'Ôn thi GPLX 2025', package: 'com.daotaogplx.vn_driving_theory', versionName: '2.0.3', versionCode: 10, extractedOn: '2026-11-11', database: 'texture25.imeg', databaseSha256: sha(plaintext), encryptedSha256: sha(ciphertext), nativeSha256: sha(native), note: 'Nội dung giữ theo ứng dụng nguồn; chưa đối chiếu độc lập với bộ đề và quy định sát hạch hiện hành.' },
   categories, licenses, questions, fixedExams, signCategories, signs, theoryCategories, theoryTips, practicalLessons, hintImages,
 };
-const dataDir = join(project, 'dist/data'); mkdirSync(dataDir, { recursive: true });
-const json = JSON.stringify(dataset);
-writeFileSync(join(dataDir, 'dataset.json'), json);
-const revision = sha(json).slice(0, 16);
-const offline = { revision, bytes: Buffer.byteLength(json) + imageBytes, urls: ['data/dataset.json', ...assetPaths] };
-writeFileSync(join(dataDir, 'offline.json'), JSON.stringify(offline));
 const byId = new Map(questions.map(q => [q.id, q]));
 const fixedSummary = fixedExams.map(exam => {
   const l = licenses.find(l => l.name === exam.license);
@@ -89,5 +84,12 @@ const report = { ...dataset.source, decoder: { algorithm: 'AES-128-CBC/PKCS7', k
 const apkPath = join(project, '../source-apk-2025/base.apk');
 if (existsSync(apkPath)) report.baseApkSha256 = sha(readFileSync(apkPath));
 writeFileSync(join(project, 'source-report.json'), JSON.stringify(report, null, 2) + '\n');
+applyOfficialCorrections(dataset);
+const dataDir = join(project, 'dist/data'); mkdirSync(dataDir, { recursive: true });
+const json = JSON.stringify(dataset);
+writeFileSync(join(dataDir, 'dataset.json'), json);
+const revision = sha(json).slice(0, 16);
+const offline = { revision, bytes: Buffer.byteLength(json) + imageBytes, urls: ['data/dataset.json', ...assetPaths] };
+writeFileSync(join(dataDir, 'offline.json'), JSON.stringify(offline));
 db.close();
 console.log(JSON.stringify({ ...report.counts, offlineMiB: (offline.bytes / 1024 / 1024).toFixed(1), revision, fixedExamsWithMultipleCritical: fixedSummary.filter(t => t.criticalCount > 1).length }, null, 2));

@@ -19,7 +19,7 @@ Nội dung chuyển markup sang plain text, Unicode NFC; UI escape trước HTML
 | ZDECO | memoryTip | Plain text, bỏ thẻ h/z |
 | ZIMAGE | image | quImage600, không dùng quImage600_old |
 | ZQUESTIONTYPE | category | 6 topic; 99 là critical aggregate, không topic thực |
-| INGROUP_A1/A/B1/B | groups | Membership; B đúng 592 |
+| INGROUP_A1/A/B1/B | groups | Membership thô B592; overlay runtime B600 |
 | ZQUESTIONDIE | critical.ALL | Chuỗi '1', toàn bộ 60 |
 | DIGROUPA1 / DIGROUPB1 | critical.A1 / B1 | Cờ critical, không answer override; A dùng cờ A1 |
 | SLICENCECLASS | licenses | 15 cấu hình count/pass/minutes/description |
@@ -30,24 +30,24 @@ Nội dung chuyển markup sang plain text, Unicode NFC; UI escape trước HTML
 | STIPCATEGORY + STIP | practicalLessons | 11 bài, 33 phần có TYPEID khớp, 10 ảnh |
 | hintImage | hintImages | 8 ảnh, gồm tocdo_2019; có nhãn tham khảo có thể cũ |
 
-## Hạng theo snapshot
+## Hạng sau đối chiếu chính thức
 
 | Hạng | Pool / critical | Câu/bài | Ngưỡng | Phút | Bài nguồn |
 | --- | --- | ---: | ---: | ---: | ---: |
 | A1 | 250 / 20 | 25 | 21 | 19 | 14 |
 | A | 250 / 20 | 25 | 23 | 19 | 14 |
 | B1 | 300 / 30 | 25 | 23 | 19 | 20 |
-| B | 592 / 56 | 30 | 27 | 20 | 26 |
+| B | 600 / 60 | 30 | 27 | 20 | 26 |
 | C1 | 600 / 60 | 35 | 32 | 22 | 18 |
 | C | 600 / 60 | 40 | 36 | 24 | 15 |
 | D1,D2,D | 600 / 60 mỗi hạng | 45 | 41 | 26 | 14 mỗi hạng |
 | BE,C1E,CE,D1E,D2E,DE | 600 / 60 mỗi hạng | 45 | 41 | 26 | 14 mỗi hạng |
 
-B loại ID 5,46,59,62,64,71,72,93 theo membership; bốn ID cuối là global critical. Kho đầy đủ vẫn học cả600. Không suy ra đây là quy định hiện hành.
+Snapshot B loại ID 5,46,59,62,64,71,72,93; bốn ID cuối là critical. Overlay CV2262 đã phục hồi cả8 vào B600/60, không thêm question ID mới. A1/A/B1 và 60 critical khớp phụ lục. Xem OFFICIAL_AUDIT.md và content/official-2026.json.
 
 6 chủ đề: quy định/quy tắc180, văn hóa/đạo đức/PCCC25, kỹ thuật58, cấu tạo/sửa chữa37, báo hiệu185, sa hình115.
 
-Tất cả233 bài nguồn đủ count, unique IDs và references. 207 bài nhiều critical, 2 bài không critical, 9 bài có câu ngoài membership; fixedSummary ghi từng bài. Giữ dưới nhãn bài ôn nguồn. Random lấy1 critical + count−1 non-critical theo pool, không trùng; chưa áp quota chủ đề chính thức. Sai/bỏ trống critical hoặc thiếu ngưỡng điểm đều không đạt. Không áp allocation di sản không tương thích topic mới.
+Tất cả233 bài nguồn đủ count, unique IDs và references. Báo cáo thô có 207 bài nhiều critical, 2 bài không critical, 9 bài ngoài membership nguồn; fixedSummary giữ các số trước overlay. Giữ dưới nhãn bài ôn nguồn. Random lấy1 critical + non-critical theo topicQuotas của CV2262, không trùng; quy tắc/kỹ thuật/cấu tạo/biển báo/sa hình đúng phân bổ từng hạng. Sai/bỏ trống critical hoặc thiếu ngưỡng điểm đều không đạt. Không áp allocation di sản không tương thích topic mới.
 
 ## Di sản không xuất
 
@@ -63,7 +63,9 @@ dataset: schemaVersion, source, categories, licenses, questions, fixedExams, sig
 
 question: id,text,category,options,answer,explanation,memoryTip,image|null,groups[],critical{ALL,A1,B1}. license: id,name,count,pass,minutes,description,pool,criticalPool. fixedExam: id,number,license,questionIds[]. lesson: id,name,image|null,sections[{title,text}].
 
-offline: revision=16 ký tự đầu SHA-256 dataset JSON, bytes=JSON+ảnh, urls=dataset+632ảnh. Không sửa JSON bằng tay; tái xuất bằng script.
+offline: revision=16 ký tự đầu SHA-256 dataset JSON, bytes=JSON+ảnh, urls=dataset+632ảnh. Không sửa JSON bằng tay; npm run update:official áp overlay idempotent và tính lại manifest. Extractor ghi source-report thô trước overlay rồi xuất runtime đã sửa. officialAudit ghi phạm vi/ngày, licenses thêm topicQuotas; schema progress vẫn v1.
+
+13 câu vá lựa chọn: 65,121,141,216,298,417,419,420,421,422,423,467,592. Câu298 bỏ lựa chọn4 sai thừa; tiến độ đọc lại sẽ lọc lựa chọn không hợp lệ, giữ bookmark. Không đổi answer ID/giải thích/hình.
 
 progress v1: license,answers{id:{selected,correct,at,attempts}},bookmarks[],history[],lastQuestion. selected0 là bỏ trống. record history: id,license,title,kind,ids[],answers{},startedAt,finishedAt; tối đa30. Import tính lại correct, lọc ID/option lỗi.
 

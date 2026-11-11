@@ -6,7 +6,7 @@ const source = readFileSync(new URL('../dist/sw.js', import.meta.url), 'utf8');
 // In-memory worker contract tests, not a browser or PWA installation test.
 function harness() {
   const scope = 'https://example.test/GPLX2026/', handlers = new Map(), stores = new Map(), messages = [];
-  let disconnected = false, failingPath = null, htmlPath = null;
+  let disconnected = false, failingPath = null, htmlPath = null, manifestColor = '#2457df';
   const key = input => typeof input === 'string' ? new URL(input, scope).href : input instanceof URL ? input.href : input.url;
   const caches = {
     async open(name) {
@@ -23,13 +23,14 @@ function harness() {
     if (htmlPath && url.endsWith(htmlPath)) return new Response('<html>sign in</html>', { headers: { 'content-type': 'text/html' } });
     if (url.endsWith('fonts/manifest.json')) return Response.json({ urls: ['fonts/fonts.css', 'fonts/be-vietnam-pro-1.woff2'] });
     if (url.endsWith('data/offline.json')) return Response.json({ revision: '0123456789abcdef', urls: ['data/dataset.json', 'assets/one.webp', 'assets/two.png'] });
-    if (url.endsWith('.json') || url.endsWith('.webmanifest')) return Response.json({});
+    if (url.endsWith('manifest.webmanifest')) return Response.json({ theme_color: manifestColor });
+    if (url.endsWith('.json')) return Response.json({});
     const mime = url.endsWith('.js') ? 'text/javascript' : url.endsWith('.css') ? 'text/css' : url.endsWith('.woff2') ? 'font/woff2' : /\.(png|webp|svg)$/.test(url) ? 'image/png' : 'text/html';
     return new Response(mime === 'text/html' ? '<html>offline shell</html>' : 'fixture', { headers: { 'content-type': mime } });
   };
   const self = { registration: { scope }, location: new URL('sw.js', scope), addEventListener(type, callback) { handlers.set(type, callback); }, skipWaiting: async () => {}, clients: { claim: async () => {}, matchAll: async () => [{ postMessage(message) { messages.push(message); } }] } };
   vm.runInNewContext(source, { self, caches, fetch, URL, Response, Promise, Error });
-  return { scope, caches, messages, offline(v) { disconnected = v; }, fail(path) { failingPath = path; }, html(path) { htmlPath = path; }, async dispatch(type, extras = {}) { let task; handlers.get(type)({ ...extras, waitUntil(p) { task = p; }, respondWith(p) { task = p; } }); return await task; } };
+  return { scope, caches, messages, manifest(color) { manifestColor = color; }, offline(v) { disconnected = v; }, fail(path) { failingPath = path; }, html(path) { htmlPath = path; }, async dispatch(type, extras = {}) { let task; handlers.get(type)({ ...extras, waitUntil(p) { task = p; }, respondWith(p) { task = p; } }); return await task; } };
 }
 const request = (h, path, mode = 'cors') => ({ request: { url: new URL(path, h.scope).href, method: 'GET', mode } });
 test('shell, modules, dataset and self-hosted font work offline at a subpath', async () => {
@@ -38,12 +39,24 @@ test('shell, modules, dataset and self-hosted font work offline at a subpath', a
   assert.equal((await h.dispatch('fetch', request(h, 'modules/core.js'))).status, 200);
   assert.equal((await h.dispatch('fetch', request(h, 'modules/chrome.js'))).status, 200);
   assert.equal((await h.dispatch('fetch', request(h, 'modules/install.js'))).status, 200);
-  assert.equal((await h.dispatch('fetch', request(h, 'app.js?v=3'))).headers.get('content-type'), 'text/javascript');
-  assert.equal((await h.dispatch('fetch', request(h, 'styles.css?v=3'))).headers.get('content-type'), 'text/css');
-  assert.equal((await h.dispatch('fetch', request(h, 'theme-init.js?v=3'))).headers.get('content-type'), 'text/javascript');
-  assert.equal((await h.dispatch('fetch', request(h, 'themes.css?v=3'))).headers.get('content-type'), 'text/css');
+  assert.equal((await h.dispatch('fetch', request(h, 'app.js?v=4'))).headers.get('content-type'), 'text/javascript');
+  assert.equal((await h.dispatch('fetch', request(h, 'styles.css?v=4'))).headers.get('content-type'), 'text/css');
+  assert.equal((await h.dispatch('fetch', request(h, 'theme-init.js?v=4'))).headers.get('content-type'), 'text/javascript');
+  assert.equal((await h.dispatch('fetch', request(h, 'themes.css?v=4'))).headers.get('content-type'), 'text/css');
   assert.equal((await h.dispatch('fetch', request(h, 'fonts/be-vietnam-pro-1.woff2'))).headers.get('content-type'), 'font/woff2');
   assert.equal((await h.dispatch('fetch', request(h, 'data/dataset.json'))).status, 200);
+  assert.equal((await h.dispatch('fetch', request(h, 'modules/core.js?v=4'))).status, 200);
+  assert.equal((await h.dispatch('fetch', request(h, 'data/dataset.json?v=4'))).status, 200);
+  assert.equal((await h.dispatch('fetch', request(h, 'data/offline.json?v=4'))).status, 200);
+});
+
+test('WebAPK manifest refreshes online and falls back to the last valid colors offline or on HTML auth', async () => {
+  const h = harness(); await h.dispatch('install'); h.manifest('#f5f7fc');
+  const get = async () => (await h.dispatch('fetch', request(h, 'manifest.webmanifest'))).json();
+  assert.equal((await get()).theme_color, '#f5f7fc');
+  h.offline(true); assert.equal((await get()).theme_color, '#f5f7fc');
+  h.offline(false); h.html('manifest.webmanifest'); assert.equal((await get()).theme_color, '#f5f7fc');
+  h.html(null); h.manifest('#0b1220'); assert.equal((await get()).theme_color, '#0b1220');
 });
 test('ready marker is written only after all images finish; images remain offline', async () => {
   const h = harness(); await h.dispatch('install');

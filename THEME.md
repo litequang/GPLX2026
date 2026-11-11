@@ -39,3 +39,11 @@ Tài liệu nền tảng: [MDN — app colors](https://developer.mozilla.org/en-
 27 nhóm test qua: 6 nhóm theme mới kiểm tra mặc định/ghi nhớ/toggle tức thì/meta/label/progress độc lập/khởi tạo sớm/storage lỗi/system và multi-tab. Một số cặp màu semantic của hai palette và button đạt contrast tính toán ≥4,5; không coi đây là chứng nhận accessibility/WCAG toàn app. Worker VM kiểm tra theme-init và theme CSS versioned vẫn phục vụ khi offline.
 
 Browser inventory vẫn unavailable; chưa có screenshot, visual QA hoặc xác nhận màu thanh native trên POCO/Android thật. Cần thử sáng/tối trong tab và PWA, system light/dark, reload/offline, đổi theme khi đang làm bài/đang ẩn bars, phone 320/375/390 khi nút Cài app hiện, dialog và từng trạng thái đúng/sai; kiểm tra safe-area/gesture/3-button navigation, đóng mở PWA và splash.
+
+## Sửa vùng điều hướng hệ điều hành — shell v4
+
+Người dùng xác nhận thanh trạng thái trên đã đúng màu, vùng Back/Home/Recents dưới vẫn xanh. Phần này thuộc cửa sổ Chrome/WebAPK, khác bottom-nav của app. Chưa có bằng chứng thiết bị để khẳng định nguyên nhân; màu metadata WebAPK cũ là một khả năng. Giữ nguyên manifest URL/id; đổi worker fetch manifest sang network-first/no-cache, kiểm MIME và fallback khi offline/auth. Không gắn query đổi vị trí manifest vì Chrome khuyến cáo giữ URL để PWA đã cài còn cập nhật được.
+
+Theme-init đồng bộ html và body backgroundColor, colorScheme cùng meta color-scheme/theme-color khi boot, DOM ready, đổi theme, pageshow và trở lại visible. themes.css phủ canvas tối thiểu100dvh; phần dưới dùng max-safe-area + bottom offset theo hướng dẫn Chrome để nền app kéo vào vùng gesture. CSS chỉ tô vùng web được cấp, không gọi được Android Window.setNavigationBarColor cho vùng native ba nút.
+
+Chrome có các lỗi/khác biệt theo phiên bản về native navbar, tham khảo Chromium issue40759522 và554055703; chưa biết phiên bản Chrome/Android hiện tại của thiết bị. Theo https://web.dev/articles/manifest-updates, WebAPK cài trước đó có chu kỳ cập nhật manifest riêng; đóng/mở PWA online chưa bảo đảm cập nhật ngay. Không hứa sửa hoàn toàn vùng native khi chưa thử trên máy thật, không yêu cầu xóa dữ liệu học hay cài lại.

@@ -10,7 +10,7 @@
 - [ ] Worker/offline/PWA thật:633 URL, ảnh chưa xem, lỗi/retry/update, Android install.
 - [ ] Private hosting xác thực hết hạn và mất mạng.
 - [ ] QA shell v2: cuộn xuống/dừng/lên, bounce và focus; mobile320/375/390 có nút Cài app; lọc/đáp án/Next; Android native install/dismiss/reinstall, xem UI_UPDATE.md.
-- [ ] Đối chiếu chính thức trước khi quảng bá dữ liệu/đề chuẩn mới nhất: B592/56, fixed ngoại lệ, quotas và mẹo cũ.
+- [ ] Đọc ảnh từng trang cho 119 ứng viên khác chữ trong official-audit-report; không tự động coi là 119 lỗi. Rà lại ảnh/giải thích/mẹo/sa hình, quyền dữ liệu và cấu trúc áp dụng từ 01/03/2027. Membership/critical/600 answer ID/quota CV2262 đã kiểm, B600/60 đã sửa.
 - [ ] Xác nhận quyền tái phân phối trước phát hành dữ liệu/ảnh công khai rộng rãi.
 
 ## P1
@@ -29,7 +29,11 @@
 - [ ] Video mô phỏng/nội dung không có nguồn, cần nguồn/quyền.
 - [ ] Public domain/GitHubPages; giữ audience hiện tại.
 
+- [ ] QA shell v4: icon tải/consent/background/resume/quota, header320/375/390, màu native Back/Home/Recents khi đổi theme và đóng/mở PWA, manifest WebAPK cập nhật. Chưa có Android/browser thật.
+
 ## Đã làm
+
+- [x] Shell v4: bỏ 3 mục nguồn khỏi UI; overlay chính thức B600/60, quota và 13 lựa chọn; icon offline tải nền/nhớ consent/resume; đồng bộ body/meta và manifest network-first. 36 nhóm test + 674 HTTP URL qua.
 
 - [x] Shell v3: sáng/tối một chạm, bootstrap trước CSS, theme preference riêng, canvas/meta/manifest/safe-area đồng bộ; 27 nhóm test qua, chưa visual/native bar QA.
 

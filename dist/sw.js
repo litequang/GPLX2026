@@ -1,7 +1,7 @@
 // Increase this revision whenever a shell, module or font changes.
-const APP_REVISION = 'gplx2026-shell-v3';
+const APP_REVISION = 'gplx2026-shell-v4';
 const DATA_PREFIX = 'gplx2026-data-';
-const SHELL = ['./', 'index.html', 'styles.css', 'styles.css?v=3', 'themes.css', 'themes.css?v=3', 'theme-init.js', 'theme-init.js?v=3', 'app.js', 'app.js?v=3', 'modules/core.js', 'modules/storage.js', 'modules/ui.js', 'modules/icons.js', 'modules/chrome.js', 'modules/install.js', 'manifest.webmanifest', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'data/dataset.json', 'data/offline.json', 'fonts/manifest.json'];
+const SHELL = ['./', 'index.html', 'styles.css', 'styles.css?v=4', 'themes.css', 'themes.css?v=4', 'theme-init.js', 'theme-init.js?v=4', 'app.js', 'app.js?v=4', 'modules/core.js', 'modules/core.js?v=4', 'modules/storage.js', 'modules/ui.js', 'modules/icons.js', 'modules/chrome.js', 'modules/install.js', 'modules/offline.js', 'manifest.webmanifest', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'data/dataset.json', 'data/dataset.json?v=4', 'data/offline.json', 'data/offline.json?v=4', 'fonts/manifest.json'];
 const scope = new URL(self.registration.scope);
 const absolute = path => new URL(path, scope);
 let manifestTask, downloadTask;
@@ -52,9 +52,17 @@ self.addEventListener('fetch', event => {
       try { const response = await fetch(event.request); if (valid(response, 'index.html')) return response; } catch {}
       return await shell.match(absolute('index.html')) || Response.error();
     }
+    // Let Chrome/WebAPK see new colors instead of retaining a cached blue manifest.
+    const relative = url.pathname.slice(scope.pathname.length);
+    if (relative === 'manifest.webmanifest') {
+      try {
+        const response = await fetch(event.request, { cache: 'no-cache' });
+        if (valid(response, relative)) { await shell.put(absolute(relative), response.clone()); return response; }
+      } catch {}
+      return await shell.match(absolute(relative)) || Response.error();
+    }
     const cached = await shell.match(event.request);
     if (cached) return cached;
-    const relative = url.pathname.slice(scope.pathname.length);
     if (!relative.startsWith('assets/')) return fetch(event.request);
     const manifest = await loadManifest();
     if (!manifest.urls.some(path => absolute(path).pathname === url.pathname)) return fetch(event.request);
@@ -71,7 +79,7 @@ async function cacheDataset() {
   const manifest = await loadManifest();
   const cache = await caches.open(DATA_PREFIX + manifest.revision);
   let completed = 0;
-  await broadcast({ type: 'offline-progress', completed, total: manifest.urls.length });
+  await broadcast({ type: 'offline-progress', revision: manifest.revision, completed, total: manifest.urls.length });
   for (let index = 0; index < manifest.urls.length; index += 6) {
     await Promise.all(manifest.urls.slice(index, index + 6).map(async path => {
       const url = absolute(path);
@@ -83,14 +91,14 @@ async function cacheDataset() {
       }
       completed++;
     }));
-    await broadcast({ type: 'offline-progress', completed, total: manifest.urls.length });
+    await broadcast({ type: 'offline-progress', revision: manifest.revision, completed, total: manifest.urls.length });
   }
   await cache.put(absolute('offline-ready'), new Response(manifest.revision));
   for (const key of await caches.keys()) if (key.startsWith(DATA_PREFIX) && key !== DATA_PREFIX + manifest.revision) await caches.delete(key);
-  await broadcast({ type: 'offline-done', total: completed });
+  await broadcast({ type: 'offline-done', revision: manifest.revision, total: completed });
 }
 self.addEventListener('message', event => {
   if (event.data?.type !== 'download-offline') return;
-  if (!downloadTask) downloadTask = cacheDataset().catch(error => broadcast({ type: 'offline-error', message: error.message })).finally(() => { downloadTask = null; });
+  if (!downloadTask) downloadTask = cacheDataset().catch(error => broadcast({ type: 'offline-error', revision: event.data.revision, message: error.message })).finally(() => { downloadTask = null; });
   event.waitUntil(downloadTask);
 });

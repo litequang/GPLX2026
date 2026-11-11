@@ -5,10 +5,10 @@
 | Kiểm tra đã chạy | Kết quả |
 | --- | --- |
 | Nguồn | 4 APK đã lấy, 2 SQLite giải mã integrity_check=ok, dùng texture25, đủ 600 giải thích |
-| npm test | 27 nhóm pass, 0 fail (thêm 6 nhóm theme) |
+| npm test | 36 nhóm pass, 0 fail (official overlay, quota, tải nền/consent/resume, manifest refresh, theme resume) |
 | Data | 600 ID/option/topic/reference hợp lệ, 60 global critical |
-| Pool/critical | A1/A: 250/20; B1: 300/30; B: 592/56; C1 trở lên: 600/60 |
-| Random | 100 × 15 hạng = 1.500 bài, đúng số câu, không trùng, trong pool, một critical |
+| Pool/critical | A1/A: 250/20; B1: 300/30; B: 600/60; C1 trở lên: 600/60 |
+| Random | 100 × 15 hạng = 1.500 bài, đúng số câu, không trùng, trong pool, một critical và đúng từng quota chủ đề CV2262 |
 | Fixed | 233 bài đủ số câu, ID không trùng, reference hợp lệ; giữ ngoại lệ critical nguồn |
 | Grade | Critical sai/bỏ trống không đạt dù đủ tổng điểm |
 | Progress | Roundtrip, skipped=0, full history; import tính lại correct, lọc ID/option lỗi |
@@ -20,11 +20,11 @@
 | Install giả lập | Gọi prompt trước await, single-use/double-tap, dismiss/error/new offer, accepted/appinstalled/standalone ẩn nút |
 | Theme giả lập | Mặc định/system/saved preference, toggle tức thì/meta/aria/storage, bootstrap trước DOM ready, storage lỗi, sync tab và giữ progress riêng |
 | Palette | Một số cặp ink/muted/primary/success/error/warning và button được tính contrast ≥4,5; không thay visual/WCAG audit |
-| Syntax | node --check app.js, sw.js và theme-init.js thành công; các module cũ không đổi |
-| Output scan | 665 file, 29.569.624 byte, lớn nhất 787.889 byte, không file cấm, dưới 25 MiB/file |
-| HTTP | 670 URL gồm root + mọi file dist + app/CSS/theme ?v=3, tất cả 200, không rỗng, MIME đúng; 29.685.272 byte ≈ 28,3 MiB |
+| Syntax | node --check app.js, sw.js, theme-init.js và các module/script đã sửa thành công |
+| Output scan | 666 file, 29.577.339 byte, lớn nhất 790.894 byte, không file cấm, dưới 25 MiB/file |
+| HTTP | 674 URL gồm root + mọi file dist + app/CSS/theme/core/data versioned v4, tất cả 200, không rỗng, MIME đúng; 30.509.739 byte ≈ 29,1 MiB |
 | Comparison | 139 text/147 options, gộp 242; 0 answer-ID/global critical đổi; 600 giải thích khác |
-| Triển khai | Sites private shell v3 succeeded, runtime commit bc75d3b; GitHub main push thành công, xem DEPLOYMENT |
+| Triển khai trước đợt này | Sites private shell v3 succeeded, runtime commit bc75d3b; đợt v4 ghi kết quả riêng ở DEPLOYMENT sau khi thành công |
 
 ## Chưa xác nhận
 
@@ -32,13 +32,13 @@ Công cụ browser tại nhiệm vụ này trả **browsers:[] / The browser acc
 
 Chưa xác nhận responsive thật, DOM/dialog/focus/keyboard/screen reader, worker cài thật, offline/reload thật, Android PWA hoặc xác thực hosting private khi mất mạng. Worker tests chỉ Node VM; HTTP không chứng minh JavaScript chạy đúng trong DOM.
 
-Chưa đối chiếu chính thức nội dung/đáp án/pool/critical/quota hoặc xác nhận quyền tái phân phối. Không gọi snapshot là bộ chuẩn 2026.
+Đã đọc PDF chính thức: danh sách A1/A/B1 và 60 critical khớp, B đã sửa600/60; đủ600 answer ID khớp (598 tự trích +2 đọc ảnh), 13 câu sửa lựa chọn bằng đọc ảnh, quota CV2262 áp dụng trong bài ngẫu nhiên. Còn119 ứng viên khác chữ cần đọc ảnh, chưa rà toàn bộ hình/giải thích/mẹo/sa hình hoặc quyền tái phân phối. Không gọi toàn app là bộ chuẩn mới nhất; xem OFFICIAL_AUDIT.
 
 ## Checklist thủ công tiếp tục
 
 1. npm start → localhost:4174: desktop1440/1280, tablet1000/760, mobile390/375; chữ/ảnh/nút và tràn ngang.
 2. Câu1: chọn1sai → làm lại chọn2đúng; giải thích/bookmark/ôn sai/reload.
-3. B592/56, scopeall600, A1/A250/20,B1300/30; tìm không dấu/topic/new.
+3. B600/60, scopeall600, A1/A250/20,B1300/30; tìm không dấu/topic/new.
 4. Signs search/category/loadmore/modal; cẩm nang11 bài/2tab/linebreak/ảnh.
 5. Timed chọn/đổi đápán/chuyểnroute/reload/đóngmở/timeout; nộp/xem lại/history sau reload. Thử fixed nhiều critical và nhãn nguồn.
 6. Export/import originmới; correctrecompute, storageblocked/quota. Sao lưu trước xóa progress.
@@ -57,3 +57,11 @@ Scan lần đầu phát hiện dist/index.zip 28.495.820 byte; giữ nguyên fil
 ## Cập nhật shell v3
 
 Đã kiểm tra lại browser inventory, vẫn The browser access host is unavailable. Không có ảnh/xác nhận giao diện tối hoặc màu thanh native trên POCO. 27 test là Node/EventTarget/VM, không phải browser. Cấu hình theme-color/manifest/canvas/safe-area đã đồng bộ nhưng OS/Chrome có thể áp màu riêng hoặc giữ metadata WebAPK/splash cũ. Manifest vẫn một URL/id ổn định; không yêu cầu người dùng gỡ app/xóa progress. Xem THEME.md để tiếp tục QA.
+
+## Chặng shell v4 — 11/11/2026
+
+- Bỏ sourceNote/link footer/sourceDialog và dòng nguồn trong chi tiết biển báo. Provenance giữ trong tài liệu và source-report.
+- npm test36 nhóm qua; bài ngẫu nhiên1.500 lượt đã kiểm cả quota, không chỉ một critical. Hai nhóm official kiểm replay/idempotence/fail-closed và tiến độ có lựa chọn298 đã loại. Báo cáo PDF có hash và phạm vi riêng.
+- Năm nhóm offline controller: chưa consent không tải lớn, confirm1post, resume/ready/clear, message đúngrevision/retry, storageblocked, chờ worker mới. Worker VM kiểm manifest network-first/offline/auth fallback và tài nguyênv4. Đây là mô phỏng Node, không chứng minh chạy nền Android thật.
+- Theme resume kiểm body/meta/color-scheme sau pageshow/visible. Theo người dùng: status bar đã đúng; vùng native Back/Home/Recents còn xanh trong PWA mở bằng icon màn hình chính. Chưa xác nhận mã mới sửa được màu native trên thiết bị.
+- Chưa có browser/visual/Android QA mới trong đợt này; hạn chế công cụ đã ghi phía trên vẫn còn.

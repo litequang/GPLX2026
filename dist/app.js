@@ -1,7 +1,8 @@
-import { getLicense, poolFor, isCritical, randomExam, grade, filterQuestions, statistics, createProgress, parseProgress } from './modules/core.js';
+import { getLicense, poolFor, isCritical, randomExam, grade, filterQuestions, statistics, createProgress, parseProgress } from './modules/core.js?v=4';
 import { readProgress, readExam, writeProgress, writeExam } from './modules/storage.js';
 import { escape as e, icon, dateLabel, dayKey, durationLabel, progressBar } from './modules/ui.js';
 import { setupAutoHideBars } from './modules/chrome.js';
+import { createOfflineDownload, activeWorker } from './modules/offline.js';
 import { setupInstall } from './modules/install.js';
 
 const $ = selector => document.querySelector(selector);
@@ -12,7 +13,7 @@ const nav = [
 ];
 const routes = nav.flatMap(g => g.items);
 const learningRoutes = ['learn', 'critical', 'wrong', 'saved'];
-let data, questionMap, progress, activeExam, offlineManifest, registration;
+let data, questionMap, progress, activeExam, offlineManifest, registration, offlineDownload;
 let state = { route: 'home', query: '', topic: '', scope: 'license', status: 'all', filtersOpen: false, index: 0, list: [], responses: {}, signCategory: '', signLimit: 32, examTab: 'random', handbookTab: 'practical', lesson: null, review: null, reviewFilter: 'all' };
 let offline = { status: 'idle', completed: 0, total: 0 };
 let toastTimeout, storageWarning = false;
@@ -29,7 +30,6 @@ function closeDialog() { if ($('#dialog').open) $('#dialog').close(); }
 function showDialog(html) { $('#dialog-content').innerHTML = html; if (!$('#dialog').open) $('#dialog').showModal(); }
 const dialogHeading = title => `<div class="dialog-heading"><h2>${title}</h2><button class="icon-button" data-action="close-dialog" aria-label="Đóng">${icon('x')}</button></div>`;
 const button = (label, action, kind = 'primary', attrs = '') => `<button class="button button-${kind}" data-action="${action}" ${attrs}>${label}</button>`;
-const sourceNote = () => `<p class="source-note">Nội dung từ ứng dụng Ôn thi GPLX 2025 v2.0.3, trích ngày 11/11/2026. <button class="text-button" data-action="source">Tìm hiểu nguồn dữ liệu ${icon('arrow-up-right', 13)}</button></p>`;
 function heading(title, description, extra = '') { return `<div class="page-heading"><div><p class="eyebrow">HỌC VỮNG · THI TỰ TIN</p><h1>${title}</h1>${description ? `<p class="subtitle">${description}</p>` : ''}</div>${extra}</div>`; }
 function navMarkup() {
   const p = currentPool(), l = currentLicense();
@@ -71,9 +71,21 @@ function updateRouteFilters() {
   history.replaceState(null, '', `#${state.route}${params.size ? '?' + params : ''}`);
 }
 function resumeBanner() { return activeExam ? `<div class="resume-banner">${icon('clock')}<div><h3>Bạn có một bài luyện đang làm</h3><p>Hạng ${e(activeExam.license)} · ${Object.keys(activeExam.answers).length}/${activeExam.ids.length} câu đã chọn. Đồng hồ vẫn đang chạy.</p></div>${button('Tiếp tục bài làm ' + icon('arrow-right', 15), 'resume-exam', 'secondary')}</div>` : ''; }
-function offlineBanner() {
-  const text = offline.status === 'ready' ? 'Đã lưu đủ câu hỏi, cẩm nang và hình ảnh cho trình duyệt này.' : offline.status === 'downloading' ? `Đang tải ${offline.completed}/${offline.total} mục. Bạn vẫn có thể tiếp tục học.` : offline.status === 'error' ? 'Dữ liệu chưa tải đủ. Kiểm tra kết nối rồi thử lại.' : `Tải khoảng ${(offlineManifest.bytes / 1024 / 1024).toFixed(1)} MB để học ngay cả khi không có mạng.`;
-  return `<section class="offline-banner" id="offline-banner">${icon('wifi')}<div class="offline-copy"><h3>Góc học tập luôn bên bạn</h3><p>${text}</p>${offline.status === 'downloading' ? progressBar(offline.completed / Math.max(1, offline.total) * 100, 'Tải dữ liệu ngoại tuyến') : ''}</div>${button(offline.status === 'ready' ? icon('check', 15) + ' Đã sẵn sàng ngoại tuyến' : offline.status === 'downloading' ? 'Đang tải…' : icon('download', 15) + ' Tải để học ngoại tuyến', 'download-offline', 'secondary', ['ready', 'downloading'].includes(offline.status) ? 'disabled' : '')}</section>`;
+function updateOfflineUI() {
+  const control = $('#offline-button'); if (!control || !offlineManifest) return;
+  control.hidden = false; control.dataset.status = offline.status;
+  const percent = Math.round(offline.completed / Math.max(1, offline.total) * 100);
+  const label = offline.status === 'ready' ? 'Đã sẵn sàng học ngoại tuyến' : offline.status === 'downloading' ? `Đang tải ngoại tuyến: ${percent}%` : offline.status === 'error' ? 'Tải ngoại tuyến chưa xong — thử lại' : 'Tải để học ngoại tuyến';
+  control.setAttribute('aria-label', label); control.title = label;
+  control.innerHTML = icon(offline.status === 'ready' ? 'check' : offline.status === 'error' ? 'triangle-alert' : 'download', 19) + (offline.status === 'downloading' ? `<small class="offline-percent">${percent}%</small>` : '');
+  const detail = $('#offline-detail');
+  if (detail) detail.textContent = offline.status === 'ready' ? 'Đã lưu đủ câu hỏi, cẩm nang và hình ảnh.' : offline.status === 'downloading' ? `Đã tải ${offline.completed}/${offline.total} mục. Bạn có thể đóng hộp này để tiếp tục học.` : offline.status === 'error' ? 'Tải chưa hoàn tất. Bấm icon để thử lại khi có mạng.' : '';
+}
+function offlineDialog() {
+  if (!offlineManifest) return;
+  const busy = offline.status === 'downloading', ready = offline.status === 'ready';
+  showDialog(`${dialogHeading(ready ? 'Sẵn sàng học ngoại tuyến' : busy ? 'Đang tải trong nền' : 'Lưu để học ngoại tuyến?')}<p class="dialog-copy">${ready ? 'Câu hỏi, cẩm nang và hình ảnh đã được lưu trên trình duyệt này.' : busy ? 'Bạn vẫn có thể đọc câu hỏi và luyện đề trong lúc tải.' : `Tải khoảng ${(offlineManifest.bytes / 1024 / 1024).toFixed(1)} MB. Sau khi xác nhận, app sẽ tải trong nền và tiếp tục khi bạn mở lại nếu bị gián đoạn. Dữ liệu mới cũng sẽ được tải khi bạn mở app.`}</p><p class="dialog-copy" id="offline-detail" role="status" aria-live="polite"></p><div class="dialog-actions">${button(busy || ready ? 'Tiếp tục học' : 'Để sau', 'close-dialog', 'secondary')}${busy || ready ? '' : button('Tải và dùng ngoại tuyến', 'download-offline')}</div>`);
+  updateOfflineUI();
 }
 function renderHome() {
   const p = currentPool(), l = currentLicense(), stats = statistics(p, progress), critical = p.filter(q => isCritical(q, l));
@@ -87,7 +99,7 @@ function renderHome() {
       ['Trả lời đúng', stats.accuracy === null ? '—' : stats.accuracy, stats.accuracy === null ? '' : '%', 'Theo lần trả lời gần nhất', 'target', ''],
       ['Câu điểm liệt', critical.length, 'câu', `${critical.filter(q => progress.answers[q.id]?.correct).length} câu đã trả lời đúng`, 'triangle-alert', 'amber'],
     ].map(([label, value, unit, note, symbol, style]) => `<div class="stat-card"><div class="stat-top"><span class="stat-icon ${style}">${icon(symbol, 15)}</span><span>${label}</span></div><div class="stat-value">${value}<small>${unit}</small></div><p class="stat-note">${note}</p></div>`).join('')}</div>
-    <div class="home-lower"><section><div class="section-heading"><h2>Chọn một chủ đề để bắt đầu</h2><a class="text-button" href="#learn?scope=all" data-go="learn" data-scope="all">Xem toàn bộ ${icon('arrow-up-right', 13)}</a></div><div class="topic-grid">${data.categories.filter(c => p.some(q => q.category === c.id)).map((c, index) => { const qs = p.filter(q => q.category === c.id), s = statistics(qs, progress); return `<button class="topic-card" data-action="topic" data-id="${c.id}"><div class="topic-top"><span class="topic-icon">${icon(topicIcons[c.id], 20)}</span><span class="topic-no">CHỦ ĐỀ ${String(index + 1).padStart(2, '0')}</span></div><h3>${e(c.name)}</h3><div class="topic-meta"><span>${qs.length} câu hỏi · ${s.answered} đã học</span>${icon('arrow-up-right', 14)}</div>${progressBar(s.percentage, 'Tiến độ ' + c.name)}</button>`; }).join('')}</div></section><aside class="home-aside"><div class="panel critical-card"><p class="eyebrow">ƯU TIÊN ÔN KỸ</p><h3>Nhớ chắc từng<br>câu điểm liệt.</h3><p>${critical.length} câu quan trọng trong bộ hạng ${e(l.name)}. Hiểu tình huống để tránh những sai sót đáng tiếc.</p><a class="text-button" href="#critical" data-go="critical">Bắt đầu ôn tập ${icon('arrow-right', 14)}</a></div><div class="panel quick-note">${icon('clipboard-check', 22)}<h3>Học xong, thử một bài luyện.</h3><p>Làm bài có đồng hồ, xem kết quả và ôn lại những câu còn chưa chắc.</p><a class="text-button" href="#exams" data-go="exams">Đến phần luyện đề ${icon('arrow-right', 13)}</a></div></aside></div>${offlineBanner()}`;
+    <div class="home-lower"><section><div class="section-heading"><h2>Chọn một chủ đề để bắt đầu</h2><a class="text-button" href="#learn?scope=all" data-go="learn" data-scope="all">Xem toàn bộ ${icon('arrow-up-right', 13)}</a></div><div class="topic-grid">${data.categories.filter(c => p.some(q => q.category === c.id)).map((c, index) => { const qs = p.filter(q => q.category === c.id), s = statistics(qs, progress); return `<button class="topic-card" data-action="topic" data-id="${c.id}"><div class="topic-top"><span class="topic-icon">${icon(topicIcons[c.id], 20)}</span><span class="topic-no">CHỦ ĐỀ ${String(index + 1).padStart(2, '0')}</span></div><h3>${e(c.name)}</h3><div class="topic-meta"><span>${qs.length} câu hỏi · ${s.answered} đã học</span>${icon('arrow-up-right', 14)}</div>${progressBar(s.percentage, 'Tiến độ ' + c.name)}</button>`; }).join('')}</div></section><aside class="home-aside"><div class="panel critical-card"><p class="eyebrow">ƯU TIÊN ÔN KỸ</p><h3>Nhớ chắc từng<br>câu điểm liệt.</h3><p>${critical.length} câu quan trọng trong bộ hạng ${e(l.name)}. Hiểu tình huống để tránh những sai sót đáng tiếc.</p><a class="text-button" href="#critical" data-go="critical">Bắt đầu ôn tập ${icon('arrow-right', 14)}</a></div><div class="panel quick-note">${icon('clipboard-check', 22)}<h3>Học xong, thử một bài luyện.</h3><p>Làm bài có đồng hồ, xem kết quả và ôn lại những câu còn chưa chắc.</p><a class="text-button" href="#exams" data-go="exams">Đến phần luyện đề ${icon('arrow-right', 13)}</a></div></aside></div>`;
 }
 function rebuildStudy() {
   if (!learningRoutes.includes(state.route)) { state.list = []; return; }
@@ -122,12 +134,12 @@ function renderStudy() {
   $('#main').dataset.view = 'study';
   const title = routes.find(r => r[0] === state.route)[1], q = state.list[state.index];
   const titleEmpty = state.query || state.topic || state.status === 'new' ? 'Không có câu phù hợp bộ lọc' : state.route === 'wrong' ? 'Chưa có câu nào cần ôn lại' : state.route === 'saved' ? 'Chưa có câu được đánh dấu' : 'Chưa tìm thấy câu hỏi';
-  $('#main').innerHTML = `<div class="study-heading"><h1>${e(title)}</h1><span>${q ? `${state.index + 1}/${state.list.length}` : '0 câu'}</span></div>${studyToolbar()}${q ? `<div class="study-layout">${questionCard(q, state.responses[q.id])}${questionNavigator(state.list, state.index)}</div>` : emptyState(titleEmpty, state.route === 'saved' && !state.query ? 'Bấm biểu tượng đánh dấu trên mỗi câu hỏi để lưu tại đây.' : 'Thử bỏ bộ lọc hoặc mở lại bộ câu hỏi để tiếp tục học.', state.route === 'saved' ? 'bookmark' : 'circle-check')}${sourceNote()}`;
+  $('#main').innerHTML = `<div class="study-heading"><h1>${e(title)}</h1><span>${q ? `${state.index + 1}/${state.list.length}` : '0 câu'}</span></div>${studyToolbar()}${q ? `<div class="study-layout">${questionCard(q, state.responses[q.id])}${questionNavigator(state.list, state.index)}</div>` : emptyState(titleEmpty, state.route === 'saved' && !state.query ? 'Bấm biểu tượng đánh dấu trên mỗi câu hỏi để lưu tại đây.' : 'Thử bỏ bộ lọc hoặc mở lại bộ câu hỏi để tiếp tục học.', state.route === 'saved' ? 'bookmark' : 'circle-check')}`;
 }
 function renderSigns() {
   const query = state.query.trim().toLocaleLowerCase('vi');
   const signs = data.signs.filter(s => (!state.signCategory || s.category === Number(state.signCategory)) && (!query || normalizeSearch(`${s.code} ${s.name} ${s.detail}`).includes(normalizeSearch(query))));
-  $('#main').innerHTML = `${heading('Hiểu biển báo, vững đường đi.', 'Tra cứu hình ảnh và ý nghĩa của các biển báo trong ứng dụng nguồn.')}<div class="toolbar">${searchField('Tìm mã biển hoặc tên biển báo…')}<label class="select-field"><span class="field-label">Nhóm biển báo</span><select id="sign-category"><option value="">Tất cả nhóm</option>${data.signCategories.filter(c => data.signs.some(s => s.category === c.id)).map(c => `<option value="${c.id}" ${String(c.id) === state.signCategory ? 'selected' : ''}>${e(c.name)}</option>`).join('')}</select></label></div><p class="filter-row">${signs.length} biển báo trong thư viện</p>${signs.length ? `<div class="sign-grid">${signs.slice(0, state.signLimit).map(s => `<button class="sign-card" data-action="sign-detail" data-id="${s.id}"><img src="${e(s.image)}" alt="${e(s.name)}" loading="lazy" decoding="async"><span class="sign-code">${e(s.code)}</span><h3>${e(s.shortName)}</h3><small>Xem ý nghĩa →</small></button>`).join('')}</div>${signs.length > state.signLimit ? `<div class="center-actions">${button(`Xem thêm (${signs.length - state.signLimit} biển còn lại) ` + icon('chevron-down', 15), 'more-signs', 'secondary')}</div>` : ''}` : emptyState('Không tìm thấy biển báo', 'Thử một từ khóa ngắn hơn hoặc bỏ lọc nhóm biển báo.', 'traffic-cone')}${sourceNote()}`;
+  $('#main').innerHTML = `${heading('Hiểu biển báo, vững đường đi.', 'Tra cứu hình ảnh và ý nghĩa của các biển báo trong ứng dụng nguồn.')}<div class="toolbar">${searchField('Tìm mã biển hoặc tên biển báo…')}<label class="select-field"><span class="field-label">Nhóm biển báo</span><select id="sign-category"><option value="">Tất cả nhóm</option>${data.signCategories.filter(c => data.signs.some(s => s.category === c.id)).map(c => `<option value="${c.id}" ${String(c.id) === state.signCategory ? 'selected' : ''}>${e(c.name)}</option>`).join('')}</select></label></div><p class="filter-row">${signs.length} biển báo trong thư viện</p>${signs.length ? `<div class="sign-grid">${signs.slice(0, state.signLimit).map(s => `<button class="sign-card" data-action="sign-detail" data-id="${s.id}"><img src="${e(s.image)}" alt="${e(s.name)}" loading="lazy" decoding="async"><span class="sign-code">${e(s.code)}</span><h3>${e(s.shortName)}</h3><small>Xem ý nghĩa →</small></button>`).join('')}</div>${signs.length > state.signLimit ? `<div class="center-actions">${button(`Xem thêm (${signs.length - state.signLimit} biển còn lại) ` + icon('chevron-down', 15), 'more-signs', 'secondary')}</div>` : ''}` : emptyState('Không tìm thấy biển báo', 'Thử một từ khóa ngắn hơn hoặc bỏ lọc nhóm biển báo.', 'traffic-cone')}`;
 }
 const normalizeSearch = text => String(text).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[đĐ]/g, 'd').toLowerCase();
 
@@ -140,7 +152,7 @@ function renderExamSetup() {
   const tabs = `<div class="segmented" aria-label="Chọn loại bài luyện"><button data-action="exam-tab" data-tab="random" class="${state.examTab === 'random' ? 'active' : ''}" aria-pressed="${state.examTab === 'random'}">Luyện ngẫu nhiên</button><button data-action="exam-tab" data-tab="fixed" class="${state.examTab === 'fixed' ? 'active' : ''}" aria-pressed="${state.examTab === 'fixed'}">Bộ bài ôn từ ứng dụng</button></div>`;
   const fixed = data.fixedExams.filter(t => t.license === progress.license);
   const content = state.examTab === 'random' ? `<div class="exam-setup"><section class="panel exam-intro"><p class="eyebrow">BÀI LUYỆN NGẪU NHIÊN · HẠNG ${e(l.name)}</p><h2>Một lần thử, thêm tự tin.</h2><p>Dành một khoảng thời gian tập trung để kiểm tra kiến thức. Chọn đáp án, hoàn thành bài và xem lại những câu chưa chắc.</p><div class="exam-facts"><div><strong>${l.count}</strong><small>câu hỏi</small></div><div><strong>${l.minutes}</strong><small>phút làm bài</small></div><div><strong>${l.pass}/${l.count}</strong><small>ngưỡng đúng theo app</small></div></div><div class="notice">Bài ngẫu nhiên chọn đúng 1 câu điểm liệt theo hạng. Sai hoặc bỏ trống câu đó sẽ không đạt bài luyện. Đây là chế độ ôn tập; không khẳng định cơ cấu chủ đề giống đề thi chính thức.</div>${button('Bắt đầu làm bài ' + icon('arrow-right', 16), 'start-random')}</section>${historyPreview()}</div>` : `<div class="notice">${fixed.length} bài được giữ theo danh sách câu trong ứng dụng gốc. Một số bài có nhiều câu điểm liệt và có thể có câu ngoài bộ lọc hạng. Phù hợp để ôn thêm nội dung; không phải xác nhận đề sát hạch chính thức.</div><div class="fixed-grid">${fixed.map(t => { const criticalCount = t.questionIds.filter(id => isCritical(questionMap.get(id), l)).length; return `<button class="fixed-card" data-action="start-fixed" data-id="${t.id}">${icon('clipboard-check', 23)}<h3>Bài ôn ${e(t.number)}</h3><p>${t.questionIds.length} câu · ${l.minutes} phút</p><span class="tag">${criticalCount} câu điểm liệt theo hạng</span></button>`; }).join('')}</div>`;
-  $('#main').innerHTML = `${heading('Thử sức để tiến bộ.', 'Chọn cách luyện phù hợp, nhìn lại kết quả để học chắc hơn.')}${tabs}${content}${sourceNote()}`;
+  $('#main').innerHTML = `${heading('Thử sức để tiến bộ.', 'Chọn cách luyện phù hợp, nhìn lại kết quả để học chắc hơn.')}${tabs}${content}`;
 }
 function activeQuestions() { return activeExam.ids.map(id => questionMap.get(id)); }
 function renderActiveExam() {
@@ -156,7 +168,7 @@ function renderResult(record) {
   $('#main').innerHTML = `${heading('Nhìn lại một chặng vừa qua.', `${e(record.title)} · Hạng ${e(record.license)} · ${dateLabel(record.finishedAt)}`)}<section class="result-hero ${result.passed ? '' : 'failed'}"><div><p class="eyebrow">${result.passed ? 'ĐẠT NGƯỠNG BÀI LUYỆN' : 'CÙNG ÔN THÊM MỘT CHÚT'}</p><div class="result-score">${result.correct}<small> / ${result.total}</small></div><p>${result.criticalMissed.length ? `${result.criticalMissed.length} câu điểm liệt chưa đúng hoặc còn bỏ trống.` : result.passed ? 'Bạn đã đạt ngưỡng điểm và trả lời đúng các câu điểm liệt của bài.' : `Cần ít nhất ${l.pass} câu đúng theo cấu hình ứng dụng nguồn.`}</p><div class="result-buttons">${button('Luyện bài khác ' + icon('arrow-right', 15), 'new-exam')}${button('Ôn các câu cần nhớ', 'open-wrong', 'secondary')}</div></div><div class="result-summary"><span>${result.correct} câu đúng</span><span>${result.total - result.correct - result.skipped} câu trả lời sai</span><span>${result.skipped} câu bỏ trống</span><span>Hoàn thành: ${dateLabel(record.finishedAt)}</span></div></section><div class="section-heading"><h2>Xem lại từng câu</h2><label><span class="field-label">Hiển thị</span><select id="review-filter" class="review-select"><option value="all" ${state.reviewFilter === 'all' ? 'selected' : ''}>Tất cả (${questions.length})</option><option value="wrong" ${state.reviewFilter === 'wrong' ? 'selected' : ''}>Cần ôn (${questions.length - result.correct})</option></select></label></div><div class="review-list">${visible.map(q => {
     const correct = Number(record.answers[q.id]) === q.answer;
     return `<details class="review-item"><summary><span class="review-badge ${correct ? '' : 'wrong'}">${icon(correct ? 'check' : 'refresh-cw', 12)}${correct ? 'Đúng' : 'Cần ôn'}</span>Câu ${q.id}: ${e(q.text)}</summary>${q.image ? `<img class="question-image" src="${e(q.image)}" alt="Hình minh họa câu ${q.id}" loading="lazy" style="margin-top:20px">` : ''}<p class="subtitle">Bạn chọn: ${record.answers[q.id] || 'Chưa chọn'} · Đáp án đúng: ${q.answer}${isCritical(q, l) ? ' · Câu điểm liệt' : ''}</p><div class="review-answers">${q.options.map(o => `<p class="${o.id === q.answer ? 'correct' : o.id === Number(record.answers[q.id]) ? 'wrong' : ''}">${o.id}. ${e(o.text)}</p>`).join('')}</div><section class="explanation"><h3>${icon('lightbulb', 16)} Giải thích theo nguồn</h3><p>${e(q.explanation)}</p></section></details>`;
-  }).join('') || '<div class="panel"><p>Không còn câu nào cần ôn trong bài này. Bạn đã trả lời đúng tất cả!</p></div>'}</div>${sourceNote()}`;
+  }).join('') || '<div class="panel"><p>Không còn câu nào cần ôn trong bài này. Bạn đã trả lời đúng tất cả!</p></div>'}</div>`;
 }
 function renderHistory() {
   $('#main').innerHTML = `${heading('Thấy rõ từng bước tiến.', 'Lưu lại bài đã làm, xem lại đáp án và tiếp tục từ những câu còn chưa chắc.')}${progress.history.length ? `<div class="history-table"><div class="history-row header"><span>Bài luyện</span><span>Hoàn thành</span><span>Kết quả</span><span>Trạng thái</span><span></span></div>${progress.history.map(h => { const result = grade(h.ids.map(id => questionMap.get(id)), h.answers, getLicense(data, h.license)); return `<div class="history-row"><div><strong>${e(h.title)}</strong><small>Hạng ${e(h.license)} · ${h.kind === 'fixed' ? 'Bộ bài ôn nguồn' : 'Ngẫu nhiên'}</small></div><span class="history-date">${dateLabel(h.finishedAt)}</span><strong class="history-score">${result.correct}/${result.total}</strong><span class="history-state status-pill ${result.passed ? '' : 'failed'}">${result.passed ? 'Đạt bài luyện' : 'Cần luyện thêm'}</span><div class="history-open">${button('Xem lại ' + icon('arrow-up-right', 14), 'view-history', 'secondary', `data-id="${e(h.id)}"`)}</div></div>`; }).join('')}</div><p class="source-note">Giữ tối đa 30 bài gần nhất trên trình duyệt này. Xuất tiến độ trong Cài đặt để sao lưu cả nội dung bài đã làm.</p>` : emptyState('Bắt đầu lần thử sức đầu tiên.', 'Bài đã nộp sẽ được lưu tại đây cùng câu hỏi, lựa chọn và phần giải thích.', 'history')}`;
@@ -166,12 +178,12 @@ function renderHandbook() {
   if (state.lesson) {
     const lesson = data.practicalLessons.find(l => l.id === state.lesson);
     if (!lesson) { state.lesson = null; renderHandbook(); return; }
-    $('#main').innerHTML = `${heading(e(lesson.name), 'Nội dung sa hình giữ theo ứng dụng nguồn.', button(icon('arrow-left', 15) + ' Cẩm nang', 'back-handbook', 'secondary'))}<div class="reading-layout">${lesson.image ? `<img class="reading-image" src="${e(lesson.image)}" alt="Minh họa ${e(lesson.name)}">` : ''}${lesson.sections.map(s => `<section class="reading-section"><h2>${e(s.title)}</h2><p>${e(s.text)}</p></section>`).join('')}${sourceNote()}</div>`;
+    $('#main').innerHTML = `${heading(e(lesson.name), 'Nội dung sa hình giữ theo ứng dụng nguồn.', button(icon('arrow-left', 15) + ' Cẩm nang', 'back-handbook', 'secondary'))}<div class="reading-layout">${lesson.image ? `<img class="reading-image" src="${e(lesson.image)}" alt="Minh họa ${e(lesson.name)}">` : ''}${lesson.sections.map(s => `<section class="reading-section"><h2>${e(s.title)}</h2><p>${e(s.text)}</p></section>`).join('')}</div>`;
     return;
   }
   const tabs = `<div class="segmented"><button data-action="handbook-tab" data-tab="practical" class="${state.handbookTab === 'practical' ? 'active' : ''}" aria-pressed="${state.handbookTab === 'practical'}">11 bài sa hình</button><button data-action="handbook-tab" data-tab="theory" class="${state.handbookTab === 'theory' ? 'active' : ''}" aria-pressed="${state.handbookTab === 'theory'}">Mẹo & tài liệu tham khảo</button></div>`;
   const content = state.handbookTab === 'practical' ? `<div class="handbook-grid">${data.practicalLessons.map((lesson, index) => `<button class="lesson-card" data-action="lesson" data-id="${lesson.id}">${lesson.image ? `<img src="${e(lesson.image)}" alt="" loading="lazy">` : `<span class="lesson-placeholder">${icon('trophy', 44)}</span>`}<p class="eyebrow">BÀI ${String(index + 1).padStart(2, '0')}</p><h3>${e(lesson.name)}</h3><small>${lesson.sections.length} phần hướng dẫn · Xem nội dung →</small></button>`).join('')}</div>` : `<div class="notice" style="margin-bottom:22px">Phần mẹo và ảnh tham khảo được giữ từ ứng dụng, có thể gồm nội dung của các bộ cũ. Dùng để tham khảo thêm; chưa được đối chiếu với quy định hiện hành.</div>${data.theoryCategories.filter(c => data.theoryTips.some(t => t.category === c.id)).map(c => `<details class="theory-group"><summary>${e(c.name)}</summary><ul>${data.theoryTips.filter(t => t.category === c.id).map(t => `<li>${e(t.text)}</li>`).join('')}</ul></details>`).join('')}<div class="section-heading" style="margin-top:30px"><h2>Ảnh tham khảo từ ứng dụng</h2></div><div class="hint-grid">${data.hintImages.map((h, index) => `<button class="hint-card" data-action="hint-image" data-index="${index}"><img src="${e(h.image)}" alt="${e(hintTitles[h.name] || h.name)}" loading="lazy"><p>${e(hintTitles[h.name] || h.name)}</p></button>`).join('')}</div>`;
-  $('#main').innerHTML = `${heading('Thêm hiểu biết cho mỗi hành trình.', 'Đọc lại hướng dẫn sa hình và các ghi chú được đóng gói trong ứng dụng.')}${tabs}${content}${sourceNote()}`;
+  $('#main').innerHTML = `${heading('Thêm hiểu biết cho mỗi hành trình.', 'Đọc lại hướng dẫn sa hình và các ghi chú được đóng gói trong ứng dụng.')}${tabs}${content}`;
 }
 function render() {
   $('#main').dataset.view = 'default';
@@ -183,11 +195,8 @@ function render() {
   else if (state.route === 'history') renderHistory();
   else if (state.route === 'exams') { if (activeExam) renderActiveExam(); else if (state.review) renderResult(state.review); else renderExamSetup(); }
 }
-function sourceDialog() {
-  showDialog(`${dialogHeading('Dữ liệu từ đâu?')}<div class="dialog-copy"><p><strong>Ôn thi GPLX 2025 · v2.0.3</strong><br>Trích xuất ngày 11/11/2026 từ bộ cài Android của bạn.</p><p>${data.questions.length} câu hỏi và giải thích, ${data.signs.length} biển báo, ${data.licenses.length} cấu hình hạng bằng, ${data.fixedExams.length} bài ôn và ${data.practicalLessons.length} bài sa hình.</p><p><code>${e(data.source.package)}</code></p><p>${e(data.source.note)}</p><p>“GPLX 2026” là tên dự án web. Tên này không có nghĩa dữ liệu đã được xác minh cập nhật cho năm 2026. Kết quả luyện tập không thay thế kết quả sát hạch.</p><p>Bộ bài có sẵn giữ nguyên ID câu theo nguồn. Bài ngẫu nhiên chọn câu từ bộ lọc hạng và một câu điểm liệt theo hạng; không xác nhận phân bổ giống đề thi chính thức.</p><p>Ứng dụng lưu tiến độ trên trình duyệt này. Không gửi tiến độ học đến máy chủ.</p></div><div class="dialog-actions">${button('Đã hiểu', 'close-dialog')}${button('Cài đặt & sao lưu', 'settings', 'secondary')}</div>`);
-}
 function settingsDialog() {
-  showDialog(`${dialogHeading('Góc học tập của bạn')}<div class="dialog-copy"><strong>Giữ lại hành trình học</strong><p>Tiến độ, câu đánh dấu và tối đa 30 bài đã làm được lưu trong trình duyệt này. Xuất tệp để sao lưu hoặc chuyển sang thiết bị khác. Nhập tệp sẽ thay thế tiến độ hiện có.</p></div><div class="dialog-actions">${button(icon('download', 16) + ' Xuất tiến độ', 'export-progress', 'secondary')}${button(icon('upload', 16) + ' Nhập tiến độ', 'import-progress', 'secondary')}<input type="file" id="progress-file" accept="application/json,.json" hidden></div><hr class="dialog-divider"><div class="dialog-copy"><strong>Cài ứng dụng và học ngoại tuyến</strong><p>Ở Tổng quan, bấm “Tải để học ngoại tuyến” và chờ hoàn tất. Bấm “Cài app” trên header khi Chrome/Edge cho phép cài; Safari iPhone dùng Chia sẻ → Thêm vào Màn hình chính. Tiến độ và dữ liệu tải về lưu riêng theo địa chỉ trang web.</p><p>Nếu hosting yêu cầu đăng nhập lại, có thể cần kết nối để xác thực. Bộ nhớ trình duyệt có thể bị hệ điều hành thu hồi; nên xuất tiến độ định kỳ.</p></div><div class="dialog-actions">${button('Tải dữ liệu ngoại tuyến', 'download-offline', 'secondary', offline.status === 'downloading' ? 'disabled' : '')}${installer.canInstall() ? button('Cài ứng dụng', 'install-app') : ''}${button('Xóa ảnh ngoại tuyến', 'clear-offline-confirm', 'secondary', offline.status === 'downloading' ? 'disabled' : '')}</div><hr class="dialog-divider"><div class="dialog-copy"><strong>Bắt đầu lại</strong><p>Xuất tiến độ trước nếu bạn cần giữ lại kết quả.</p></div><div class="dialog-actions">${button('Xóa tiến độ trên trình duyệt', 'reset-confirm', 'danger')}</div>`);
+  showDialog(`${dialogHeading('Góc học tập của bạn')}<div class="dialog-copy"><strong>Giữ lại hành trình học</strong><p>Tiến độ, câu đánh dấu và tối đa 30 bài đã làm được lưu trong trình duyệt này. Xuất tệp để sao lưu hoặc chuyển sang thiết bị khác. Nhập tệp sẽ thay thế tiến độ hiện có.</p></div><div class="dialog-actions">${button(icon('download', 16) + ' Xuất tiến độ', 'export-progress', 'secondary')}${button(icon('upload', 16) + ' Nhập tiến độ', 'import-progress', 'secondary')}<input type="file" id="progress-file" accept="application/json,.json" hidden></div><hr class="dialog-divider"><div class="dialog-copy"><strong>Cài ứng dụng và học ngoại tuyến</strong><p>Bấm icon tải xuống trên header, xác nhận dung lượng rồi tiếp tục học trong lúc app tải. Icon chuyển sang dấu tích khi đã lưu đủ. Bấm “Cài app” trên header khi Chrome/Edge cho phép cài; Safari iPhone dùng Chia sẻ → Thêm vào Màn hình chính. Tiến độ và dữ liệu tải về lưu riêng theo địa chỉ trang web.</p><p>Nếu hosting yêu cầu đăng nhập lại, có thể cần kết nối để xác thực. Bộ nhớ trình duyệt có thể bị hệ điều hành thu hồi; nên xuất tiến độ định kỳ.</p></div><div class="dialog-actions">${button('Học ngoại tuyến', 'offline-info', 'secondary', offline.status === 'downloading' ? 'disabled' : '')}${installer.canInstall() ? button('Cài ứng dụng', 'install-app') : ''}${button('Xóa ảnh ngoại tuyến', 'clear-offline-confirm', 'secondary', offline.status === 'downloading' ? 'disabled' : '')}</div><hr class="dialog-divider"><div class="dialog-copy"><strong>Bắt đầu lại</strong><p>Xuất tiến độ trước nếu bạn cần giữ lại kết quả.</p></div><div class="dialog-actions">${button('Xóa tiến độ trên trình duyệt', 'reset-confirm', 'danger')}</div>`);
 }
 function recordAnswer(question, selected) {
   progress.answers[question.id] = { selected, correct: selected === question.answer, at: Date.now(), attempts: (progress.answers[question.id]?.attempts || 0) + 1 };
@@ -220,19 +229,15 @@ function updateClock() {
   if (remaining === 0) finishExam(true);
 }
 async function downloadOffline() {
-  try {
-    if (!('serviceWorker' in navigator)) throw new Error('Trình duyệt này chưa hỗ trợ học ngoại tuyến.');
-    const ready = await Promise.race([navigator.serviceWorker.ready, new Promise((_, reject) => setTimeout(() => reject(new Error('Ngoại tuyến chưa sẵn sàng. Hãy mở bằng HTTPS hoặc localhost rồi thử lại.')), 12000))]);
-    if (!ready.active) throw new Error('Ứng dụng đang chuẩn bị dữ liệu. Bạn thử lại sau một chút nhé.');
-    offline.status = 'downloading'; closeDialog(); if (state.route === 'home') renderHome();
-    navigator.storage?.persist?.().catch(() => {});
-    ready.active.postMessage({ type: 'download-offline' });
-  } catch (error) { offline.status = 'error'; toast(error.message); if (state.route === 'home') renderHome(); }
+  if (!offlineDownload) return;
+  closeDialog();
+  navigator.storage?.persist?.().catch(() => {});
+  await offlineDownload.start(true);
 }
 async function clearOffline() {
   if (offline.status === 'downloading') return;
   for (const name of await caches.keys()) if (name.startsWith('gplx2026-data-')) await caches.delete(name);
-  offline.status = 'idle'; closeDialog(); render(); toast('Đã xóa ảnh ngoại tuyến. Tiến độ của bạn được giữ lại.');
+  offlineDownload?.clear(); closeDialog(); render(); toast('Đã xóa ảnh ngoại tuyến. Tiến độ của bạn được giữ lại.');
 }
 function installApp() { closeDialog(); return installer.install(); }
 function exportProgress() {
@@ -256,7 +261,6 @@ function action(name, element) {
     case 'menu': if (!$('#menu-dialog').open) $('#menu-dialog').showModal(); break;
     case 'close-menu': $('#menu-dialog').close(); break;
     case 'close-dialog': closeDialog(); break;
-    case 'source': sourceDialog(); break;
     case 'settings': settingsDialog(); break;
     case 'install-app': installApp(); break;
     case 'open-learn': go('learn'); break;
@@ -268,7 +272,7 @@ function action(name, element) {
     case 'study-jump': jumpQuestion(index); break;
     case 'retry-question': if (q) { delete state.responses[q.id]; renderStudy(); } break;
     case 'bookmark': { const at = progress.bookmarks.indexOf(id); if (at >= 0) progress.bookmarks.splice(at, 1); else progress.bookmarks.push(id); persist(); render(); toast(at >= 0 ? 'Đã bỏ đánh dấu.' : 'Đã thêm vào góc ghi nhớ.'); break; }
-    case 'sign-detail': { const s = data.signs.find(s => s.id === id); if (!s) return; showDialog(`${dialogHeading(e(s.shortName))}<img class="sign-dialog-image" src="${e(s.image)}" alt="${e(s.name)}"><div class="dialog-copy multiline"><strong>${e(s.code)}</strong><p>${e(s.detail)}</p></div><p class="source-note">Nội dung giữ theo ứng dụng nguồn.</p>`); break; }
+    case 'sign-detail': { const s = data.signs.find(s => s.id === id); if (!s) return; showDialog(`${dialogHeading(e(s.shortName))}<img class="sign-dialog-image" src="${e(s.image)}" alt="${e(s.name)}"><div class="dialog-copy multiline"><strong>${e(s.code)}</strong><p>${e(s.detail)}</p></div>`); break; }
     case 'more-signs': state.signLimit += 32; renderSigns(); break;
     case 'exam-tab': state.examTab = element.dataset.tab === 'fixed' ? 'fixed' : 'random'; renderExamSetup(); break;
     case 'start-random': beginExam('random'); break;
@@ -283,6 +287,7 @@ function action(name, element) {
     case 'lesson': go('handbook', { lesson: id }); break;
     case 'back-handbook': go('handbook'); break;
     case 'hint-image': { const hint = data.hintImages[index]; if (hint) showDialog(`${dialogHeading(e(hintTitles[hint.name] || hint.name))}<img class="dialog-image" src="${e(hint.image)}" alt="${e(hintTitles[hint.name] || hint.name)}"><p class="dialog-copy">Ảnh tham khảo từ ứng dụng nguồn, có thể gồm thông tin của bộ cũ.</p>`); break; }
+    case 'offline-info': offlineDialog(); break;
     case 'download-offline': downloadOffline(); break;
     case 'clear-offline-confirm': showDialog(`${dialogHeading('Xóa ảnh đã tải ngoại tuyến?')}<p class="dialog-copy">Các ảnh tải về sẽ được xóa khỏi bộ nhớ trình duyệt. Tiến độ và lịch sử luyện đề vẫn được giữ. Bạn có thể tải ảnh lại khi có mạng.</p><div class="dialog-actions">${button('Giữ ảnh đã tải', 'close-dialog', 'secondary')}${button('Xóa ảnh ngoại tuyến', 'clear-offline', 'danger')}</div>`); break;
     case 'clear-offline': clearOffline().catch(() => toast('Chưa xóa được dữ liệu ngoại tuyến.')); break;
@@ -342,25 +347,35 @@ addEventListener('online', connectionChanged); addEventListener('offline', conne
 addEventListener('hashchange', () => { if (data) applyRoute(); });
 
 async function setupWorker() {
-  if (!('serviceWorker' in navigator)) return;
-  navigator.serviceWorker.addEventListener('message', event => {
-    const message = event.data;
-    if (!message?.type) return;
-    if (message.type === 'offline-progress') offline = { status: 'downloading', completed: message.completed, total: message.total };
-    else if (message.type === 'offline-done') { offline.status = 'ready'; toast('Đã tải đầy đủ nội dung. Bạn có thể học ngoại tuyến.'); }
-    else if (message.type === 'offline-error') { offline.status = 'error'; toast('Tải chưa hoàn tất. Kiểm tra mạng rồi bấm tải lại để tiếp tục.'); }
-    if (state.route === 'home' && message.type?.startsWith('offline-')) { const banner = $('#offline-banner'); if (banner) banner.outerHTML = offlineBanner(); }
+  let storage; try { storage = localStorage; } catch {}
+  offlineDownload = createOfflineDownload({
+    revision: offlineManifest.revision, total: offlineManifest.urls.length, storage,
+    getWorker: async () => {
+      if (!registration) throw new Error('Ngoại tuyến chưa sẵn sàng. Hãy thử lại sau một chút.');
+      return activeWorker(registration);
+    },
+    hasReady: async () => {
+      const cache = await caches.open('gplx2026-data-' + offlineManifest.revision);
+      const marker = await cache.match(new URL('offline-ready', registration.scope));
+      return Boolean(marker && await marker.text() === offlineManifest.revision);
+    },
+    onChange: value => { offline = value; updateOfflineUI(); },
+    onComplete: () => toast('Đã tải đủ nội dung để học ngoại tuyến.'),
+    onError: message => toast(message),
   });
+  updateOfflineUI();
+  if (!('serviceWorker' in navigator)) { $('#offline-button').disabled = true; $('#offline-button').title = 'Trình duyệt chưa hỗ trợ học ngoại tuyến'; return; }
+  navigator.serviceWorker.addEventListener('message', event => offlineDownload.message(event.data));
   try {
-    registration = await navigator.serviceWorker.register('./sw.js');
-    const cache = await caches.open('gplx2026-data-' + offlineManifest.revision);
-    const marker = await cache.match(new URL('offline-ready', registration.scope));
-    if (marker && await marker.text() === offlineManifest.revision) { offline.status = 'ready'; if (state.route === 'home') { const banner = $('#offline-banner'); if (banner) banner.outerHTML = offlineBanner(); } }
-  } catch { offline.status = 'error'; }
+    registration = await navigator.serviceWorker.register('./sw.js?v=4', { updateViaCache: 'none' });
+    await activeWorker(registration);
+    await offlineDownload.restore();
+    addEventListener('online', () => offlineDownload.start());
+  } catch { offline = { ...offline, status: 'error' }; updateOfflineUI(); }
 }
 async function init() {
   try {
-    const responses = await Promise.all([fetch('./data/dataset.json'), fetch('./data/offline.json')]);
+    const responses = await Promise.all([fetch('./data/dataset.json?v=4'), fetch('./data/offline.json?v=4')]);
     if (responses.some(r => !r.ok || r.redirected)) throw new Error('Chưa tải được bộ dữ liệu.');
     [data, offlineManifest] = await Promise.all(responses.map(r => r.json()));
     questionMap = new Map(data.questions.map(q => [q.id, q])); progress = readProgress(data); activeExam = readExam(data);

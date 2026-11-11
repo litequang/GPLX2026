@@ -48,3 +48,17 @@ Không dùng dữ liệu của dự án GPLX cũ để giả định đã trích
 | GitHub/hosting bản cập nhật | Hoàn tất: a444871 đã push; deployment appgdep_6af41d3b864c8191b7374d4f29df35d7 succeeded |
 
 Browser inventory vẫn báo The browser access host is unavailable; không coi unit/EventTarget/worker mock là visual/Android QA. Bản đồ chi tiết và checklist tại UI_UPDATE.md.
+
+## Đối chiếu chính thức, thu gọn UI, tải nền — 11/11/2026
+
+| Chặng | Trạng thái |
+| --- | --- |
+| Bỏ 3 mục nguồn thừa trên UI | Hoàn tất; tài liệu nguồn được giữ |
+| Đọc nguồn chính thức | CV2262 và bộ600 từ Cục CSGT; TT108 bản ký trang1/36–38 |
+| Dataset | B600/60; 600 answer ID khớp; vá13 lựa chọn; quota bài ngẫu nhiên; revision e9638aa2aa05be26 |
+| Icon offline header | Consent1lần, tải nền, progress/ready/retry, resume lần mở sau; chưa Android thật |
+| Vùng native Android | Người dùng mở PWA bằng icon; trên đúng, dưới Back/Home/Recents xanh. Đã sửa manifest fetch/theme resume/canvas, chưa xác nhận màu thực tế |
+| Kiểm tra | 36 nhóm, 1.500 bài quota, 674 HTTP, 666 file output qua |
+| Publish | Đang hoàn tất; kết quả ghi DEPLOYMENT sau tool trả success |
+
+Chi tiết cho AI tiếp theo: OFFICIAL_AUDIT.md, OFFLINE.md, PROJECT_MAP.md, VALIDATION.md; còn119 ứng viên text và QA browser/Android.

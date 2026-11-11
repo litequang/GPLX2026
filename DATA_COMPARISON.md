@@ -23,3 +23,7 @@ node scripts/compare-data.mjs ../gplx-pwa/dist/data/dataset.json
 Câu1: nguồn cũ hỏi đường dùng cho “các phương tiện giao thông qua lại”; mới dùng “phương tiện giao thông đường bộ đi lại”. Giải thích cũ phân tích lựa chọn và mẹo; mới dẫn Khoản5 Điều2 Luật Trật tự an toàn giao thông đường bộ2024. Đây là mô tả app nguồn, chưa xác minh độc lập điều khoản.
 
 Không kết luận mọi thay đổi là nâng cấp độ chính xác, hoặc tên2025/2026 bảo đảm dữ liệu mới nhất. Pool/critical theo hạng có khác cách lọc trước; xem DATA_MAP. Cần nguồn chính thức trước khi tuyên bố đề chuẩn hiện hành.
+
+## Đợt đối chiếu sau snapshot
+
+comparison-report.json là so sánh hai snapshot Android trước overlay, không viết lại báo cáo lịch sử. Bản vá chính thức 11/11/2026 (B600/60, quota, 13 câu chỉnh lựa chọn) ghi riêng ở OFFICIAL_AUDIT.md, content/official-2026.json và official-audit-report.json.

@@ -10,7 +10,9 @@ flowchart LR
   APK --> Unpack[scripts/unpack-apk.py]
   Unpack --> Raw[../extracted-2025: Flutter assets + libapp.so]
   Raw --> Extract[scripts/extract-data.mjs]
-  Extract --> Dataset[dist/data/dataset.json]
+  Extract --> RawReport[source-report.json: snapshot thô]
+  Extract --> Overlay[official-overlay + content/official-2026.json]
+  Overlay --> Dataset[dist/data/dataset.json: đã đối chiếu một phần]
   Extract --> Assets[dist/assets: 632 ảnh duy nhất]
   Extract --> Manifest[dist/data/offline.json]
   Extract --> Report[source-report.json]
@@ -58,7 +60,11 @@ flowchart LR
 | `tests/service-worker.test.mjs` | In-memory Node VM contract; không phải browser thật |
 | `tests/chrome.test.mjs` | Scroll/idle/đổi hướng và install lifecycle với EventTarget giả lập, không phải Chrome thật |
 | `tests/theme.test.mjs` | 6 nhóm theme: bootstrap/toggle/storage/system/tab/meta/contrast, Node VM giả lập |
-| `source-report.json` | Hash nguồn, counts, pools, fixedSummary từng bài |
+| `source-report.json` | Hash/count/pool/fixedSummary **thô trước overlay**, B592 |
+| `content/official-2026.json`, `scripts/official-overlay.mjs` | Nguồn/hash/ID/quota/before-after; applyOfficialCorrections; runtime B600/60 |
+| `scripts/update-official.mjs`, `scripts/audit-official.py`, `official-audit-report.json` | Áp overlay/revision offline; so sánh PDF read-only; báo cáo 600 đáp án/ứng viên chữ còn lại |
+| `dist/modules/offline.js`, `tests/offline.test.mjs` | createOfflineDownload/activeWorker, consent/restore/message revision; 5 nhóm lifecycle giả lập |
+| `tests/official.test.mjs`, `OFFICIAL_AUDIT.md`, `OFFLINE.md` | Reproduction/guard patch, phạm vi xác minh và tải nền |
 | `comparison-report.json` | Hash hai dataset và ID khác theo trường |
 | `.openai/hosting.json` | Site ID GPLX2026 và static.directory=dist, không chứa token |
 | `licenses/`, `THIRD_PARTY.md` | Giấy phép/provenance; không gán license mở cho dữ liệu Android |
@@ -67,7 +73,7 @@ flowchart LR
 
 | Route | Luồng chính | Dữ liệu/params |
 | --- | --- | --- |
-| #home | renderHome, continue-study, offlineBanner | Pool hạng, stats, mục tiêu ngày VN, resume banner |
+| #home | renderHome, continue-study, updateOfflineUI | Pool hạng, stats, mục tiêu ngày VN, resume bài làm |
 | #learn | rebuildStudy → renderStudy → questionCard/questionNavigator | scope=all/license, topic, q, question; trạng thái all/new |
 | #critical/#wrong/#saved | Chung màn học + filterQuestions | Critical theo hạng; wrong gồm selected=0; bookmarks |
 | #signs | renderSigns, sign-detail, more-signs | Active signs, q/category, 32 mục mỗi lượt |
@@ -75,7 +81,7 @@ flowchart LR
 | #handbook | renderHandbook, handbook-tab, lesson, hint-image | lesson ID; tab=theory hoặc practical |
 | #history | renderHistory → view-history | Full records tối đa 30, vẫn mở sau reload |
 | Settings dialog | settingsDialog/exportProgress/parseProgress/clearOffline/reset-progress | Import thay tiến độ; chặn khi active exam; xóa ảnh giữ progress |
-| Source dialog | sourceDialog | App/version/ngày trích và giới hạn “2026” |
+| Offline dialog | offlineDialog/updateOfflineUI/downloadOffline | Icon header, consent/dung lượng, progress/ready/retry; không render lại bài đang làm |
 
 `go` push/replace history → `applyRoute` đọc hash → rebuildStudy → renderShell + màn hình. Back/Forward qua hashchange. Search/filter dùng replaceState. Danh sách học giữ snapshot trong một lượt để trả lời đúng hoặc bỏ bookmark không làm nhảy câu; vào lại route mới lọc lại.
 
@@ -105,7 +111,7 @@ Keys: `gplx2026-progress-v1`, `gplx2026-active-exam-v1`. Active dùng localStora
 
 ## Cache / cập nhật
 
-Shell `gplx2026-shell-v3` có HTML/CSS/modules/data/fonts/icons cùng theme-init.js/themes.css. HTML tham chiếu app/CSS/theme với `?v=3`, URL thường và version đều precache để tránh worker cũ trả code/CSS cũ khi mở online. Tăng version cần cập nhật HTML/SHELL/HTTP check đồng bộ. Data `gplx2026-data-<revision>` không đổi nếu nội dung không đổi. Manifest đọc từ shell hiện hành để không trộn phiên bản. Tải lô 6; marker `offline-ready` chỉ ghi sau đủ 633 URL. Sai MIME/redirect/network/quota không đánh dấu ready, retry dùng phần đã lưu. Activate chỉ xóa shell GPLX2026 cũ; tải data mới hoàn tất mới xóa data cũ.
+Shell `gplx2026-shell-v4` có HTML/CSS/modules/data/fonts/icons cùng theme-init.js/themes.css. HTML tham chiếu app/CSS/theme với `?v=4`, URL thường và version đều precache để tránh worker cũ trả code/CSS cũ khi mở online. Tăng version cần cập nhật HTML/SHELL/HTTP check đồng bộ. Data `gplx2026-data-<revision>` không đổi nếu nội dung không đổi. Manifest đọc từ shell hiện hành để không trộn phiên bản. Tải lô 6; marker `offline-ready` chỉ ghi sau đủ 633 URL. Sai MIME/redirect/network/quota không đánh dấu ready, retry dùng phần đã lưu. Activate chỉ xóa shell GPLX2026 cũ; tải data mới hoàn tất mới xóa data cũ.
 
 Sửa shell phải tăng APP_REVISION; sửa dataset/ảnh dùng extractor + manifest. Thêm module/font phải thêm precache. Không auto-reload khi controllerchange. Private hosting có thể cần mạng để xác thực; chưa kiểm chứng browser/PWA/offline thật.
 
@@ -117,6 +123,12 @@ Theme một chạm, key gplx2026-theme-v1 và giới hạn màu thanh native c�
 
 1. Ưu tiên checklist browser/Android trong VALIDATION/ROADMAP; không coi Node/HTTP là visual pass.
 2. Đổi logic ở core + test; UI ở app/styles + worker revision; schema đổi cần migration/import tests.
-3. Native build mới phải kiểm tra decoder/offset/hash/schema lại. Không tự thay cờ critical hoặc pool cho giống repo trước.
-4. Muốn mô phỏng thi chính thức phải xác minh membership, critical và quota; không dùng allocation/topic IDs di sản của GPLX cũ.
+3. Native build mới kiểm tra decoder/offset/hash/schema; overlay phải từ chối nguồn thay đổi, không ghi đè tùy tiện. source-report và comparison-report là bằng chứng snapshot gốc.
+4. Membership/critical/quota CV2262 đã xác minh; cách viết/giải thích/ảnh/mẹo và chuyển cấu trúc 01/03/2027 còn việc ở OFFICIAL_AUDIT/ROADMAP.
 5. Cập nhật map/data/validation/timeline sau chặng; kiểm tra remote trước push, không force.
+
+## Luồng tải nền và màu native — shell v4
+
+Header icon → offlineDialog xác nhận → createOfflineDownload nhớ consent → activeWorker đợi activated → worker download-offline theo revision → lô6 ảnh → marker đủ633 → icon tick. Progress chỉ cập nhật header/dialog, không renderHome/câu hỏi. Key gplx2026-offline-v1 độc lập progress/theme; online/mở lại tiếp tục sau consent, clearOffline tắt consent. Android có thể dừng worker.
+
+Versioned app/core/dataset/offline URL tránh worker cũ trộn dữ liệu trong lần online đầu; đăng ký sw.js?v=4, updateViaCache:none. Manifest URL/id giữ nguyên, fetch network-first có MIME/fallback; theme-init đặt cả html/body/meta/color-scheme, reapply pageshow/visible. themes.css dùng max safe-area + offset cho Android edge-to-edge. Không có API web bảo đảm đổi ngay màu thanh Back/Home/Recents trên mọi Chrome/WebAPK.

@@ -8,13 +8,13 @@ function harness({ preference = null, dark = false, blocked = false, loading = f
   const win = new EventTarget(), doc = new EventTarget(), media = Object.assign(new EventTarget(), { matches: dark });
   const values = new Map([['gplx2026-progress-v1', 'keep-progress']]); if (preference !== null) values.set(key, preference);
   const attrs = () => ({ values: new Map(), setAttribute(name, value) { this.values.set(name, value); } });
-  const meta = attrs(), apple = attrs(), button = Object.assign(new EventTarget(), attrs());
+  const meta = attrs(), scheme = attrs(), apple = attrs(), button = Object.assign(new EventTarget(), attrs());
   const root = { dataset: {}, style: {} };
   Object.assign(win, { matchMedia: () => media });
   Object.defineProperty(win, 'localStorage', { get() { if (blocked) throw new Error('storage blocked'); return { getItem: k => values.get(k) ?? null, setItem: (k, value) => values.set(k, value) }; } });
-  Object.assign(doc, { documentElement: root, readyState: loading ? 'loading' : 'complete', querySelector: selector => selector.includes('apple-mobile') ? apple : selector.includes('meta') ? meta : button });
+  Object.assign(doc, { documentElement: root, body: { style: {} }, readyState: loading ? 'loading' : 'complete', querySelector: selector => selector.includes('apple-mobile') ? apple : selector.includes('color-scheme') ? scheme : selector.includes('meta') ? meta : button });
   vm.runInNewContext(source, { window: win, document: doc });
-  return { root, meta, apple, button, values, hydrate() { doc.dispatchEvent(new Event('DOMContentLoaded')); }, system(value) { media.matches = value; media.dispatchEvent(new Event('change')); }, storage(k, value) { const event = new Event('storage'); event.key = k; event.newValue = value; win.dispatchEvent(event); } };
+  return { root, meta, scheme, apple, body: doc.body, button, values, resume() { win.dispatchEvent(new Event('pageshow')); doc.dispatchEvent(new Event('visibilitychange')); }, hydrate() { doc.dispatchEvent(new Event('DOMContentLoaded')); }, system(value) { media.matches = value; media.dispatchEvent(new Event('change')); }, storage(k, value) { const event = new Event('storage'); event.key = k; event.newValue = value; win.dispatchEvent(event); } };
 }
 test('first visit follows the system, saved explicit theme wins, invalid preferences are ignored', () => {
   assert.equal(harness().root.dataset.theme, 'light');
@@ -28,11 +28,20 @@ test('one tap immediately toggles theme, browser chrome color, accessible label 
   h.button.dispatchEvent(new Event('click'));
   assert.equal(h.root.dataset.theme, 'dark'); assert.equal(h.root.style.colorScheme, 'dark');
   assert.equal(h.root.style.backgroundColor, '#0b1220'); assert.equal(h.meta.values.get('content'), '#0b1220');
+  assert.equal(h.body.style.backgroundColor, '#0b1220'); assert.equal(h.scheme.values.get('content'), 'dark');
   assert.match(h.button.values.get('aria-label'), /sáng/); assert.equal(h.button.values.get('aria-pressed'), 'true');
   assert.equal(h.values.get(key), 'dark'); assert.equal(h.values.get('gplx2026-progress-v1'), 'keep-progress');
   h.button.dispatchEvent(new Event('click'));
   assert.equal(h.root.dataset.theme, 'light'); assert.equal(h.meta.values.get('content'), '#f5f7fc');
   assert.match(h.button.values.get('aria-label'), /tối/); assert.equal(h.values.get(key), 'light');
+});
+
+test('returning to the PWA reapplies canvas, body and native theme metadata without resetting progress', () => {
+  const h = harness({ preference: 'dark' });
+  h.body.style.backgroundColor = '#2457df'; h.meta.setAttribute('content', '#2457df');
+  h.resume();
+  assert.equal(h.body.style.backgroundColor, '#0b1220'); assert.equal(h.meta.values.get('content'), '#0b1220');
+  assert.equal(h.values.get('gplx2026-progress-v1'), 'keep-progress');
 });
 test('restores page and system-bar colors before DOMContentLoaded, then binds the toggle once', () => {
   const h = harness({ preference: 'dark', loading: true });
@@ -65,7 +74,7 @@ test('static manifest and initial meta match the light canvas; bootstrap precede
   const dark = palette(themes.match(/:root\[data-theme="dark"\]\s*\{([^}]+)/)[1]);
   assert.equal(manifest.theme_color, light.bg); assert.equal(manifest.background_color, light.bg);
   assert.ok(html.includes(`name="theme-color" content="${light.bg}"`));
-  assert.ok(html.indexOf('src="./theme-init.js?v=3"') < html.indexOf('rel="stylesheet"'));
+  assert.ok(html.indexOf('src="./theme-init.js?v=4"') < html.indexOf('rel="stylesheet"'));
   assert.equal(harness({ preference: 'dark' }).meta.values.get('content'), dark.bg);
   const luminance = hex => {
     const rgb = [1, 3, 5].map(index => parseInt(hex.slice(index, index + 2), 16) / 255).map(c => c <= .04045 ? c / 12.92 : ((c + .055) / 1.055) ** 2.4);

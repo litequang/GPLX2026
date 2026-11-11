@@ -13,7 +13,11 @@ export function shuffle(items, random = Math.random) {
 export function randomExam(data, name, random = Math.random) {
   const l = getLicense(data, name), pool = poolFor(data, l.name);
   const critical = shuffle(pool.filter(q => isCritical(q, l)), random)[0];
-  const regular = shuffle(pool.filter(q => !isCritical(q, l)), random).slice(0, l.count - 1);
+  const regular = (l.topicQuotas || []).flatMap(quota => {
+    const selected = shuffle(pool.filter(q => !isCritical(q, l) && quota.categories.includes(q.category)), random).slice(0, quota.count);
+    if (selected.length !== quota.count) throw new Error('Bộ dữ liệu chưa đủ câu theo chủ đề.');
+    return selected;
+  });
   if (!critical || regular.length !== l.count - 1) throw new Error('Bộ dữ liệu chưa đủ để tạo bài luyện.');
   return shuffle([critical, ...regular], random);
 }

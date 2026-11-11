@@ -20,12 +20,15 @@
     root.dataset.theme = theme;
     root.style.colorScheme = theme;
     root.style.backgroundColor = colors[theme];
+    if (document.body) document.body.style.backgroundColor = colors[theme];
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', colors[theme]);
+    document.querySelector('meta[name="color-scheme"]')?.setAttribute('content', theme);
     document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')?.setAttribute('content', theme === 'dark' ? 'black-translucent' : 'default');
     updateButton();
   }
   apply(preference || systemTheme());
   function bind() {
+    apply(current);
     button = document.querySelector('#theme-toggle');
     if (!button) return;
     updateButton();
@@ -43,4 +46,7 @@
     preference = event.key === key && valid(event.newValue) ? event.newValue : null;
     apply(preference || systemTheme());
   });
+  // Android can restore the native chrome after returning from another app/BFCache.
+  window.addEventListener('pageshow', () => apply(current));
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) apply(current); });
 })();

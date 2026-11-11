@@ -1,0 +1,922 @@
+{
+  "checkedOn": "2026-11-11",
+  "datasetSha256": "e9638aa2aa05be26f92c70c3b9eb2a8799b80d5abd39d888881960eea102127f",
+  "sources": [
+    {
+      "title": "Công văn 2262/CSGT-P5 ngày 07/05/2025",
+      "url": "https://csgtmedia.bocongan.gov.vn/upload/services/2071319603_Hướng dẫn sử dụng bộ câu hỏi sát hạch GPLX (CV 2262.07.5.2025).pdf",
+      "sha256": "dcb0b42473a23af3b006ed07cfd3a728254eb3d5263f6a26d0536c576d69e634"
+    },
+    {
+      "title": "Bộ 600 câu hỏi của Cục CSGT",
+      "url": "https://csgtmedia.bocongan.gov.vn/upload/services/725823572_600 câu hỏi dùng cho sát hạch GPLX cơ giới đường bộ.pdf",
+      "sha256": "6a6dab8543eb334b36ac9de6abcd938e864f2e0e915be27c3a2157ee6e518575"
+    },
+    {
+      "title": "Thông tư 108/2026/TT-BCA, Điều 41 khoản 2 và 6, trang 37",
+      "url": "https://vanban.bocongan.gov.vn/co-so-du-lieu-van-ban/thong-tu-quy-dinh-ve-sat-hach-cap-giay-phep-lai-xe-cap-su-dung-giay-phep-lai-xe-quoc-te-1784191590?tab=attributes",
+      "sha256": "b66d189449dac8e5131b9dbb8985f0a1477c82a9bc5d13ec92ac563ca4ad7a2b",
+      "downloadUrl": "https://bocongan.gov.vn/media/bca-media/library-20260723141819-a2ce5861-a0e9-45b6-8d7b-84d13e58c7ad-thong-tu-so-108-2026.pdf"
+    }
+  ],
+  "bookPages": 188,
+  "questionIdsCovered": 600,
+  "answerKeysMatching": 600,
+  "answerIdsChanged": 0,
+  "automaticAnswerKeys": 598,
+  "manualAnswerReviews": {
+    "204": {
+      "answer": 1,
+      "pdfPage": 47
+    },
+    "302": {
+      "answer": 4,
+      "pdfPage": 71
+    }
+  },
+  "appendixMembership": {
+    "A1": {
+      "pool": 250,
+      "critical": 20,
+      "matches": true
+    },
+    "B1": {
+      "pool": 300,
+      "critical": 30,
+      "matches": true
+    }
+  },
+  "globalCriticalCount": 60,
+  "restoredBIds": [
+    5,
+    46,
+    59,
+    62,
+    64,
+    71,
+    72,
+    93
+  ],
+  "visuallyReviewedWordingCorrections": [
+    65,
+    121,
+    141,
+    216,
+    298,
+    417,
+    419,
+    420,
+    421,
+    422,
+    423,
+    467,
+    592
+  ],
+  "remainingTextComparisonCandidates": [
+    {
+      "id": 2,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 5
+    },
+    {
+      "id": 3,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 5
+    },
+    {
+      "id": 7,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 6
+    },
+    {
+      "id": 36,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 11
+    },
+    {
+      "id": 37,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 11
+    },
+    {
+      "id": 49,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 14
+    },
+    {
+      "id": 65,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 17
+    },
+    {
+      "id": 73,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 18
+    },
+    {
+      "id": 80,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 20
+    },
+    {
+      "id": 89,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 22
+    },
+    {
+      "id": 90,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 22
+    },
+    {
+      "id": 92,
+      "fields": [
+        "text",
+        "options"
+      ],
+      "pdfPage": 22
+    },
+    {
+      "id": 94,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 23
+    },
+    {
+      "id": 96,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 23
+    },
+    {
+      "id": 97,
+      "fields": [
+        "text",
+        "options"
+      ],
+      "pdfPage": 23
+    },
+    {
+      "id": 98,
+      "fields": [
+        "text",
+        "options"
+      ],
+      "pdfPage": 23
+    },
+    {
+      "id": 111,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 26
+    },
+    {
+      "id": 136,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 32
+    },
+    {
+      "id": 141,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 33
+    },
+    {
+      "id": 142,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 33
+    },
+    {
+      "id": 147,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 34
+    },
+    {
+      "id": 148,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 34
+    },
+    {
+      "id": 162,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 37
+    },
+    {
+      "id": 167,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 39
+    },
+    {
+      "id": 168,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 39
+    },
+    {
+      "id": 171,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 39
+    },
+    {
+      "id": 172,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 40
+    },
+    {
+      "id": 174,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 40
+    },
+    {
+      "id": 178,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 41
+    },
+    {
+      "id": 179,
+      "fields": [
+        "text",
+        "options"
+      ],
+      "pdfPage": 41
+    },
+    {
+      "id": 180,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 42
+    },
+    {
+      "id": 182,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 43
+    },
+    {
+      "id": 195,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 45
+    },
+    {
+      "id": 198,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 46
+    },
+    {
+      "id": 200,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 46
+    },
+    {
+      "id": 201,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 47
+    },
+    {
+      "id": 202,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 47
+    },
+    {
+      "id": 215,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 51
+    },
+    {
+      "id": 230,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 54
+    },
+    {
+      "id": 232,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 55
+    },
+    {
+      "id": 233,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 55
+    },
+    {
+      "id": 235,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 55
+    },
+    {
+      "id": 239,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 56
+    },
+    {
+      "id": 240,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 56
+    },
+    {
+      "id": 243,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 57
+    },
+    {
+      "id": 244,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 57
+    },
+    {
+      "id": 245,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 57
+    },
+    {
+      "id": 246,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 57
+    },
+    {
+      "id": 250,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 58
+    },
+    {
+      "id": 252,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 59
+    },
+    {
+      "id": 253,
+      "fields": [
+        "text",
+        "options"
+      ],
+      "pdfPage": 59
+    },
+    {
+      "id": 256,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 59
+    },
+    {
+      "id": 257,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 59
+    },
+    {
+      "id": 260,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 60
+    },
+    {
+      "id": 261,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 60
+    },
+    {
+      "id": 263,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 61
+    },
+    {
+      "id": 266,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 62
+    },
+    {
+      "id": 267,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 62
+    },
+    {
+      "id": 268,
+      "fields": [
+        "text",
+        "options"
+      ],
+      "pdfPage": 62
+    },
+    {
+      "id": 269,
+      "fields": [
+        "text",
+        "options"
+      ],
+      "pdfPage": 62
+    },
+    {
+      "id": 271,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 63
+    },
+    {
+      "id": 273,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 63
+    },
+    {
+      "id": 274,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 63
+    },
+    {
+      "id": 279,
+      "fields": [
+        "text",
+        "options"
+      ],
+      "pdfPage": 64
+    },
+    {
+      "id": 280,
+      "fields": [
+        "text",
+        "options"
+      ],
+      "pdfPage": 65
+    },
+    {
+      "id": 281,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 65
+    },
+    {
+      "id": 282,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 65
+    },
+    {
+      "id": 283,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 65
+    },
+    {
+      "id": 284,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 65
+    },
+    {
+      "id": 285,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 65
+    },
+    {
+      "id": 290,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 67
+    },
+    {
+      "id": 301,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 71
+    },
+    {
+      "id": 302,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 71
+    },
+    {
+      "id": 306,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 72
+    },
+    {
+      "id": 319,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 77
+    },
+    {
+      "id": 323,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 78
+    },
+    {
+      "id": 324,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 78
+    },
+    {
+      "id": 338,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 83
+    },
+    {
+      "id": 339,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 83
+    },
+    {
+      "id": 341,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 84
+    },
+    {
+      "id": 343,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 85
+    },
+    {
+      "id": 352,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 88
+    },
+    {
+      "id": 360,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 90
+    },
+    {
+      "id": 362,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 90
+    },
+    {
+      "id": 375,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 94
+    },
+    {
+      "id": 382,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 97
+    },
+    {
+      "id": 400,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 103
+    },
+    {
+      "id": 409,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 106
+    },
+    {
+      "id": 410,
+      "fields": [
+        "text",
+        "options"
+      ],
+      "pdfPage": 106
+    },
+    {
+      "id": 413,
+      "fields": [
+        "text",
+        "options"
+      ],
+      "pdfPage": 107
+    },
+    {
+      "id": 421,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 109
+    },
+    {
+      "id": 423,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 110
+    },
+    {
+      "id": 442,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 116
+    },
+    {
+      "id": 443,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 117
+    },
+    {
+      "id": 445,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 117
+    },
+    {
+      "id": 456,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 121
+    },
+    {
+      "id": 461,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 123
+    },
+    {
+      "id": 466,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 124
+    },
+    {
+      "id": 473,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 127
+    },
+    {
+      "id": 478,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 128
+    },
+    {
+      "id": 480,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 129
+    },
+    {
+      "id": 481,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 129
+    },
+    {
+      "id": 485,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 130
+    },
+    {
+      "id": 510,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 143
+    },
+    {
+      "id": 511,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 143
+    },
+    {
+      "id": 512,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 144
+    },
+    {
+      "id": 519,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 147
+    },
+    {
+      "id": 523,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 149
+    },
+    {
+      "id": 524,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 150
+    },
+    {
+      "id": 528,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 152
+    },
+    {
+      "id": 533,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 154
+    },
+    {
+      "id": 535,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 155
+    },
+    {
+      "id": 538,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 157
+    },
+    {
+      "id": 555,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 165
+    },
+    {
+      "id": 561,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 168
+    },
+    {
+      "id": 568,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 172
+    },
+    {
+      "id": 580,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 178
+    },
+    {
+      "id": 594,
+      "fields": [
+        "options"
+      ],
+      "pdfPage": 185
+    },
+    {
+      "id": 595,
+      "fields": [
+        "text"
+      ],
+      "pdfPage": 185
+    }
+  ],
+  "limitations": "Candidates include PDF layout artifacts (chapter titles, inline columns, figure labels), spelling and real wording differences. Do not apply automatically. Image equivalence, explanations, tips, practical lessons and full current-law compliance are not verified. No newer question bank was identified in the official sources checked on this date."
+}
