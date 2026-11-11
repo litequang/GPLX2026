@@ -5,7 +5,7 @@
 | Kiểm tra đã chạy | Kết quả |
 | --- | --- |
 | Nguồn | 4 APK đã lấy, 2 SQLite giải mã integrity_check=ok, dùng texture25, đủ 600 giải thích |
-| npm test | 40 nhóm pass, 0 fail; thêm canonical root/307, retry worker, manifest theo theme/ack/restart |
+| npm test | 41 nhóm pass, 0 fail; thêm MIME manifest của domain MHS + HTML giả loại |
 | Data | 600 ID/option/topic/reference hợp lệ, 60 global critical |
 | Pool/critical | A1/A: 250/20; B1: 300/30; B: 600/60; C1 trở lên: 600/60 |
 | Random | 100 × 15 hạng = 1.500 bài, đúng số câu, không trùng, trong pool, một critical và đúng từng quota chủ đề CV2262 |
@@ -21,8 +21,8 @@
 | Theme giả lập | Mặc định/system/saved preference, toggle tức thì/meta/aria/storage, bootstrap trước DOM ready, storage lỗi, sync tab và giữ progress riêng |
 | Palette | Một số cặp ink/muted/primary/success/error/warning và button được tính contrast ≥4,5; không thay visual/WCAG audit |
 | Syntax | node --check app.js, sw.js, theme-init.js và các module/script đã sửa thành công |
-| Output scan | 666 file, 29.582.330 byte, lớn nhất 790.894 byte, không file cấm, dưới 25 MiB/file |
-| HTTP local | 675 URL gồm root + mọi file dist + app/CSS/theme/core/offline/data v6, 200/nonempty/MIME đúng; 30.520.290 byte |
+| Output scan | 666 file, 29.582.584 byte, lớn nhất 790.894 byte, không file cấm, dưới 25 MiB/file |
+| HTTP local | 675 URL gồm root + mọi file dist + app/CSS/theme/core/offline/data v6, 200/nonempty/MIME đúng; 30.520.544 byte |
 | Comparison | 139 text/147 options, gộp 242; 0 answer-ID/global critical đổi; 600 giải thích khác |
 | Triển khai | Sites private shell v5 succeeded, runtime0237d3d26909c0d2659d07e14ef1a0969419cb2c; GitHub main đã push, xem DEPLOYMENT |
 
@@ -79,3 +79,9 @@ Browser inventory mới: browsers:[] / The browser access host is unavailable. C
 ## Sửa URL ảnh trên hosting — shell v6
 
 Live-check v5 đã qua cài shell/manifest nhưng dừng ở assets/signImage/S.G,7.png. Kiểm tra HTTPS xác nhận URL raw dấu phẩy trả307 sang S.G%2C7.png, URL encoded trả200 image/png. Có21 URL dấu phẩy trong manifest offline. Worker v6 chuẩn hóa từng segment pathname (decode rồi encodeURIComponent, giữ query), dùng cùng URL canonical để tải, match và put cache; chấp nhận cả URL src thô và đã mã hóa. Không nới chặn redirect/auth HTML. Bộ test mock cả redirect index.html và ảnh dấu phẩy, kiểm cache offline raw/encoded cùng ảnh. Dataset/ảnh/raw/offline revision không đổi.
+
+## Hosting chính của người dùng — hoclaixe.thophuong.com
+
+Người dùng xác nhận URL thực là https://hoclaixe.thophuong.com/, không phải Site private preview. Kiểm tra trực tiếp: / và /index.html đều200 HTML, ảnh comma raw/encoded đều200; các chuyển hướng được tìm thấy trước đó chỉ xảy ra ở Site preview. Lỗi thực của domain chính tái hiện bằng live-worker VM: Invalid shell response: manifest.webmanifest. Header thực là200 application/octet-stream, JSON hợp lệ.
+
+V6 cho phép octet-stream riêng cho .webmanifest và bắt buộc parse JSON/kiểm id/start_url/icons trước cache; không áp ngoại lệ cho .json/module/ảnh và vẫn từ chối HTML giả loại. Unit regression kiểm trường hợp MIME MHS và HTML/octet-stream. Sau sửa, script đã chạy với tài nguyên HTTPS thật của domain: cài shell qua; tải633 URL; dark/light manifest đúng; fallback root và2ảnh mẫu khi mô phỏng offline qua;676request/17.755.587byte. Đây là worker local trong Node VM + cache mô phỏng, không phải browser Android. Chưa xác nhận server chính đã nhận mã v6; phải kiểm revision công khai sau triển khai.

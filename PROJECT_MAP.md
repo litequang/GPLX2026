@@ -146,3 +146,5 @@ scripts/check-hosted-worker.mjs nhận base/token qua hidden JSON stdin, chạy 
 ## Sửa URL ảnh trên hosting — shell v6
 
 Live-check v5 đã qua cài shell/manifest nhưng dừng ở assets/signImage/S.G,7.png. Kiểm tra HTTPS xác nhận URL raw dấu phẩy trả307 sang S.G%2C7.png, URL encoded trả200 image/png. Có21 URL dấu phẩy trong manifest offline. Worker v6 chuẩn hóa từng segment pathname (decode rồi encodeURIComponent, giữ query), dùng cùng URL canonical để tải, match và put cache; chấp nhận cả URL src thô và đã mã hóa. Không nới chặn redirect/auth HTML. Bộ test mock cả redirect index.html và ảnh dấu phẩy, kiểm cache offline raw/encoded cùng ảnh. Dataset/ảnh/raw/offline revision không đổi.
+
+Domain thực người dùng: hoclaixe.thophuong.com, tách origin/progress/hosting khỏi Site preview private. Triển khai và xác minh riêng; không suy ra Site publish đồng nghĩa domain này cập nhật. Manifest MHS trả octet-stream nên parser v6 chấp nhận đúng JSON có identity; xem OFFLINE/VALIDATION.

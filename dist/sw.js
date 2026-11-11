@@ -27,16 +27,20 @@ async function readTheme() {
   } catch {}
   return savedTheme || 'light';
 }
-async function themedManifest(response) {
+async function parsePwaManifest(response) {
   const manifest = await response.json();
   if (!manifest || typeof manifest !== 'object' || Array.isArray(manifest) || typeof manifest.id !== 'string' || typeof manifest.start_url !== 'string' || !Array.isArray(manifest.icons)) throw new Error('Invalid PWA manifest');
+  return manifest;
+}
+async function themedManifest(response) {
+  const manifest = await parsePwaManifest(response);
   const color = await readTheme() === 'dark' ? '#0b1220' : '#f5f7fc';
   return new Response(JSON.stringify({ ...manifest, theme_color: color, background_color: color }), { headers: { 'content-type': 'application/manifest+json', 'cache-control': 'no-store' } });
 }
 function valid(response, path) {
   path = path.split(/[?#]/, 1)[0];
   const mime = response.headers.get('content-type') || '';
-  const expected = /\.(png|jpe?g|webp|svg)$/.test(path) ? /^image\// : path.endsWith('.js') ? /javascript/ : path.endsWith('.css') ? /text\/css/ : /\.(json|webmanifest)$/.test(path) ? /json|manifest/ : path.endsWith('.woff2') ? /font\/woff2|application\/octet-stream/ : path.endsWith('.txt') ? /text\/plain/ : /text\/html/;
+  const expected = /\.(png|jpe?g|webp|svg)$/.test(path) ? /^image\// : path.endsWith('.js') ? /javascript/ : path.endsWith('.css') ? /text\/css/ : path.endsWith('.webmanifest') ? /json|manifest|application\/octet-stream/ : path.endsWith('.json') ? /json/ : path.endsWith('.woff2') ? /font\/woff2|application\/octet-stream/ : path.endsWith('.txt') ? /text\/plain/ : /text\/html/;
   return response.ok && !response.redirected && response.type !== 'opaque' && expected.test(mime);
 }
 async function loadManifest() {
@@ -63,6 +67,7 @@ self.addEventListener('install', event => event.waitUntil((async () => {
   for (const path of [...SHELL, ...fonts.urls]) {
     const response = await fetch(absolute(path), { cache: 'reload' });
     if (!valid(response, path)) throw new Error(`Invalid shell response: ${path}`);
+    if (path.endsWith('.webmanifest')) await parsePwaManifest(response.clone());
     await cache.put(absolute(path), response);
   }
   await self.skipWaiting();

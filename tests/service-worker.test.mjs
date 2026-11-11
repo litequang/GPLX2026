@@ -8,6 +8,7 @@ function harness(stores = new Map()) {
   const scope = 'https://example.test/GPLX2026/', handlers = new Map(), messages = [];
   const fetches = [];
   let disconnected = false, failingPath = null, htmlPath = null, manifestColor = '#2457df';
+  let manifestMime = 'application/manifest+json', invalidManifest = false;
   const key = input => typeof input === 'string' ? new URL(input, scope).href : input instanceof URL ? input.href : input.url;
   const caches = {
     async open(name) {
@@ -27,16 +28,23 @@ function harness(stores = new Map()) {
     if (htmlPath && url.endsWith(htmlPath)) return new Response('<html>sign in</html>', { headers: { 'content-type': 'text/html' } });
     if (url.endsWith('fonts/manifest.json')) return new Response(readFileSync(new URL('../dist/fonts/manifest.json', import.meta.url)), { headers: { 'content-type': 'application/json' } });
     if (url.endsWith('data/offline.json')) return Response.json({ revision: '0123456789abcdef', urls: ['data/dataset.json', 'assets/one.webp', 'assets/two.png', 'assets/S.G,7.png'] });
-    if (url.endsWith('manifest.webmanifest')) return Response.json({ id: './', start_url: './', scope: './', icons: [{ src: 'icons/icon-192.png' }], theme_color: manifestColor });
+    if (url.endsWith('manifest.webmanifest')) return new Response(invalidManifest ? '<html>login</html>' : JSON.stringify({ id: './', start_url: './', scope: './', icons: [{ src: 'icons/icon-192.png' }], theme_color: manifestColor }), { headers: { 'content-type': manifestMime } });
     if (url.endsWith('.json')) return Response.json({});
     const mime = url.endsWith('.js') ? 'text/javascript' : url.endsWith('.css') ? 'text/css' : url.endsWith('.woff2') ? 'font/woff2' : url.endsWith('.txt') ? 'text/plain' : /\.(png|webp|svg)$/.test(url) ? 'image/png' : 'text/html';
     return new Response(mime === 'text/html' ? '<html>offline shell</html>' : 'fixture', { headers: { 'content-type': mime } });
   };
   const self = { registration: { scope }, location: new URL('sw.js', scope), addEventListener(type, callback) { handlers.set(type, callback); }, skipWaiting: async () => {}, clients: { claim: async () => {}, matchAll: async () => [{ postMessage(message) { messages.push(message); } }] } };
   vm.runInNewContext(source, { self, caches, fetch, URL, Response, Promise, Error });
-  return { scope, caches, stores, messages, fetches, manifest(color) { manifestColor = color; }, offline(v) { disconnected = v; }, fail(path) { failingPath = path; }, html(path) { htmlPath = path; }, async dispatch(type, extras = {}) { let task; handlers.get(type)({ ...extras, waitUntil(p) { task = p; }, respondWith(p) { task = p; } }); return await task; } };
+  return { scope, caches, stores, messages, fetches, manifestType(mime, invalid = false) { manifestMime = mime; invalidManifest = invalid; }, manifest(color) { manifestColor = color; }, offline(v) { disconnected = v; }, fail(path) { failingPath = path; }, html(path) { htmlPath = path; }, async dispatch(type, extras = {}) { let task; handlers.get(type)({ ...extras, waitUntil(p) { task = p; }, respondWith(p) { task = p; } }); return await task; } };
 }
 const request = (h, path, mode = 'cors') => ({ request: { url: new URL(path, h.scope).href, method: 'GET', mode } });
+
+test('hoclaixe hosting octet-stream manifest installs after JSON validation; mislabeled HTML still fails', async () => {
+  const h = harness(); h.manifestType('application/octet-stream'); await h.dispatch('install');
+  assert.equal((await h.dispatch('fetch', request(h, 'manifest.webmanifest'))).headers.get('content-type'), 'application/manifest+json');
+  const bad = harness(); bad.manifestType('application/octet-stream', true);
+  await assert.rejects(bad.dispatch('install'), /JSON|Unexpected|manifest/);
+});
 test('shell, modules, dataset and self-hosted font work offline at a subpath', async () => {
   const h = harness(); await h.dispatch('install'); await h.dispatch('activate'); h.offline(true);
   assert.match(await (await h.dispatch('fetch', request(h, '', 'navigate'))).text(), /offline shell/);

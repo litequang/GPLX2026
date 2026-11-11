@@ -84,3 +84,9 @@ Người dùng xác nhận v4. Đã đọc Chromium CL8077818 và controller hi�
 ## Sửa URL ảnh trên hosting — shell v6
 
 Live-check v5 đã qua cài shell/manifest nhưng dừng ở assets/signImage/S.G,7.png. Kiểm tra HTTPS xác nhận URL raw dấu phẩy trả307 sang S.G%2C7.png, URL encoded trả200 image/png. Có21 URL dấu phẩy trong manifest offline. Worker v6 chuẩn hóa từng segment pathname (decode rồi encodeURIComponent, giữ query), dùng cùng URL canonical để tải, match và put cache; chấp nhận cả URL src thô và đã mã hóa. Không nới chặn redirect/auth HTML. Bộ test mock cả redirect index.html và ảnh dấu phẩy, kiểm cache offline raw/encoded cùng ảnh. Dataset/ảnh/raw/offline revision không đổi.
+
+## Hosting chính của người dùng — hoclaixe.thophuong.com
+
+Người dùng xác nhận URL thực là https://hoclaixe.thophuong.com/, không phải Site private preview. Kiểm tra trực tiếp: / và /index.html đều200 HTML, ảnh comma raw/encoded đều200; các chuyển hướng được tìm thấy trước đó chỉ xảy ra ở Site preview. Lỗi thực của domain chính tái hiện bằng live-worker VM: Invalid shell response: manifest.webmanifest. Header thực là200 application/octet-stream, JSON hợp lệ.
+
+V6 cho phép octet-stream riêng cho .webmanifest và bắt buộc parse JSON/kiểm id/start_url/icons trước cache; không áp ngoại lệ cho .json/module/ảnh và vẫn từ chối HTML giả loại. Unit regression kiểm trường hợp MIME MHS và HTML/octet-stream. Sau sửa, script đã chạy với tài nguyên HTTPS thật của domain: cài shell qua; tải633 URL; dark/light manifest đúng; fallback root và2ảnh mẫu khi mô phỏng offline qua;676request/17.755.587byte. Đây là worker local trong Node VM + cache mô phỏng, không phải browser Android. Chưa xác nhận server chính đã nhận mã v6; phải kiểm revision công khai sau triển khai.

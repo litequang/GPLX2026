@@ -46,4 +46,4 @@ offline = true;
 if (!(await dispatch('fetch', request('', 'navigate'))).ok) throw new Error('Offline root missing');
 const manifest = JSON.parse(readFileSync(new URL('../dist/data/offline.json', import.meta.url)));
 for (const path of [manifest.urls[1], manifest.urls.at(-1)]) if (!(await dispatch('fetch', request(path))).ok) throw new Error('Offline image missing');
-console.log(JSON.stringify({ liveHttps: true, workerExecution: 'Node VM; cache simulated', shellInstall: true, downloadedResources: done.total, themedManifest: 'dark/light passed', offlineRootAndSampleImages: true, requests, bytes }, null, 2));
+console.log(JSON.stringify({ base: scope.href, liveHttps: true, workerExecution: 'Node VM; cache simulated', shellInstall: true, downloadedResources: done.total, themedManifest: 'dark/light passed', offlineRootAndSampleImages: true, requests, bytes }, null, 2));
