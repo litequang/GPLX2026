@@ -2,6 +2,8 @@
 
 ## P0
 
+- [ ] Người dùng upload nội dung dist v6 vào root MHS cho hoclaixe.thophuong.com; kiểm tra domain trả worker v6, rồi QA icon ngoại tuyến và manifest/native dark trên Android. Gói ZIP đã kiểm đủ666 file và hash; Site private v6 succeeded không thay thế bước MHS.
+
 - [ ] QA shell v3 trên Android thật: theme một chạm/reload/offline, header nhỏ khi có Cài app, trạng thái đúng/sai/dialog, safe-area và màu thanh native trong tab/PWA, system light/dark, gesture/3-button và splash; xem THEME.md.
 
 - [ ] Browser/visualQA desktop/mobile theo VALIDATION, hiện host unavailable.

@@ -24,7 +24,7 @@
 | Output scan | 666 file, 29.582.584 byte, lớn nhất 790.894 byte, không file cấm, dưới 25 MiB/file |
 | HTTP local | 675 URL gồm root + mọi file dist + app/CSS/theme/core/offline/data v6, 200/nonempty/MIME đúng; 30.520.544 byte |
 | Comparison | 139 text/147 options, gộp 242; 0 answer-ID/global critical đổi; 600 giải thích khác |
-| Triển khai | Sites private shell v5 succeeded, runtime0237d3d26909c0d2659d07e14ef1a0969419cb2c; GitHub main đã push, xem DEPLOYMENT |
+| Triển khai | Sites private shell v6 succeeded, runtime2e06a607738cf070f577606d6a01fc7bb00008e7; GitHub main đã push. MHS domain chính chờ người dùng chép dist vào root, xem DEPLOYMENT |
 
 ## Chưa xác nhận
 

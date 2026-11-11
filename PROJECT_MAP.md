@@ -111,7 +111,7 @@ Keys: `gplx2026-progress-v1`, `gplx2026-active-exam-v1`. Active dùng localStora
 
 ## Cache / cập nhật
 
-Shell `gplx2026-shell-v5` có HTML/CSS/modules/data/fonts/icons cùng theme-init.js/themes.css. HTML tham chiếu app/CSS/theme với `?v=5`, URL thường và version đều precache để tránh worker cũ trả code/CSS cũ khi mở online. Tăng version cần cập nhật HTML/SHELL/HTTP check đồng bộ. Data `gplx2026-data-<revision>` không đổi nếu nội dung không đổi. Manifest đọc từ shell hiện hành để không trộn phiên bản. Tải lô 6; marker `offline-ready` chỉ ghi sau đủ 633 URL. Sai MIME/redirect/network/quota không đánh dấu ready, retry dùng phần đã lưu. Activate chỉ xóa shell GPLX2026 cũ; tải data mới hoàn tất mới xóa data cũ.
+Shell `gplx2026-shell-v6` có HTML/CSS/modules/data/fonts/icons cùng theme-init.js/themes.css. HTML tham chiếu app/CSS/theme với `?v=6`, URL thường và version đều precache để tránh worker cũ trả code/CSS cũ khi mở online. Tăng version cần cập nhật HTML/SHELL/HTTP check đồng bộ. Data `gplx2026-data-<revision>` không đổi nếu nội dung không đổi. Manifest đọc từ shell hiện hành để không trộn phiên bản. Tải lô 6; marker `offline-ready` chỉ ghi sau đủ 633 URL. Sai MIME/redirect/network/quota không đánh dấu ready, retry dùng phần đã lưu. Activate chỉ xóa shell GPLX2026 cũ; tải data mới hoàn tất mới xóa data cũ.
 
 Sửa shell phải tăng APP_REVISION; sửa dataset/ảnh dùng extractor + manifest. Thêm module/font phải thêm precache. Không auto-reload khi controllerchange. Private hosting có thể cần mạng để xác thực; chưa kiểm chứng browser/PWA/offline thật.
 
@@ -148,3 +148,5 @@ scripts/check-hosted-worker.mjs nhận base/token qua hidden JSON stdin, chạy 
 Live-check v5 đã qua cài shell/manifest nhưng dừng ở assets/signImage/S.G,7.png. Kiểm tra HTTPS xác nhận URL raw dấu phẩy trả307 sang S.G%2C7.png, URL encoded trả200 image/png. Có21 URL dấu phẩy trong manifest offline. Worker v6 chuẩn hóa từng segment pathname (decode rồi encodeURIComponent, giữ query), dùng cùng URL canonical để tải, match và put cache; chấp nhận cả URL src thô và đã mã hóa. Không nới chặn redirect/auth HTML. Bộ test mock cả redirect index.html và ảnh dấu phẩy, kiểm cache offline raw/encoded cùng ảnh. Dataset/ảnh/raw/offline revision không đổi.
 
 Domain thực người dùng: hoclaixe.thophuong.com, tách origin/progress/hosting khỏi Site preview private. Triển khai và xác minh riêng; không suy ra Site publish đồng nghĩa domain này cập nhật. Manifest MHS trả octet-stream nên parser v6 chấp nhận đúng JSON có identity; xem OFFLINE/VALIDATION.
+
+Người dùng chép nội dung dist vào root MHS thủ công. Gói ZIP bàn giao cũng có index.html ở root, không bao ngoài bởi thư mục dist. Các SHA/gói/trạng thái upload hiện tại nằm trong DEPLOYMENT.md; không coi push GitHub là domain đã cập nhật.

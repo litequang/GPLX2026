@@ -1,3 +1,24 @@
+# Triển khai hiện tại — shell v6 và MHS
+
+Hosting chính của người dùng là https://hoclaixe.thophuong.com/. Người dùng xác nhận cập nhật thủ công: chép **nội dung `dist/` vào root website trên MHS**, không đặt thêm tầng thư mục `dist`. Push GitHub hoặc publish Site riêng tư không cập nhật domain này.
+
+- Runtime v6: `2e06a607738cf070f577606d6a01fc7bb00008e7`, đã push GitHub main.
+- Gói MHS: `../.tools/GPLX2026-v6-web.zip`; 666 file / 29.582.584 byte giải nén, `index.html`/`sw.js`/`manifest.webmanifest` ở root. Đã đối chiếu SHA-256 từng file với dist, không chứa mã nguồn repository hoặc APK/database/token.
+- SHA-256 ZIP: `3E8032D32B8B8A468B6D3EDAA85C7D37A4FEBC450E8825AC8EE1EC8BDEB697CE`.
+- Chép đè đầy đủ file/thư mục của gói vào root site MHS hiện có, giữ cấu hình hosting; sau đó mở app khi có mạng, tải lại/đóng mở rồi thử icon ngoại tuyến. Không yêu cầu gỡ PWA hoặc xóa tiến độ.
+- Lần kiểm tra domain gần nhất trước bàn giao vẫn trả shell v5. **Chưa xác nhận người dùng đã upload v6**. Sau upload, kiểm tra `/sw.js` có `gplx2026-shell-v6` và chạy lại kiểm tra domain/browser.
+- Lỗi đã tái hiện: MHS trả manifest hợp lệ dưới MIME `application/octet-stream`; worker v6 kiểm tra cấu trúc JSON riêng cho manifest trước khi chấp nhận. Không cần thay cấu hình MHS để dùng bản sửa này.
+- Candidate v6 chạy trong Node VM với tài nguyên HTTPS từ domain thật: cài shell, tải đủ633, manifest light/dark và offline root/ảnh mẫu qua. Cache mô phỏng; chưa có browser/Android/native QA.
+
+Site preview riêng tư cũng đã cập nhật v6, **khác hosting MHS**:
+
+- URL: https://gplx2026-on-thi-quang.quartzcello4.chatgpt.site
+- Deployment: `appgdep_6af434acfda88191b9a12cc446841988`, native tool succeeded ngày 11/11/2026; audience giữ riêng tư.
+- Version: `appgprj_6af3da19926881918b14804d80550a09~appgver_c9b32e6ed7748191bdf59c69a721b08b`.
+- Archive: `../.tools/gplx2026-offline-manifest-v6-site.tar.gz`, đóng gói đúng runtime SHA phía trên.
+
+## Lịch sử shell v5
+
 # Bản đang chạy — shell v5
 
 Native Sites tool trả succeeded ngày 11/11/2026, giữ audience riêng tư.
