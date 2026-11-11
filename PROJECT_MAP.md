@@ -32,6 +32,8 @@ flowchart LR
 | --- | --- |
 | `dist/index.html` | Shell semantic, desktop/mobile nav, topbar, hạng, main, dialogs, toast, meta/font |
 | `dist/styles.css` | Token, dashboard, study/exam/results/signs/handbook, responsive |
+| `dist/themes.css` | Dark palette/trạng thái, icon toggle, màu canvas/header/bottom/safe-area |
+| `dist/theme-init.js` | Bootstrap trước CSS, lưu theme riêng, meta/color-scheme, toggle một chạm và sync tab/system |
 | `dist/app.js` | State/router/render/event, timer, export/import, settings, worker messages |
 | `dist/modules/core.js` | normalize/getLicense/poolFor/isCritical/randomExam/grade/filterQuestions/statistics/createProgress/parseProgress/parseActiveExam |
 | `dist/modules/storage.js` | readProgress/readExam/writeProgress/writeExam; xử lý storage blocked/quota |
@@ -55,6 +57,7 @@ flowchart LR
 | `tests/core.test.mjs` | Data, pools, random/grade, import/restore, storage, manifest |
 | `tests/service-worker.test.mjs` | In-memory Node VM contract; không phải browser thật |
 | `tests/chrome.test.mjs` | Scroll/idle/đổi hướng và install lifecycle với EventTarget giả lập, không phải Chrome thật |
+| `tests/theme.test.mjs` | 6 nhóm theme: bootstrap/toggle/storage/system/tab/meta/contrast, Node VM giả lập |
 | `source-report.json` | Hash nguồn, counts, pools, fixedSummary từng bài |
 | `comparison-report.json` | Hash hai dataset và ID khác theo trường |
 | `.openai/hosting.json` | Site ID GPLX2026 và static.directory=dist, không chứa token |
@@ -102,13 +105,15 @@ Keys: `gplx2026-progress-v1`, `gplx2026-active-exam-v1`. Active dùng localStora
 
 ## Cache / cập nhật
 
-Shell `gplx2026-shell-v2` có HTML/CSS/modules/data/fonts/icons. HTML tham chiếu app.js/styles.css với `?v=2`, URL thường và version đều precache để tránh worker v1 trả app/CSS cũ khi mở online. Tăng version cần cập nhật HTML/SHELL/HTTP check đồng bộ. Data `gplx2026-data-<revision>` không đổi nếu nội dung không đổi. Manifest đọc từ shell hiện hành để không trộn phiên bản. Tải lô 6; marker `offline-ready` chỉ ghi sau đủ 633 URL. Sai MIME/redirect/network/quota không đánh dấu ready, retry dùng phần đã lưu. Activate chỉ xóa shell GPLX2026 cũ; tải data mới hoàn tất mới xóa data cũ.
+Shell `gplx2026-shell-v3` có HTML/CSS/modules/data/fonts/icons cùng theme-init.js/themes.css. HTML tham chiếu app/CSS/theme với `?v=3`, URL thường và version đều precache để tránh worker cũ trả code/CSS cũ khi mở online. Tăng version cần cập nhật HTML/SHELL/HTTP check đồng bộ. Data `gplx2026-data-<revision>` không đổi nếu nội dung không đổi. Manifest đọc từ shell hiện hành để không trộn phiên bản. Tải lô 6; marker `offline-ready` chỉ ghi sau đủ 633 URL. Sai MIME/redirect/network/quota không đánh dấu ready, retry dùng phần đã lưu. Activate chỉ xóa shell GPLX2026 cũ; tải data mới hoàn tất mới xóa data cũ.
 
 Sửa shell phải tăng APP_REVISION; sửa dataset/ảnh dùng extractor + manifest. Thêm module/font phải thêm precache. Không auto-reload khi controllerchange. Private hosting có thể cần mạng để xác thực; chưa kiểm chứng browser/PWA/offline thật.
 
 ## Chỉ dẫn tiếp tục
 
 Chi tiết module/hành vi UI shell v2 và việc còn phải QA: [UI_UPDATE.md](UI_UPDATE.md).
+
+Theme một chạm, key gplx2026-theme-v1 và giới hạn màu thanh native của shell v3: [THEME.md](THEME.md).
 
 1. Ưu tiên checklist browser/Android trong VALIDATION/ROADMAP; không coi Node/HTTP là visual pass.
 2. Đổi logic ở core + test; UI ở app/styles + worker revision; schema đổi cần migration/import tests.

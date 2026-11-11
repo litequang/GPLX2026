@@ -1,7 +1,7 @@
 // Increase this revision whenever a shell, module or font changes.
-const APP_REVISION = 'gplx2026-shell-v2';
+const APP_REVISION = 'gplx2026-shell-v3';
 const DATA_PREFIX = 'gplx2026-data-';
-const SHELL = ['./', 'index.html', 'styles.css', 'styles.css?v=2', 'app.js', 'app.js?v=2', 'modules/core.js', 'modules/storage.js', 'modules/ui.js', 'modules/icons.js', 'modules/chrome.js', 'modules/install.js', 'manifest.webmanifest', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'data/dataset.json', 'data/offline.json', 'fonts/manifest.json'];
+const SHELL = ['./', 'index.html', 'styles.css', 'styles.css?v=3', 'themes.css', 'themes.css?v=3', 'theme-init.js', 'theme-init.js?v=3', 'app.js', 'app.js?v=3', 'modules/core.js', 'modules/storage.js', 'modules/ui.js', 'modules/icons.js', 'modules/chrome.js', 'modules/install.js', 'manifest.webmanifest', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'data/dataset.json', 'data/offline.json', 'fonts/manifest.json'];
 const scope = new URL(self.registration.scope);
 const absolute = path => new URL(path, scope);
 let manifestTask, downloadTask;

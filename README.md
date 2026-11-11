@@ -25,6 +25,7 @@ Mở http://localhost:4174. App chạy bằng HTML/CSS/JavaScript; Node chỉ ph
 - Tiến độ local, xuất/nhập JSON, xóa ảnh cache riêng; font/icon nội bộ và tải ngoại tuyến dữ liệu/ảnh khoảng 27,8 MiB.
 - Header/thanh dưới: cuộn xuống ẩn, dừng giữ nguyên, lên hiện; màn học gọn, bộ lọc mở rộng và Trước/Tiếp ngay sau đáp án.
 - Nút Cài app header mobile/desktop mở hộp thoại khi Chrome cho phép, tự ẩn sau cài hoặc trong chế độ ứng dụng. Chi tiết: [UI_UPDATE.md](UI_UPDATE.md).
+- Icon mặt trăng/mặt trời đổi sáng/tối ngay, nhớ lựa chọn; lần đầu theo thiết bị. Màu thanh trạng thái/canvas/safe-area đồng bộ theo theme qua cấu hình PWA, xem [THEME.md](THEME.md) về giới hạn Android/Chrome.
 
 Nguồn có ngoại lệ: **B 592 câu / 56 critical**, A1/A 250/20, B1 300/30; kho đầy đủ 600/60. Trong 233 bài cố định có 207 bài nhiều critical, 2 bài không critical, 9 bài có câu ngoài bộ lọc hạng. Web giữ nguyên và gọi “Bộ bài ôn từ ứng dụng”, không xác nhận đề sát hạch chính thức. Nội dung mẹo có thể gồm bộ cũ.
 

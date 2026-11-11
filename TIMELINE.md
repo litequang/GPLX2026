@@ -1,5 +1,15 @@
 # Tiến độ GPLX2026
 
+## Cập nhật giao diện sáng/tối — 11/11/2026
+
+| Chặng | Trạng thái |
+| --- | --- |
+| Tham khảo sivn.app | Đọc HTML public: moon/sun và lưu preference/fallback hệ thống, không điều khiển UI site |
+| Theme / màu mép ngoài | Mã hoàn tất: meta/manifest bỏ xanh, canvas/safe-area khớp sáng/tối, toggle header một chạm |
+| Kiểm thử | 27 nhóm pass; 670 HTTP URL và output scan qua, xem VALIDATION |
+| Browser / Android | Chưa xác nhận: browser access host unavailable; chi tiết giới hạn THEME.md |
+| GitHub / web shell v3 | Đang chuẩn bị |
+
 Ngày: 11/11/2026 (Asia/Saigon).
 
 | Chặng | Trạng thái | Điều kiện hoàn thành |

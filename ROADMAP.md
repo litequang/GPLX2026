@@ -2,6 +2,8 @@
 
 ## P0
 
+- [ ] QA shell v3 trên Android thật: theme một chạm/reload/offline, header nhỏ khi có Cài app, trạng thái đúng/sai/dialog, safe-area và màu thanh native trong tab/PWA, system light/dark, gesture/3-button và splash; xem THEME.md.
+
 - [ ] Browser/visualQA desktop/mobile theo VALIDATION, hiện host unavailable.
 - [ ] Kiểm thử browser chọn đápán/filter/bookmark/signs/handbook/import/export.
 - [ ] Timed bài thật: reload/đóngmở/timeout/history chi tiết.
@@ -28,6 +30,8 @@
 - [ ] Public domain/GitHubPages; giữ audience hiện tại.
 
 ## Đã làm
+
+- [x] Shell v3: sáng/tối một chạm, bootstrap trước CSS, theme preference riêng, canvas/meta/manifest/safe-area đồng bộ; 27 nhóm test qua, chưa visual/native bar QA.
 
 - [x] APKmới/giải mã/data/provenance/so sánh bộtrước.
 - [x] UI15hạng/học/filter/wrong/saved/signs/fixed+random/timer+restore/fullhistory/handbook.

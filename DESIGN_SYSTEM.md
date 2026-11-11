@@ -1,5 +1,7 @@
 # Thiết kế
 
+Shell v3 có sáng/tối một chạm, lưu lựa chọn và màu thanh hệ thống theo canvas; palette/quy tắc/giới hạn trong [THEME.md](THEME.md).
+
 Cập nhật shell v2 về thanh trượt, màn học gọn và nút cài PWA: [UI_UPDATE.md](UI_UPDATE.md).
 
 Không gian học cá nhân dành cho người lớn, tiếng Việt, ưu tiên câu hỏi dễ đọc và ít bước bắt đầu học/làm bài.

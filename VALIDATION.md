@@ -5,7 +5,7 @@
 | Kiểm tra đã chạy | Kết quả |
 | --- | --- |
 | Nguồn | 4 APK đã lấy, 2 SQLite giải mã integrity_check=ok, dùng texture25, đủ 600 giải thích |
-| npm test | 21 nhóm pass, 0 fail (gồm 6 nhóm scroll/install mới) |
+| npm test | 27 nhóm pass, 0 fail (thêm 6 nhóm theme) |
 | Data | 600 ID/option/topic/reference hợp lệ, 60 global critical |
 | Pool/critical | A1/A: 250/20; B1: 300/30; B: 592/56; C1 trở lên: 600/60 |
 | Random | 100 × 15 hạng = 1.500 bài, đúng số câu, không trùng, trong pool, một critical |
@@ -18,9 +18,11 @@
 | Worker Node VM | Shell/module/font/data subpath; marker sau đủ ảnh; lỗi/retry; HTML giả ảnh/module bị từ chối; không xóa cache GPLX trước |
 | Scroll giả lập | Xuống ẩn, dừng giữ nguyên, lên hiện; sync baseline Next, clamp bounce, gộp rAF, focus/Tab |
 | Install giả lập | Gọi prompt trước await, single-use/double-tap, dismiss/error/new offer, accepted/appinstalled/standalone ẩn nút |
-| Syntax | node --check app.js, sw.js, modules/chrome.js, modules/install.js thành công |
-| Output scan | 663 file, 29.559.020 byte, lớn nhất 787.889 byte, không file cấm, dưới 25 MiB/file |
-| HTTP | 666 URL gồm root + mọi file dist + app/CSS ?v=2, tất cả 200, không rỗng, MIME ảnh/module/CSS/font đúng; 29.664.134 byte ≈ 28,3 MiB |
+| Theme giả lập | Mặc định/system/saved preference, toggle tức thì/meta/aria/storage, bootstrap trước DOM ready, storage lỗi, sync tab và giữ progress riêng |
+| Palette | Một số cặp ink/muted/primary/success/error/warning và button được tính contrast ≥4,5; không thay visual/WCAG audit |
+| Syntax | node --check app.js, sw.js và theme-init.js thành công; các module cũ không đổi |
+| Output scan | 665 file, 29.569.624 byte, lớn nhất 787.889 byte, không file cấm, dưới 25 MiB/file |
+| HTTP | 670 URL gồm root + mọi file dist + app/CSS/theme ?v=3, tất cả 200, không rỗng, MIME đúng; 29.685.272 byte ≈ 28,3 MiB |
 | Comparison | 139 text/147 options, gộp 242; 0 answer-ID/global critical đổi; 600 giải thích khác |
 | Triển khai | Sites private shell v2 succeeded, runtime commit a444871; GitHub main push thành công, xem DEPLOYMENT |
 
@@ -51,3 +53,7 @@ Chỉ đánh dấu hoàn thành khi đã thực hiện và ghi bằng chứng.
 21 test gồm Node logic/EventTarget giả lập và worker VM, không xác nhận animation render hoặc Chrome Android native prompt. Đã kiểm tra lại browser inventory: host vẫn unavailable. Checklist màn hình/gesture/install/update còn thiếu ở UI_UPDATE.md.
 
 Scan lần đầu phát hiện dist/index.zip 28.495.820 byte; giữ nguyên file bằng Move-Item sang ../.tools/gplx2026-index-preserved-20261111-scroll.zip. Lần scan và HTTP sau đã loại ZIP khỏi output; số liệu bảng trên là lần sau. Không sửa APK/database/raw hoặc ảnh gốc.
+
+## Cập nhật shell v3
+
+Đã kiểm tra lại browser inventory, vẫn The browser access host is unavailable. Không có ảnh/xác nhận giao diện tối hoặc màu thanh native trên POCO. 27 test là Node/EventTarget/VM, không phải browser. Cấu hình theme-color/manifest/canvas/safe-area đã đồng bộ nhưng OS/Chrome có thể áp màu riêng hoặc giữ metadata WebAPK/splash cũ. Manifest vẫn một URL/id ổn định; không yêu cầu người dùng gỡ app/xóa progress. Xem THEME.md để tiếp tục QA.

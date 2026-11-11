@@ -38,8 +38,10 @@ test('shell, modules, dataset and self-hosted font work offline at a subpath', a
   assert.equal((await h.dispatch('fetch', request(h, 'modules/core.js'))).status, 200);
   assert.equal((await h.dispatch('fetch', request(h, 'modules/chrome.js'))).status, 200);
   assert.equal((await h.dispatch('fetch', request(h, 'modules/install.js'))).status, 200);
-  assert.equal((await h.dispatch('fetch', request(h, 'app.js?v=2'))).headers.get('content-type'), 'text/javascript');
-  assert.equal((await h.dispatch('fetch', request(h, 'styles.css?v=2'))).headers.get('content-type'), 'text/css');
+  assert.equal((await h.dispatch('fetch', request(h, 'app.js?v=3'))).headers.get('content-type'), 'text/javascript');
+  assert.equal((await h.dispatch('fetch', request(h, 'styles.css?v=3'))).headers.get('content-type'), 'text/css');
+  assert.equal((await h.dispatch('fetch', request(h, 'theme-init.js?v=3'))).headers.get('content-type'), 'text/javascript');
+  assert.equal((await h.dispatch('fetch', request(h, 'themes.css?v=3'))).headers.get('content-type'), 'text/css');
   assert.equal((await h.dispatch('fetch', request(h, 'fonts/be-vietnam-pro-1.woff2'))).headers.get('content-type'), 'font/woff2');
   assert.equal((await h.dispatch('fetch', request(h, 'data/dataset.json'))).status, 200);
 });
