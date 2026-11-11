@@ -36,6 +36,8 @@ flowchart LR
 | `dist/modules/core.js` | normalize/getLicense/poolFor/isCritical/randomExam/grade/filterQuestions/statistics/createProgress/parseProgress/parseActiveExam |
 | `dist/modules/storage.js` | readProgress/readExam/writeProgress/writeExam; xử lý storage blocked/quota |
 | `dist/modules/ui.js` | escape, dateLabel/dayKey theo Asia/Ho_Chi_Minh, durationLabel, progressBar |
+| `dist/modules/chrome.js` | createScrollTracker/setupAutoHideBars: hướng cuộn, rAF, bounce clamp, inert/focus, đo header |
+| `dist/modules/install.js` | setupInstall: native beforeinstallprompt/userChoice/appinstalled/standalone và nút header |
 | `dist/modules/icons.js` | 35 Lucide SVG vendored, không CDN runtime |
 | `dist/sw.js` | Install/activate/fetch/message; precache shell/font, tải ảnh theo lô, marker/revision |
 | `dist/data/dataset.json` | Snapshot chuẩn hóa; không sửa tay |
@@ -52,6 +54,7 @@ flowchart LR
 | `scripts/check-deploy.mjs` | Scan cả file bị ignore: archive/raw/secrets/symlink/per-file 25MiB |
 | `tests/core.test.mjs` | Data, pools, random/grade, import/restore, storage, manifest |
 | `tests/service-worker.test.mjs` | In-memory Node VM contract; không phải browser thật |
+| `tests/chrome.test.mjs` | Scroll/idle/đổi hướng và install lifecycle với EventTarget giả lập, không phải Chrome thật |
 | `source-report.json` | Hash nguồn, counts, pools, fixedSummary từng bài |
 | `comparison-report.json` | Hash hai dataset và ID khác theo trường |
 | `.openai/hosting.json` | Site ID GPLX2026 và static.directory=dist, không chứa token |
@@ -99,11 +102,13 @@ Keys: `gplx2026-progress-v1`, `gplx2026-active-exam-v1`. Active dùng localStora
 
 ## Cache / cập nhật
 
-Shell `gplx2026-shell-v1` có HTML/CSS/modules/data/fonts/icons. Data `gplx2026-data-<revision>` có ảnh xem lẻ hoặc tải đủ. Manifest đọc từ shell hiện hành để không trộn phiên bản. Tải lô 6; marker `offline-ready` chỉ ghi sau đủ 633 URL. Sai MIME/redirect/network/quota không đánh dấu ready, retry dùng lại phần đã lưu. Activate xóa shell GPLX2026 cũ; hoàn tất data mới xóa data cũ. Không xóa cache GPLX trước.
+Shell `gplx2026-shell-v2` có HTML/CSS/modules/data/fonts/icons. HTML tham chiếu app.js/styles.css với `?v=2`, URL thường và version đều precache để tránh worker v1 trả app/CSS cũ khi mở online. Tăng version cần cập nhật HTML/SHELL/HTTP check đồng bộ. Data `gplx2026-data-<revision>` không đổi nếu nội dung không đổi. Manifest đọc từ shell hiện hành để không trộn phiên bản. Tải lô 6; marker `offline-ready` chỉ ghi sau đủ 633 URL. Sai MIME/redirect/network/quota không đánh dấu ready, retry dùng phần đã lưu. Activate chỉ xóa shell GPLX2026 cũ; tải data mới hoàn tất mới xóa data cũ.
 
 Sửa shell phải tăng APP_REVISION; sửa dataset/ảnh dùng extractor + manifest. Thêm module/font phải thêm precache. Không auto-reload khi controllerchange. Private hosting có thể cần mạng để xác thực; chưa kiểm chứng browser/PWA/offline thật.
 
 ## Chỉ dẫn tiếp tục
+
+Chi tiết module/hành vi UI shell v2 và việc còn phải QA: [UI_UPDATE.md](UI_UPDATE.md).
 
 1. Ưu tiên checklist browser/Android trong VALIDATION/ROADMAP; không coi Node/HTTP là visual pass.
 2. Đổi logic ở core + test; UI ở app/styles + worker revision; schema đổi cần migration/import tests.

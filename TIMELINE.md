@@ -24,3 +24,17 @@ Không dùng dữ liệu của dự án GPLX cũ để giả định đã trích
 - Deployment `appgdep_6af3e45383a4819190f1d7189e0d6c8b`, succeeded ngày 11/11/2026, không có lỗi deployment.
 - Các commit sau cập nhật tài liệu có thể mới hơn runtime; không thay đổi gói đã triển khai.
 - Browser/Android QA còn thiếu; xem VALIDATION và ROADMAP.
+
+## Cập nhật header, màn học và PWA — 11/11/2026
+
+| Công việc | Trạng thái |
+| --- | --- |
+| Header/bottom-nav: xuống ẩn, dừng giữ nguyên, lên hiện; transform240ms | Mã hoàn tất, tracker/adapter test qua |
+| Màn học/timed gọn, bộ lọc gấp, Trước/Tiếp trước giải thích, chuyển câu căn card | Mã hoàn tất, chưa visual QA |
+| Cài app header mobile/desktop, native prompt trực tiếp, tự ẩn sau cài/standalone | Lifecycle giả lập qua, chưa Chrome Android thật |
+| Shell v2, URL app/CSS versioned và precache module mới | Worker mô phỏng qua |
+| Kiểm thử | 21 nhóm pass, HTTP/output xem VALIDATION |
+| ZIP ngoài source | dist/index.zip 28.495.820 byte giữ ở ../.tools/gplx2026-index-preserved-20261111-scroll.zip, không đóng gói |
+| GitHub/hosting bản cập nhật | Đang chuẩn bị |
+
+Browser inventory vẫn báo The browser access host is unavailable; không coi unit/EventTarget/worker mock là visual/Android QA. Bản đồ chi tiết và checklist tại UI_UPDATE.md.

@@ -1,5 +1,7 @@
 # Thiết kế
 
+Cập nhật shell v2 về thanh trượt, màn học gọn và nút cài PWA: [UI_UPDATE.md](UI_UPDATE.md).
+
 Không gian học cá nhân dành cho người lớn, tiếng Việt, ưu tiên câu hỏi dễ đọc và ít bước bắt đầu học/làm bài.
 
 Tham khảo [UI UX Pro Max](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill), commit6ae86f61f520d6ca229d2f40e070410638c908c5, clone ngoài checkout ở ../.tools/ui-ux-pro-max, không cài global. Kết quả design-system không khớp hoàn toàn app này; dùng UX tổng quát về nhãn/trạng thái/khoảng cách và typography Vietnamese Friendly cho Be Vietnam Pro. Không áp máy móc mẫu marketing/trẻ em. Giao diện được viết trực tiếp bằng HTML/CSS/JS.

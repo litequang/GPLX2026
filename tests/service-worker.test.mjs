@@ -17,7 +17,7 @@ function harness() {
     async keys() { return [...stores.keys()]; }, async delete(name) { return stores.delete(name); },
   };
   const fetch = async input => {
-    const url = key(input);
+    const url = new URL(key(input)).pathname;
     if (disconnected) throw new Error('Network unavailable');
     if (failingPath && url.endsWith(failingPath)) return new Response('failed', { status: 503 });
     if (htmlPath && url.endsWith(htmlPath)) return new Response('<html>sign in</html>', { headers: { 'content-type': 'text/html' } });
@@ -36,6 +36,10 @@ test('shell, modules, dataset and self-hosted font work offline at a subpath', a
   const h = harness(); await h.dispatch('install'); await h.dispatch('activate'); h.offline(true);
   assert.match(await (await h.dispatch('fetch', request(h, '', 'navigate'))).text(), /offline shell/);
   assert.equal((await h.dispatch('fetch', request(h, 'modules/core.js'))).status, 200);
+  assert.equal((await h.dispatch('fetch', request(h, 'modules/chrome.js'))).status, 200);
+  assert.equal((await h.dispatch('fetch', request(h, 'modules/install.js'))).status, 200);
+  assert.equal((await h.dispatch('fetch', request(h, 'app.js?v=2'))).headers.get('content-type'), 'text/javascript');
+  assert.equal((await h.dispatch('fetch', request(h, 'styles.css?v=2'))).headers.get('content-type'), 'text/css');
   assert.equal((await h.dispatch('fetch', request(h, 'fonts/be-vietnam-pro-1.woff2'))).headers.get('content-type'), 'font/woff2');
   assert.equal((await h.dispatch('fetch', request(h, 'data/dataset.json'))).status, 200);
 });

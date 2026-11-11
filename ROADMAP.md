@@ -7,6 +7,7 @@
 - [ ] Timed bài thật: reload/đóngmở/timeout/history chi tiết.
 - [ ] Worker/offline/PWA thật:633 URL, ảnh chưa xem, lỗi/retry/update, Android install.
 - [ ] Private hosting xác thực hết hạn và mất mạng.
+- [ ] QA shell v2: cuộn xuống/dừng/lên, bounce và focus; mobile320/375/390 có nút Cài app; lọc/đáp án/Next; Android native install/dismiss/reinstall, xem UI_UPDATE.md.
 - [ ] Đối chiếu chính thức trước khi quảng bá dữ liệu/đề chuẩn mới nhất: B592/56, fixed ngoại lệ, quotas và mẹo cũ.
 - [ ] Xác nhận quyền tái phân phối trước phát hành dữ liệu/ảnh công khai rộng rãi.
 
@@ -33,3 +34,4 @@
 - [x] Manifest/icon/localfont/workerrevision/offline/retry/clearcache riêng.
 - [x] 15testgroups/1.500random/662HTTP/outputscan.
 - [x] Map/data/design/validation/AGENTS/handoffdocs.
+- [x] Shell v2: auto-hide không idle timer, màn học gọn, native install header mobile/standalone; 21 nhóm test, chưa browser thật.

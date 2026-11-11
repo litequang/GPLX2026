@@ -1,11 +1,12 @@
 // Increase this revision whenever a shell, module or font changes.
-const APP_REVISION = 'gplx2026-shell-v1';
+const APP_REVISION = 'gplx2026-shell-v2';
 const DATA_PREFIX = 'gplx2026-data-';
-const SHELL = ['./', 'index.html', 'styles.css', 'app.js', 'modules/core.js', 'modules/storage.js', 'modules/ui.js', 'modules/icons.js', 'manifest.webmanifest', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'data/dataset.json', 'data/offline.json', 'fonts/manifest.json'];
+const SHELL = ['./', 'index.html', 'styles.css', 'styles.css?v=2', 'app.js', 'app.js?v=2', 'modules/core.js', 'modules/storage.js', 'modules/ui.js', 'modules/icons.js', 'modules/chrome.js', 'modules/install.js', 'manifest.webmanifest', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'data/dataset.json', 'data/offline.json', 'fonts/manifest.json'];
 const scope = new URL(self.registration.scope);
 const absolute = path => new URL(path, scope);
 let manifestTask, downloadTask;
 function valid(response, path) {
+  path = path.split(/[?#]/, 1)[0];
   const mime = response.headers.get('content-type') || '';
   const expected = /\.(png|jpe?g|webp|svg)$/.test(path) ? /^image\// : path.endsWith('.js') ? /javascript/ : path.endsWith('.css') ? /text\/css/ : /\.(json|webmanifest)$/.test(path) ? /json|manifest/ : path.endsWith('.woff2') ? /font\/woff2|application\/octet-stream/ : path.endsWith('.txt') ? /text\/plain/ : /text\/html/;
   return response.ok && !response.redirected && response.type !== 'opaque' && expected.test(mime);

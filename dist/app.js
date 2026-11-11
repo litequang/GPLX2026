@@ -1,6 +1,8 @@
 import { getLicense, poolFor, isCritical, randomExam, grade, filterQuestions, statistics, createProgress, parseProgress } from './modules/core.js';
 import { readProgress, readExam, writeProgress, writeExam } from './modules/storage.js';
 import { escape as e, icon, dateLabel, dayKey, durationLabel, progressBar } from './modules/ui.js';
+import { setupAutoHideBars } from './modules/chrome.js';
+import { setupInstall } from './modules/install.js';
 
 const $ = selector => document.querySelector(selector);
 const nav = [
@@ -10,10 +12,12 @@ const nav = [
 ];
 const routes = nav.flatMap(g => g.items);
 const learningRoutes = ['learn', 'critical', 'wrong', 'saved'];
-let data, questionMap, progress, activeExam, offlineManifest, registration, installPrompt;
-let state = { route: 'home', query: '', topic: '', scope: 'license', status: 'all', index: 0, list: [], responses: {}, signCategory: '', signLimit: 32, examTab: 'random', handbookTab: 'practical', lesson: null, review: null, reviewFilter: 'all' };
+let data, questionMap, progress, activeExam, offlineManifest, registration;
+let state = { route: 'home', query: '', topic: '', scope: 'license', status: 'all', filtersOpen: false, index: 0, list: [], responses: {}, signCategory: '', signLimit: 32, examTab: 'random', handbookTab: 'practical', lesson: null, review: null, reviewFilter: 'all' };
 let offline = { status: 'idle', completed: 0, total: 0 };
 let toastTimeout, storageWarning = false;
+const chrome = setupAutoHideBars();
+const installer = setupInstall({ button: $('#install-button'), onInstalled: () => toast('Đã cài ứng dụng. Chúc bạn học tốt!'), onError: () => toast('Chưa mở được hộp thoại cài. Hãy thử lại khi trình duyệt cho phép.'), onChange: available => document.querySelectorAll('[data-action="install-app"]').forEach(button => { button.hidden = !available; }) });
 const currentLicense = () => getLicense(data, progress.license);
 const currentPool = () => poolFor(data, progress.license);
 const categoryName = id => data.categories.find(c => c.id === id)?.name || 'Tổng hợp';
@@ -45,11 +49,11 @@ function renderShell() {
 function applyRoute() {
   const [name, query = ''] = location.hash.slice(1).split('?');
   const params = new URLSearchParams(query);
-  state = { ...state, route: routes.some(r => r[0] === name) ? name : 'home', query: params.get('q') || '', topic: params.get('topic') || '', scope: params.get('scope') === 'all' ? 'all' : 'license', index: 0, list: [], responses: {}, signCategory: params.get('category') || '', signLimit: 32, lesson: params.get('lesson') ? Number(params.get('lesson')) : null, handbookTab: params.get('tab') === 'theory' ? 'theory' : 'practical', review: params.get('result') ? progress.history.find(h => h.id === params.get('result')) || null : null, reviewFilter: 'all' };
+  state = { ...state, route: routes.some(r => r[0] === name) ? name : 'home', query: params.get('q') || '', topic: params.get('topic') || '', scope: params.get('scope') === 'all' ? 'all' : 'license', filtersOpen: false, index: 0, list: [], responses: {}, signCategory: params.get('category') || '', signLimit: 32, lesson: params.get('lesson') ? Number(params.get('lesson')) : null, handbookTab: params.get('tab') === 'theory' ? 'theory' : 'practical', review: params.get('result') ? progress.history.find(h => h.id === params.get('result')) || null : null, reviewFilter: 'all' };
   rebuildStudy();
   if (params.get('question')) { const index = state.list.findIndex(q => q.id === Number(params.get('question'))); if (index >= 0) state.index = index; }
   if ($('#menu-dialog').open) $('#menu-dialog').close();
-  render(); window.scrollTo({ top: 0, behavior: 'instant' });
+  chrome.show(); render(); window.scrollTo({ top: 0, behavior: 'instant' }); chrome.sync();
 }
 function go(route, params = {}, replace = false) {
   const query = new URLSearchParams(Object.entries(params).filter(([, value]) => value !== '' && value !== undefined && value !== null));
@@ -92,15 +96,18 @@ function rebuildStudy() {
   state.index = Math.min(state.index, Math.max(0, state.list.length - 1));
 }
 function searchField(placeholder) { return `<label class="search-field"><span class="field-label">Tìm kiếm</span><span class="search-box">${icon('search', 18)}<input id="content-search" type="search" placeholder="${e(placeholder)}" value="${e(state.query)}" autocomplete="off"></span></label>`; }
-function studyToolbar() { return `<div class="toolbar">${searchField('Nhập nội dung hoặc số câu hỏi…')}<label class="select-field"><span class="field-label">Chủ đề</span><select id="topic-filter"><option value="">Tất cả chủ đề</option>${data.categories.map(c => `<option value="${c.id}" ${String(c.id) === state.topic ? 'selected' : ''}>${e(c.name)}</option>`).join('')}</select></label></div><div class="filter-row"><span>${state.list.length} câu hỏi${state.scope === 'all' && state.route === 'learn' ? ' trong kho đầy đủ' : ` · Theo dữ liệu hạng ${e(progress.license)}`}</span>${state.route === 'learn' ? `<div><select id="scope-filter" aria-label="Phạm vi học"><option value="license" ${state.scope === 'license' ? 'selected' : ''}>Theo hạng ${e(progress.license)} (${currentPool().length} câu)</option><option value="all" ${state.scope === 'all' ? 'selected' : ''}>Toàn bộ 600 câu</option></select> <select id="learn-status" aria-label="Trạng thái học"><option value="all" ${state.status === 'all' ? 'selected' : ''}>Tất cả</option><option value="new" ${state.status === 'new' ? 'selected' : ''}>Chưa học</option></select></div>` : ''}</div>`; }
+function studyToolbar() {
+  const filtered = state.query || state.topic || (state.route === 'learn' && state.status !== 'all');
+  return `<details class="study-filters" id="study-filters" ${state.filtersOpen ? 'open' : ''}><summary>${icon('search', 16)}<span>Lọc & tìm câu hỏi${filtered ? '<i class="filter-dot" aria-label="Đang áp dụng bộ lọc"></i>' : ''}</span><small>${state.list.length} câu · ${state.scope === 'all' && state.route === 'learn' ? 'Toàn bộ' : `Hạng ${e(progress.license)}`}</small>${icon('chevron-down', 15)}</summary><div class="study-filter-content"><div class="toolbar">${searchField('Nội dung hoặc số câu hỏi…')}<label class="select-field"><span class="field-label">Chủ đề</span><select id="topic-filter"><option value="">Tất cả chủ đề</option>${data.categories.map(c => `<option value="${c.id}" ${String(c.id) === state.topic ? 'selected' : ''}>${e(c.name)}</option>`).join('')}</select></label></div>${state.route === 'learn' ? `<div class="filter-row"><label><span class="field-label">Phạm vi học</span><select id="scope-filter"><option value="license" ${state.scope === 'license' ? 'selected' : ''}>Theo hạng ${e(progress.license)} (${currentPool().length} câu)</option><option value="all" ${state.scope === 'all' ? 'selected' : ''}>Toàn bộ 600 câu</option></select></label><label><span class="field-label">Trạng thái</span><select id="learn-status"><option value="all" ${state.status === 'all' ? 'selected' : ''}>Tất cả</option><option value="new" ${state.status === 'new' ? 'selected' : ''}>Chưa học</option></select></label></div>` : ''}</div></details>`;
+}
 function emptyState(title, description, symbol = 'book-open') { return `<section class="empty-state">${icon(symbol, 36)}<h2>${title}</h2><p>${description}</p>${button('Mở bộ câu hỏi ' + icon('arrow-right', 16), 'open-learn')}</section>`; }
 function questionCard(q, selected, mode = 'study') {
   const exam = mode === 'exam', reveal = selected && !exam, l = exam ? getLicense(data, activeExam.license) : currentLicense();
   const index = exam ? activeExam.index : state.index, total = exam ? activeExam.ids.length : state.list.length;
-  return `<article class="question-card"><div class="question-meta"><span class="question-id">CÂU ${q.id}</span><span class="tag">${e(categoryName(q.category))}</span>${!exam && isCritical(q, l) ? `<span class="tag tag-critical">${icon('triangle-alert', 11)} Điểm liệt</span>` : ''}<button class="icon-button ${progress.bookmarks.includes(q.id) ? 'saved' : ''}" data-action="bookmark" data-id="${q.id}" aria-label="${progress.bookmarks.includes(q.id) ? 'Bỏ đánh dấu' : 'Đánh dấu'} câu ${q.id}" aria-pressed="${progress.bookmarks.includes(q.id)}">${icon('bookmark', 18)}</button></div><h2 class="question-text" id="question-title">${e(q.text)}</h2>${q.image ? `<img class="question-image" src="${e(q.image)}" alt="Hình minh họa câu ${q.id}" decoding="async">` : ''}<div class="answer-options" role="group" aria-labelledby="question-title">${q.options.map(o => {
+  return `<article class="question-card" tabindex="-1"><div class="question-meta"><span class="question-id">CÂU ${q.id}</span><span class="tag question-topic">${e(categoryName(q.category))}</span>${!exam && isCritical(q, l) ? `<span class="tag tag-critical">${icon('triangle-alert', 11)} Điểm liệt</span>` : ''}<button class="icon-button ${progress.bookmarks.includes(q.id) ? 'saved' : ''}" data-action="bookmark" data-id="${q.id}" aria-label="${progress.bookmarks.includes(q.id) ? 'Bỏ đánh dấu' : 'Đánh dấu'} câu ${q.id}" aria-pressed="${progress.bookmarks.includes(q.id)}">${icon('bookmark', 18)}</button></div><h2 class="question-text" id="question-title">${e(q.text)}</h2>${q.image ? `<img class="question-image" src="${e(q.image)}" alt="Hình minh họa câu ${q.id}" decoding="async">` : ''}<div class="answer-options" role="group" aria-labelledby="question-title">${q.options.map(o => {
     const chosen = Number(selected) === o.id, style = reveal ? o.id === q.answer ? 'correct' : chosen ? 'wrong' : '' : chosen ? 'selected' : '';
     return `<button class="answer-option ${style}" data-action="${exam ? 'exam-answer' : 'study-answer'}" data-option="${o.id}" aria-pressed="${chosen}" ${reveal ? 'disabled' : ''}><span class="option-number">${o.id}</span><span>${e(o.text)}</span>${reveal && (o.id === q.answer || chosen) ? `<span class="answer-mark" aria-label="${o.id === q.answer ? 'Đáp án đúng' : 'Đáp án bạn chọn chưa đúng'}">${icon(o.id === q.answer ? 'check' : 'x', 19)}</span>` : ''}</button>`;
-  }).join('')}</div>${reveal ? `<div class="answer-status ${Number(selected) === q.answer ? '' : 'wrong'}" role="status">${icon(Number(selected) === q.answer ? 'circle-check' : 'circle-help', 19)}<span>${Number(selected) === q.answer ? 'Chính xác. Thêm một câu đã nắm vững!' : `Đáp án đúng là ${q.answer}. Cùng xem lại nhé.`}</span></div><section class="explanation"><h3>${icon('lightbulb', 16)} Giải thích theo ứng dụng gốc</h3><p>${e(q.explanation || 'Câu này chưa có giải thích trong dữ liệu gốc.')}</p>${q.memoryTip ? `<div class="memory-tip"><h3>Gợi ý ghi nhớ</h3><p>${e(q.memoryTip)}</p></div>` : ''}</section>` : ''}<div class="question-controls">${button(icon('arrow-left', 15) + ' Câu trước', exam ? 'exam-jump' : 'study-jump', 'secondary', `data-index="${index - 1}" ${index === 0 ? 'disabled' : ''}`)}${reveal ? '<button class="text-button" data-action="retry-question">Làm lại câu này</button>' : ''}${button('Câu tiếp theo ' + icon('arrow-right', 15), exam ? 'exam-jump' : 'study-jump', 'primary', `data-index="${index + 1}" ${index >= total - 1 ? 'disabled' : ''}`)}</div></article>`;
+  }).join('')}</div><div class="question-controls" aria-label="Chuyển câu hỏi">${button(icon('arrow-left', 15) + ' Câu trước', exam ? 'exam-jump' : 'study-jump', 'secondary', `data-index="${index - 1}" ${index === 0 ? 'disabled' : ''}`)}<span class="question-position">${index + 1}/${total}</span>${button('Câu tiếp ' + icon('arrow-right', 15), exam ? 'exam-jump' : 'study-jump', 'primary', `data-index="${index + 1}" ${index >= total - 1 ? 'disabled' : ''}`)}</div>${reveal ? `<div class="answer-status ${Number(selected) === q.answer ? '' : 'wrong'}" role="status">${icon(Number(selected) === q.answer ? 'circle-check' : 'circle-help', 19)}<span>${Number(selected) === q.answer ? 'Chính xác. Thêm một câu đã nắm vững!' : `Đáp án đúng là ${q.answer}. Cùng xem lại nhé.`}</span></div><section class="explanation"><div class="explanation-heading"><h3>${icon('lightbulb', 16)} Giải thích theo ứng dụng gốc</h3><button class="text-button" data-action="retry-question">Làm lại</button></div><p>${e(q.explanation || 'Câu này chưa có giải thích trong dữ liệu gốc.')}</p>${q.memoryTip ? `<div class="memory-tip"><h3>Gợi ý ghi nhớ</h3><p>${e(q.memoryTip)}</p></div>` : ''}</section>` : ''}</article>`;
 }
 function questionNavigator(questions, index, mode = 'study') {
   const exam = mode === 'exam', page = Math.floor(index / 60), start = page * 60;
@@ -112,10 +119,10 @@ function questionNavigator(questions, index, mode = 'study') {
   }).join('')}</div>${questions.length > 60 ? `<div class="navigator-pages">${button(icon('chevron-left', 15), 'study-jump', 'secondary', `data-index="${Math.max(0, start - 60)}" aria-label="Nhóm câu trước" ${page === 0 ? 'disabled' : ''}`)}<span>${start + 1}–${Math.min(start + 60, questions.length)} / ${questions.length}</span>${button(icon('chevron-right', 15), 'study-jump', 'secondary', `data-index="${start + 60}" aria-label="Nhóm câu sau" ${start + 60 >= questions.length ? 'disabled' : ''}`)}</div>` : ''}<div class="navigator-legend"><span><i class="legend-square"></i>${exam ? 'Đã chọn' : 'Đúng'}</span>${exam ? '' : '<span><i class="legend-square wrong"></i>Cần ôn</span>'}</div>${exam ? `<div style="margin-top:22px">${button('Nộp bài ' + icon('check', 16), 'submit-exam', 'primary', 'style="width:100%"')}</div>` : '<p class="key-hint">Phím 1–4 để chọn đáp án.<br>Phím ← → để chuyển câu.</p>'}</aside>`;
 }
 function renderStudy() {
-  const descriptions = { learn: ['Học để hiểu, nhớ để vững.', 'Chọn một chủ đề, học từng câu theo nhịp độ của bạn.'], critical: ['Nhớ chắc câu điểm liệt.', 'Tập trung vào những tình huống quan trọng của hạng bằng đang chọn.'], wrong: ['Mỗi lần ôn, thêm một lần nhớ.', 'Những câu trả lời sai hoặc bỏ trống gần nhất cần dành thêm thời gian.'], saved: ['Góc ghi nhớ của bạn.', 'Những câu bạn đã đánh dấu để quay lại học kỹ hơn.'] };
-  const [title, description] = descriptions[state.route], q = state.list[state.index];
+  $('#main').dataset.view = 'study';
+  const title = routes.find(r => r[0] === state.route)[1], q = state.list[state.index];
   const titleEmpty = state.query || state.topic || state.status === 'new' ? 'Không có câu phù hợp bộ lọc' : state.route === 'wrong' ? 'Chưa có câu nào cần ôn lại' : state.route === 'saved' ? 'Chưa có câu được đánh dấu' : 'Chưa tìm thấy câu hỏi';
-  $('#main').innerHTML = `${heading(title, description)}${studyToolbar()}${q ? `<div class="study-layout">${questionCard(q, state.responses[q.id])}${questionNavigator(state.list, state.index)}</div>` : emptyState(titleEmpty, state.route === 'saved' && !state.query ? 'Bấm biểu tượng đánh dấu trên mỗi câu hỏi để lưu tại đây.' : 'Thử bỏ bộ lọc hoặc mở lại bộ câu hỏi để tiếp tục học.', state.route === 'saved' ? 'bookmark' : 'circle-check')}${sourceNote()}`;
+  $('#main').innerHTML = `<div class="study-heading"><h1>${e(title)}</h1><span>${q ? `${state.index + 1}/${state.list.length}` : '0 câu'}</span></div>${studyToolbar()}${q ? `<div class="study-layout">${questionCard(q, state.responses[q.id])}${questionNavigator(state.list, state.index)}</div>` : emptyState(titleEmpty, state.route === 'saved' && !state.query ? 'Bấm biểu tượng đánh dấu trên mỗi câu hỏi để lưu tại đây.' : 'Thử bỏ bộ lọc hoặc mở lại bộ câu hỏi để tiếp tục học.', state.route === 'saved' ? 'bookmark' : 'circle-check')}${sourceNote()}`;
 }
 function renderSigns() {
   const query = state.query.trim().toLocaleLowerCase('vi');
@@ -128,6 +135,7 @@ function historyPreview() {
   return `<aside class="panel"><div class="section-heading"><h3>Những lần thử sức</h3>${icon('history', 18)}</div>${progress.history.length ? progress.history.slice(0, 5).map(h => { const result = grade(h.ids.map(id => questionMap.get(id)), h.answers, getLicense(data, h.license)); return `<div class="history-preview"><span class="history-icon ${result.passed ? '' : 'failed'}">${icon(result.passed ? 'check' : 'refresh-cw', 15)}</span><div><p>Hạng ${e(h.license)}</p><small>${dateLabel(h.finishedAt)}</small></div><strong>${result.correct}/${result.total}</strong></div>`; }).join('') : '<p class="subtitle">Chưa có bài luyện nào. Thử một bài để bắt đầu theo dõi sự tiến bộ của bạn.</p>'}<a class="text-button" href="#history" data-go="history">Xem lịch sử ${icon('arrow-right', 13)}</a></aside>`;
 }
 function renderExamSetup() {
+  $('#main').dataset.view = 'default';
   const l = currentLicense();
   const tabs = `<div class="segmented" aria-label="Chọn loại bài luyện"><button data-action="exam-tab" data-tab="random" class="${state.examTab === 'random' ? 'active' : ''}" aria-pressed="${state.examTab === 'random'}">Luyện ngẫu nhiên</button><button data-action="exam-tab" data-tab="fixed" class="${state.examTab === 'fixed' ? 'active' : ''}" aria-pressed="${state.examTab === 'fixed'}">Bộ bài ôn từ ứng dụng</button></div>`;
   const fixed = data.fixedExams.filter(t => t.license === progress.license);
@@ -136,11 +144,13 @@ function renderExamSetup() {
 }
 function activeQuestions() { return activeExam.ids.map(id => questionMap.get(id)); }
 function renderActiveExam() {
+  $('#main').dataset.view = 'exam';
   const questions = activeQuestions(), q = questions[activeExam.index];
-  $('#main').innerHTML = `${heading(`${e(activeExam.title)} · Hạng ${e(activeExam.license)}`, `Câu ${activeExam.index + 1}/${questions.length} · Đã chọn ${Object.keys(activeExam.answers).length} đáp án`, `<div class="clock" id="exam-clock" aria-label="Thời gian còn lại">${icon('clock', 19)}<span></span></div>`)}<div class="study-layout">${questionCard(q, activeExam.answers[q.id], 'exam')}${questionNavigator(questions, activeExam.index, 'exam')}</div><p class="source-note">Bạn có thể đổi đáp án trước khi nộp. Đồng hồ vẫn chạy khi chuyển màn hình hoặc đóng ứng dụng; hết giờ bài sẽ được nộp khi ứng dụng hoạt động lại.</p>`;
+  $('#main').innerHTML = `<div class="exam-heading"><div><h1>${e(activeExam.title)} · Hạng ${e(activeExam.license)}</h1><p>Câu ${activeExam.index + 1}/${questions.length} · Đã chọn ${Object.keys(activeExam.answers).length} đáp án</p></div><div class="clock" id="exam-clock" aria-label="Thời gian còn lại">${icon('clock', 17)}<span></span></div></div><div class="study-layout">${questionCard(q, activeExam.answers[q.id], 'exam')}${questionNavigator(questions, activeExam.index, 'exam')}</div><p class="source-note">Bạn có thể đổi đáp án trước khi nộp. Đồng hồ vẫn chạy khi chuyển màn hình hoặc đóng ứng dụng; hết giờ bài sẽ được nộp khi ứng dụng hoạt động lại.</p>`;
   updateClock();
 }
 function renderResult(record) {
+  $('#main').dataset.view = 'default';
   const questions = record.ids.map(id => questionMap.get(id)), l = getLicense(data, record.license), result = grade(questions, record.answers, l);
   const visible = state.reviewFilter === 'wrong' ? questions.filter(q => Number(record.answers[q.id]) !== q.answer) : questions;
   $('#main').innerHTML = `${heading('Nhìn lại một chặng vừa qua.', `${e(record.title)} · Hạng ${e(record.license)} · ${dateLabel(record.finishedAt)}`)}<section class="result-hero ${result.passed ? '' : 'failed'}"><div><p class="eyebrow">${result.passed ? 'ĐẠT NGƯỠNG BÀI LUYỆN' : 'CÙNG ÔN THÊM MỘT CHÚT'}</p><div class="result-score">${result.correct}<small> / ${result.total}</small></div><p>${result.criticalMissed.length ? `${result.criticalMissed.length} câu điểm liệt chưa đúng hoặc còn bỏ trống.` : result.passed ? 'Bạn đã đạt ngưỡng điểm và trả lời đúng các câu điểm liệt của bài.' : `Cần ít nhất ${l.pass} câu đúng theo cấu hình ứng dụng nguồn.`}</p><div class="result-buttons">${button('Luyện bài khác ' + icon('arrow-right', 15), 'new-exam')}${button('Ôn các câu cần nhớ', 'open-wrong', 'secondary')}</div></div><div class="result-summary"><span>${result.correct} câu đúng</span><span>${result.total - result.correct - result.skipped} câu trả lời sai</span><span>${result.skipped} câu bỏ trống</span><span>Hoàn thành: ${dateLabel(record.finishedAt)}</span></div></section><div class="section-heading"><h2>Xem lại từng câu</h2><label><span class="field-label">Hiển thị</span><select id="review-filter" class="review-select"><option value="all" ${state.reviewFilter === 'all' ? 'selected' : ''}>Tất cả (${questions.length})</option><option value="wrong" ${state.reviewFilter === 'wrong' ? 'selected' : ''}>Cần ôn (${questions.length - result.correct})</option></select></label></div><div class="review-list">${visible.map(q => {
@@ -164,6 +174,7 @@ function renderHandbook() {
   $('#main').innerHTML = `${heading('Thêm hiểu biết cho mỗi hành trình.', 'Đọc lại hướng dẫn sa hình và các ghi chú được đóng gói trong ứng dụng.')}${tabs}${content}${sourceNote()}`;
 }
 function render() {
+  $('#main').dataset.view = 'default';
   renderShell();
   if (state.route === 'home') renderHome();
   else if (learningRoutes.includes(state.route)) renderStudy();
@@ -176,7 +187,7 @@ function sourceDialog() {
   showDialog(`${dialogHeading('Dữ liệu từ đâu?')}<div class="dialog-copy"><p><strong>Ôn thi GPLX 2025 · v2.0.3</strong><br>Trích xuất ngày 11/11/2026 từ bộ cài Android của bạn.</p><p>${data.questions.length} câu hỏi và giải thích, ${data.signs.length} biển báo, ${data.licenses.length} cấu hình hạng bằng, ${data.fixedExams.length} bài ôn và ${data.practicalLessons.length} bài sa hình.</p><p><code>${e(data.source.package)}</code></p><p>${e(data.source.note)}</p><p>“GPLX 2026” là tên dự án web. Tên này không có nghĩa dữ liệu đã được xác minh cập nhật cho năm 2026. Kết quả luyện tập không thay thế kết quả sát hạch.</p><p>Bộ bài có sẵn giữ nguyên ID câu theo nguồn. Bài ngẫu nhiên chọn câu từ bộ lọc hạng và một câu điểm liệt theo hạng; không xác nhận phân bổ giống đề thi chính thức.</p><p>Ứng dụng lưu tiến độ trên trình duyệt này. Không gửi tiến độ học đến máy chủ.</p></div><div class="dialog-actions">${button('Đã hiểu', 'close-dialog')}${button('Cài đặt & sao lưu', 'settings', 'secondary')}</div>`);
 }
 function settingsDialog() {
-  showDialog(`${dialogHeading('Góc học tập của bạn')}<div class="dialog-copy"><strong>Giữ lại hành trình học</strong><p>Tiến độ, câu đánh dấu và tối đa 30 bài đã làm được lưu trong trình duyệt này. Xuất tệp để sao lưu hoặc chuyển sang thiết bị khác. Nhập tệp sẽ thay thế tiến độ hiện có.</p></div><div class="dialog-actions">${button(icon('download', 16) + ' Xuất tiến độ', 'export-progress', 'secondary')}${button(icon('upload', 16) + ' Nhập tiến độ', 'import-progress', 'secondary')}<input type="file" id="progress-file" accept="application/json,.json" hidden></div><hr class="dialog-divider"><div class="dialog-copy"><strong>Cài ứng dụng và học ngoại tuyến</strong><p>Ở Tổng quan, bấm “Tải để học ngoại tuyến” và chờ hoàn tất. Sau đó có thể cài ứng dụng bằng menu Chrome/Edge; Safari iPhone dùng Chia sẻ → Thêm vào Màn hình chính. Tiến độ và dữ liệu tải về lưu riêng theo địa chỉ trang web.</p><p>Nếu hosting yêu cầu đăng nhập lại, có thể cần kết nối để xác thực. Bộ nhớ trình duyệt có thể bị hệ điều hành thu hồi; nên xuất tiến độ định kỳ.</p></div><div class="dialog-actions">${button('Tải dữ liệu ngoại tuyến', 'download-offline', 'secondary', offline.status === 'downloading' ? 'disabled' : '')}${installPrompt ? button('Cài ứng dụng', 'install-app') : ''}${button('Xóa ảnh ngoại tuyến', 'clear-offline-confirm', 'secondary', offline.status === 'downloading' ? 'disabled' : '')}</div><hr class="dialog-divider"><div class="dialog-copy"><strong>Bắt đầu lại</strong><p>Xuất tiến độ trước nếu bạn cần giữ lại kết quả.</p></div><div class="dialog-actions">${button('Xóa tiến độ trên trình duyệt', 'reset-confirm', 'danger')}</div>`);
+  showDialog(`${dialogHeading('Góc học tập của bạn')}<div class="dialog-copy"><strong>Giữ lại hành trình học</strong><p>Tiến độ, câu đánh dấu và tối đa 30 bài đã làm được lưu trong trình duyệt này. Xuất tệp để sao lưu hoặc chuyển sang thiết bị khác. Nhập tệp sẽ thay thế tiến độ hiện có.</p></div><div class="dialog-actions">${button(icon('download', 16) + ' Xuất tiến độ', 'export-progress', 'secondary')}${button(icon('upload', 16) + ' Nhập tiến độ', 'import-progress', 'secondary')}<input type="file" id="progress-file" accept="application/json,.json" hidden></div><hr class="dialog-divider"><div class="dialog-copy"><strong>Cài ứng dụng và học ngoại tuyến</strong><p>Ở Tổng quan, bấm “Tải để học ngoại tuyến” và chờ hoàn tất. Bấm “Cài app” trên header khi Chrome/Edge cho phép cài; Safari iPhone dùng Chia sẻ → Thêm vào Màn hình chính. Tiến độ và dữ liệu tải về lưu riêng theo địa chỉ trang web.</p><p>Nếu hosting yêu cầu đăng nhập lại, có thể cần kết nối để xác thực. Bộ nhớ trình duyệt có thể bị hệ điều hành thu hồi; nên xuất tiến độ định kỳ.</p></div><div class="dialog-actions">${button('Tải dữ liệu ngoại tuyến', 'download-offline', 'secondary', offline.status === 'downloading' ? 'disabled' : '')}${installer.canInstall() ? button('Cài ứng dụng', 'install-app') : ''}${button('Xóa ảnh ngoại tuyến', 'clear-offline-confirm', 'secondary', offline.status === 'downloading' ? 'disabled' : '')}</div><hr class="dialog-divider"><div class="dialog-copy"><strong>Bắt đầu lại</strong><p>Xuất tiến độ trước nếu bạn cần giữ lại kết quả.</p></div><div class="dialog-actions">${button('Xóa tiến độ trên trình duyệt', 'reset-confirm', 'danger')}</div>`);
 }
 function recordAnswer(question, selected) {
   progress.answers[question.id] = { selected, correct: selected === question.answer, at: Date.now(), attempts: (progress.answers[question.id]?.attempts || 0) + 1 };
@@ -223,7 +234,7 @@ async function clearOffline() {
   for (const name of await caches.keys()) if (name.startsWith('gplx2026-data-')) await caches.delete(name);
   offline.status = 'idle'; closeDialog(); render(); toast('Đã xóa ảnh ngoại tuyến. Tiến độ của bạn được giữ lại.');
 }
-async function installApp() { if (!installPrompt) return; await installPrompt.prompt(); installPrompt = null; $('#install-button').hidden = true; closeDialog(); }
+function installApp() { closeDialog(); return installer.install(); }
 function exportProgress() {
   const url = URL.createObjectURL(new Blob([JSON.stringify(progress, null, 2)], { type: 'application/json' }));
   const link = document.createElement('a'); link.href = url; link.download = 'gplx2026-tien-do.json'; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
@@ -231,7 +242,13 @@ function exportProgress() {
 function jumpQuestion(index, exam = false) {
   if (exam) { if (!activeExam || index < 0 || index >= activeExam.ids.length) return; activeExam.index = index; persistExam(); renderActiveExam(); }
   else { if (index < 0 || index >= state.list.length) return; state.index = index; renderStudy(); }
-  if (window.innerWidth < 1251) $('#main').scrollIntoView({ block: 'start' });
+  const card = $('.question-card');
+  if (card) {
+    card.focus({ preventScroll: true });
+    const offset = chrome.hidden ? 10 : $('.topbar').offsetHeight + 10;
+    window.scrollTo({ top: Math.max(0, card.getBoundingClientRect().top + window.scrollY - offset), behavior: 'instant' });
+    chrome.sync();
+  }
 }
 function action(name, element) {
   const id = Number(element.dataset.id), index = Number(element.dataset.index), q = state.list[state.index];
@@ -292,6 +309,7 @@ document.addEventListener('input', event => {
   if (state.route === 'signs') renderSigns(); else renderStudy();
   const input = $('#content-search'); input.focus({ preventScroll: true }); try { input.setSelectionRange(cursor, cursor); } catch {}
 });
+document.addEventListener('toggle', event => { if (event.target.id === 'study-filters' && event.target.isConnected) state.filtersOpen = event.target.open; }, true);
 document.addEventListener('change', async event => {
   const target = event.target;
   if (target.id === 'license-select') { progress.license = target.value; persist(); state.index = 0; state.responses = {}; rebuildStudy(); render(); }
@@ -322,9 +340,6 @@ document.addEventListener('keydown', event => {
 function connectionChanged() { $('#connection-text').textContent = navigator.onLine ? 'Đang trực tuyến' : 'Đang ngoại tuyến'; document.querySelector('.online-dot').style.background = navigator.onLine ? '#36a76b' : '#d69225'; }
 addEventListener('online', connectionChanged); addEventListener('offline', connectionChanged);
 addEventListener('hashchange', () => { if (data) applyRoute(); });
-addEventListener('beforeinstallprompt', event => { event.preventDefault(); installPrompt = event; $('#install-button').hidden = false; });
-addEventListener('appinstalled', () => { installPrompt = null; $('#install-button').hidden = true; toast('Đã cài ứng dụng. Chúc bạn học tốt!'); });
-$('#install-button').addEventListener('click', installApp);
 
 async function setupWorker() {
   if (!('serviceWorker' in navigator)) return;
