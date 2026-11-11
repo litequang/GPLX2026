@@ -1,8 +1,8 @@
-import { getLicense, poolFor, isCritical, randomExam, grade, filterQuestions, statistics, createProgress, parseProgress } from './modules/core.js?v=5';
+import { getLicense, poolFor, isCritical, randomExam, grade, filterQuestions, statistics, createProgress, parseProgress } from './modules/core.js?v=6';
 import { readProgress, readExam, writeProgress, writeExam } from './modules/storage.js';
 import { escape as e, icon, dateLabel, dayKey, durationLabel, progressBar } from './modules/ui.js';
 import { setupAutoHideBars } from './modules/chrome.js';
-import { createOfflineDownload, createWorkerConnection } from './modules/offline.js?v=5';
+import { createOfflineDownload, createWorkerConnection } from './modules/offline.js?v=6';
 import { setupInstall } from './modules/install.js';
 
 const $ = selector => document.querySelector(selector);
@@ -348,7 +348,7 @@ addEventListener('online', connectionChanged); addEventListener('offline', conne
 addEventListener('hashchange', () => { if (data) applyRoute(); });
 
 async function setupWorker() {
-  const connect = navigator.serviceWorker && createWorkerConnection(navigator.serviceWorker, './sw.js?v=5');
+  const connect = navigator.serviceWorker && createWorkerConnection(navigator.serviceWorker, './sw.js?v=6');
   let storage; try { storage = localStorage; } catch {}
   offlineDownload = createOfflineDownload({
     revision: offlineManifest.revision, total: offlineManifest.urls.length, storage,
@@ -377,7 +377,7 @@ async function setupWorker() {
 }
 async function init() {
   try {
-    const responses = await Promise.all([fetch('./data/dataset.json?v=5'), fetch('./data/offline.json?v=5')]);
+    const responses = await Promise.all([fetch('./data/dataset.json?v=6'), fetch('./data/offline.json?v=6')]);
     if (responses.some(r => !r.ok || r.redirected)) throw new Error('Chưa tải được bộ dữ liệu.');
     [data, offlineManifest] = await Promise.all(responses.map(r => r.json()));
     questionMap = new Map(data.questions.map(q => [q.id, q])); progress = readProgress(data); activeExam = readExam(data);

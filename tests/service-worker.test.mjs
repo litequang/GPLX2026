@@ -22,10 +22,11 @@ function harness(stores = new Map()) {
     fetches.push(url);
     if (disconnected) throw new Error('Network unavailable');
     if (url.endsWith('/index.html')) return new Response(null, { status: 307, headers: { location: scope } });
+    if (url.includes(',')) return new Response(null, { status: 307, headers: { location: url.replaceAll(',', '%2C') } });
     if (failingPath && url.endsWith(failingPath)) return new Response('failed', { status: 503 });
     if (htmlPath && url.endsWith(htmlPath)) return new Response('<html>sign in</html>', { headers: { 'content-type': 'text/html' } });
     if (url.endsWith('fonts/manifest.json')) return new Response(readFileSync(new URL('../dist/fonts/manifest.json', import.meta.url)), { headers: { 'content-type': 'application/json' } });
-    if (url.endsWith('data/offline.json')) return Response.json({ revision: '0123456789abcdef', urls: ['data/dataset.json', 'assets/one.webp', 'assets/two.png'] });
+    if (url.endsWith('data/offline.json')) return Response.json({ revision: '0123456789abcdef', urls: ['data/dataset.json', 'assets/one.webp', 'assets/two.png', 'assets/S.G,7.png'] });
     if (url.endsWith('manifest.webmanifest')) return Response.json({ id: './', start_url: './', scope: './', icons: [{ src: 'icons/icon-192.png' }], theme_color: manifestColor });
     if (url.endsWith('.json')) return Response.json({});
     const mime = url.endsWith('.js') ? 'text/javascript' : url.endsWith('.css') ? 'text/css' : url.endsWith('.woff2') ? 'font/woff2' : url.endsWith('.txt') ? 'text/plain' : /\.(png|webp|svg)$/.test(url) ? 'image/png' : 'text/html';
@@ -42,15 +43,15 @@ test('shell, modules, dataset and self-hosted font work offline at a subpath', a
   assert.equal((await h.dispatch('fetch', request(h, 'modules/core.js'))).status, 200);
   assert.equal((await h.dispatch('fetch', request(h, 'modules/chrome.js'))).status, 200);
   assert.equal((await h.dispatch('fetch', request(h, 'modules/install.js'))).status, 200);
-  assert.equal((await h.dispatch('fetch', request(h, 'app.js?v=5'))).headers.get('content-type'), 'text/javascript');
-  assert.equal((await h.dispatch('fetch', request(h, 'styles.css?v=5'))).headers.get('content-type'), 'text/css');
-  assert.equal((await h.dispatch('fetch', request(h, 'theme-init.js?v=5'))).headers.get('content-type'), 'text/javascript');
-  assert.equal((await h.dispatch('fetch', request(h, 'themes.css?v=5'))).headers.get('content-type'), 'text/css');
+  assert.equal((await h.dispatch('fetch', request(h, 'app.js?v=6'))).headers.get('content-type'), 'text/javascript');
+  assert.equal((await h.dispatch('fetch', request(h, 'styles.css?v=6'))).headers.get('content-type'), 'text/css');
+  assert.equal((await h.dispatch('fetch', request(h, 'theme-init.js?v=6'))).headers.get('content-type'), 'text/javascript');
+  assert.equal((await h.dispatch('fetch', request(h, 'themes.css?v=6'))).headers.get('content-type'), 'text/css');
   assert.equal((await h.dispatch('fetch', request(h, 'fonts/be-vietnam-pro-1.woff2'))).headers.get('content-type'), 'font/woff2');
   assert.equal((await h.dispatch('fetch', request(h, 'data/dataset.json'))).status, 200);
-  assert.equal((await h.dispatch('fetch', request(h, 'modules/core.js?v=5'))).status, 200);
-  assert.equal((await h.dispatch('fetch', request(h, 'data/dataset.json?v=5'))).status, 200);
-  assert.equal((await h.dispatch('fetch', request(h, 'data/offline.json?v=5'))).status, 200);
+  assert.equal((await h.dispatch('fetch', request(h, 'modules/core.js?v=6'))).status, 200);
+  assert.equal((await h.dispatch('fetch', request(h, 'data/dataset.json?v=6'))).status, 200);
+  assert.equal((await h.dispatch('fetch', request(h, 'data/offline.json?v=6'))).status, 200);
   assert.ok(!h.fetches.some(url => url.endsWith('/index.html')), 'install must not fetch the hosting redirect alias');
   assert.match(await (await h.dispatch('fetch', request(h, 'index.html', 'navigate'))).text(), /offline shell/);
 });
@@ -87,6 +88,10 @@ test('ready marker is written only after all images finish; images remain offlin
   assert.equal(await (await cache.match(new URL('offline-ready', h.scope))).text(), '0123456789abcdef');
   h.offline(true);
   assert.equal((await h.dispatch('fetch', request(h, 'assets/two.png'))).status, 200);
+  assert.ok(h.fetches.some(path => path.endsWith('S.G%2C7.png')));
+  assert.ok(!h.fetches.some(path => path.includes(',')));
+  assert.equal((await h.dispatch('fetch', request(h, 'assets/S.G,7.png'))).status, 200);
+  assert.equal((await h.dispatch('fetch', request(h, 'assets/S.G%2C7.png'))).status, 200);
 });
 test('failed download never marks ready; retry reuses partial cache and completes', async () => {
   const h = harness(); await h.dispatch('install'); h.fail('assets/two.png');

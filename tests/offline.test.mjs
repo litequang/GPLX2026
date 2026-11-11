@@ -46,7 +46,7 @@ test('download waits for replacement worker activation instead of using a stale 
 
 test('a failed install registration is retried; concurrent requests share the retry, not a dead registration', async () => {
   let attempts = 0; const worker = {};
-  const connect = createWorkerConnection({ register: async () => { attempts++; return { active: attempts === 1 ? null : worker }; } }, './sw.js?v=5');
+  const connect = createWorkerConnection({ register: async () => { attempts++; return { active: attempts === 1 ? null : worker }; } }, './sw.js?v=6');
   await assert.rejects(connect(), /chưa hoạt động/);
   const [a, b] = await Promise.all([connect(), connect()]); assert.equal(attempts, 2); assert.equal(a.worker, worker); assert.equal(b.worker, worker);
 });

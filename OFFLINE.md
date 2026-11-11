@@ -17,3 +17,7 @@ App khởi tạo shell/core/dataset/offline manifest với URL v4, worker precac
 V5 bỏ alias index.html khỏi precache và dùng ./ cho fallback navigation; vẫn chặn redirect/auth HTML sai loại cho assets. Kiểm thử worker hiện mô phỏng index.html trả307 và dùng danh sách font thật có OFL.txt. createWorkerConnection retry register khi cài trước đó hỏng, gộp các lần bấm đồng thời; lỗi active rỗng báo worker chưa hoạt động. Dialog hiện lỗi thực, không suy ra thiếu HTTPS từ registration rỗng. Chờ install tối đa45s.
 
 Manifest URL ổn định nhưng worker cá nhân hóa hai màu theo CacheStorage preference; cần worker cài thành công trước khi chọn theme/cài PWA để nhận màu mong muốn. Cache settings tách khỏi data và tiến độ.
+
+## Sửa URL ảnh trên hosting — shell v6
+
+Live-check v5 đã qua cài shell/manifest nhưng dừng ở assets/signImage/S.G,7.png. Kiểm tra HTTPS xác nhận URL raw dấu phẩy trả307 sang S.G%2C7.png, URL encoded trả200 image/png. Có21 URL dấu phẩy trong manifest offline. Worker v6 chuẩn hóa từng segment pathname (decode rồi encodeURIComponent, giữ query), dùng cùng URL canonical để tải, match và put cache; chấp nhận cả URL src thô và đã mã hóa. Không nới chặn redirect/auth HTML. Bộ test mock cả redirect index.html và ảnh dấu phẩy, kiểm cache offline raw/encoded cùng ảnh. Dataset/ảnh/raw/offline revision không đổi.

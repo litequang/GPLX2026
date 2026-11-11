@@ -79,4 +79,8 @@ Người dùng xác nhận v4. Đã đọc Chromium CL8077818 và controller hi�
 | Lời chào mobile | 19px, mô tả11px, ít khoảng trống, bỏ badge cạnh heading |
 | Kiểm tra | 40 nhóm Node/VM;675 HTTP local;666 outputfiles qua |
 | Browser | Host vẫn unavailable; chưa visual/native QA |
-| GitHub/Sites | Đang đóng gói, ghi kết quả sau khi tool trả success |
+| GitHub/Sites | Runtime0237d3d đã push; appgdep_6af4304c31dc8191a03b96a40d687789 succeeded |
+
+## Sửa URL ảnh trên hosting — shell v6
+
+Live-check v5 đã qua cài shell/manifest nhưng dừng ở assets/signImage/S.G,7.png. Kiểm tra HTTPS xác nhận URL raw dấu phẩy trả307 sang S.G%2C7.png, URL encoded trả200 image/png. Có21 URL dấu phẩy trong manifest offline. Worker v6 chuẩn hóa từng segment pathname (decode rồi encodeURIComponent, giữ query), dùng cùng URL canonical để tải, match và put cache; chấp nhận cả URL src thô và đã mã hóa. Không nới chặn redirect/auth HTML. Bộ test mock cả redirect index.html và ảnh dấu phẩy, kiểm cache offline raw/encoded cùng ảnh. Dataset/ảnh/raw/offline revision không đổi.

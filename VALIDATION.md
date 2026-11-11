@@ -21,10 +21,10 @@
 | Theme giả lập | Mặc định/system/saved preference, toggle tức thì/meta/aria/storage, bootstrap trước DOM ready, storage lỗi, sync tab và giữ progress riêng |
 | Palette | Một số cặp ink/muted/primary/success/error/warning và button được tính contrast ≥4,5; không thay visual/WCAG audit |
 | Syntax | node --check app.js, sw.js, theme-init.js và các module/script đã sửa thành công |
-| Output scan | 666 file, 29.581.984 byte, lớn nhất 790.894 byte, không file cấm, dưới 25 MiB/file |
-| HTTP local | 675 URL gồm root + mọi file dist + app/CSS/theme/core/offline/data v5, 200/nonempty/MIME đúng; 30.519.944 byte |
+| Output scan | 666 file, 29.582.330 byte, lớn nhất 790.894 byte, không file cấm, dưới 25 MiB/file |
+| HTTP local | 675 URL gồm root + mọi file dist + app/CSS/theme/core/offline/data v6, 200/nonempty/MIME đúng; 30.520.290 byte |
 | Comparison | 139 text/147 options, gộp 242; 0 answer-ID/global critical đổi; 600 giải thích khác |
-| Triển khai | Sites private shell v4 succeeded, runtime a7c30f1a5db001966b36ec3e2c2586ad818a9e8c; GitHub main đã push, xem DEPLOYMENT |
+| Triển khai | Sites private shell v5 succeeded, runtime0237d3d26909c0d2659d07e14ef1a0969419cb2c; GitHub main đã push, xem DEPLOYMENT |
 
 ## Chưa xác nhận
 
@@ -75,3 +75,7 @@ Scan lần đầu phát hiện dist/index.zip 28.495.820 byte; giữ nguyên fil
 Đã kiểm tra HTTPS của Site private bằng service access đúng Site: /index.html307, /200; SW/JSON/CSS/JS/ảnh đúng loại, WOFF2 hosting application/octet-stream (worker cho phép). Các URL này được kiểm qua HTTP, không phải browser. Đây là nguyên nhân install v4 thất bại; local server không chuyển hướng nên HTTP local trước đây không bắt được. Worker test v5 tái hiện alias307 và dùng root chuẩn.
 
 Browser inventory mới: browsers:[] / The browser access host is unavailable. Chưa có responsive visual, cài worker/browser thật, native Android Home hoặc đóng/mở/offline thật. Không coi 40 nhóm Node/VM hoặc script live-worker (nếu chạy) là bằng chứng native/PWA đã qua.
+
+## Sửa URL ảnh trên hosting — shell v6
+
+Live-check v5 đã qua cài shell/manifest nhưng dừng ở assets/signImage/S.G,7.png. Kiểm tra HTTPS xác nhận URL raw dấu phẩy trả307 sang S.G%2C7.png, URL encoded trả200 image/png. Có21 URL dấu phẩy trong manifest offline. Worker v6 chuẩn hóa từng segment pathname (decode rồi encodeURIComponent, giữ query), dùng cùng URL canonical để tải, match và put cache; chấp nhận cả URL src thô và đã mã hóa. Không nới chặn redirect/auth HTML. Bộ test mock cả redirect index.html và ảnh dấu phẩy, kiểm cache offline raw/encoded cùng ảnh. Dataset/ảnh/raw/offline revision không đổi.

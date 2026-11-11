@@ -1,3 +1,17 @@
+# Bản đang chạy — shell v5
+
+Native Sites tool trả succeeded ngày 11/11/2026, giữ audience riêng tư.
+
+- Web: https://gplx2026-on-thi-quang.quartzcello4.chatgpt.site
+- Runtime commit: `0237d3d26909c0d2659d07e14ef1a0969419cb2c`, đã push source Site và GitHub main.
+- Deployment: `appgdep_6af4304c31dc8191a03b96a40d687789`.
+- Saved version: `appgprj_6af3da19926881918b14804d80550a09~appgver_1afdcd1e49d88191b99702bffb8d13ba`.
+- Archive: ../.tools/gplx2026-offline-manifest-v5-site.tar.gz, đúng runtime SHA, ngoài Git/dist.
+- Sửa precache root thay index.html307, retry worker/thông báo, manifest theo theme qua worker và heading mobile nhỏ.
+- 40 nhóm Node/VM, 675 HTTP local; kiểm tra live-worker có ghi riêng ở VALIDATION. Không xác nhận Android/browser/native QA.
+
+## Lịch sử v4
+
 # Bản đang chạy — shell v4
 
 Ngày 11/11/2026, native Sites tool trả status succeeded. Web riêng tư: https://gplx2026-on-thi-quang.quartzcello4.chatgpt.site

@@ -3,7 +3,7 @@ import { join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 const base = process.env.PREVIEW_URL || 'http://localhost:4174/';
 const root = fileURLToPath(new URL('../dist', import.meta.url));
-const paths = ['', 'modules/offline.js?v=5', 'modules/core.js?v=5', 'data/dataset.json?v=5', 'data/offline.json?v=5', 'app.js?v=5', 'styles.css?v=5', 'themes.css?v=5', 'theme-init.js?v=5'];
+const paths = ['', 'modules/offline.js?v=6', 'modules/core.js?v=6', 'data/dataset.json?v=6', 'data/offline.json?v=6', 'app.js?v=6', 'styles.css?v=6', 'themes.css?v=6', 'theme-init.js?v=6'];
 function scan(dir) { for (const entry of readdirSync(dir, { withFileTypes: true })) { const path = join(dir, entry.name); if (entry.isDirectory()) scan(path); else paths.push(relative(root, path).replaceAll('\\', '/')); } }
 scan(root);
 let bytes = 0;

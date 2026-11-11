@@ -1,10 +1,19 @@
 // Increase this revision whenever a shell, module or font changes.
-const APP_REVISION = 'gplx2026-shell-v5';
+const APP_REVISION = 'gplx2026-shell-v6';
 const DATA_PREFIX = 'gplx2026-data-';
 const SETTINGS_CACHE = 'gplx2026-settings-v1';
-const SHELL = ['./', 'styles.css', 'styles.css?v=5', 'themes.css', 'themes.css?v=5', 'theme-init.js', 'theme-init.js?v=5', 'app.js', 'app.js?v=5', 'modules/core.js', 'modules/core.js?v=5', 'modules/storage.js', 'modules/ui.js', 'modules/icons.js', 'modules/chrome.js', 'modules/install.js', 'modules/offline.js', 'modules/offline.js?v=5', 'manifest.webmanifest', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'data/dataset.json', 'data/dataset.json?v=5', 'data/offline.json', 'data/offline.json?v=5', 'fonts/manifest.json'];
+const SHELL = ['./', 'styles.css', 'styles.css?v=6', 'themes.css', 'themes.css?v=6', 'theme-init.js', 'theme-init.js?v=6', 'app.js', 'app.js?v=6', 'modules/core.js', 'modules/core.js?v=6', 'modules/storage.js', 'modules/ui.js', 'modules/icons.js', 'modules/chrome.js', 'modules/install.js', 'modules/offline.js', 'modules/offline.js?v=6', 'manifest.webmanifest', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'data/dataset.json', 'data/dataset.json?v=6', 'data/offline.json', 'data/offline.json?v=6', 'fonts/manifest.json'];
 const scope = new URL(self.registration.scope);
-const absolute = path => new URL(path, scope);
+const absolute = path => {
+  const url = new URL(path, scope);
+  // Static hosting canonicalizes commas and other reserved path characters.
+  // Use that URL for both downloading and cache lookup, including raw <img> URLs.
+  url.pathname = url.pathname.split('/').map(segment => {
+    try { return encodeURIComponent(decodeURIComponent(segment)); }
+    catch { return encodeURIComponent(segment); }
+  }).join('/');
+  return url;
+};
 let manifestTask, downloadTask;
 let savedTheme, themeTask = Promise.resolve();
 async function readTheme() {
@@ -63,7 +72,7 @@ self.addEventListener('activate', event => event.waitUntil((async () => {
   await self.clients.claim();
 })()));
 self.addEventListener('fetch', event => {
-  const url = new URL(event.request.url);
+  const url = absolute(event.request.url);
   if (event.request.method !== 'GET' || url.origin !== scope.origin || !url.pathname.startsWith(scope.pathname)) return;
   event.respondWith((async () => {
     const shell = await caches.open(APP_REVISION);
@@ -85,16 +94,16 @@ self.addEventListener('fetch', event => {
       const cachedManifest = await shell.match(absolute(relative));
       try { return cachedManifest ? await themedManifest(cachedManifest) : Response.error(); } catch { return Response.error(); }
     }
-    const cached = await shell.match(event.request);
+    const cached = await shell.match(url);
     if (cached) return cached;
     if (!relative.startsWith('assets/')) return fetch(event.request);
     const manifest = await loadManifest();
     if (!manifest.urls.some(path => absolute(path).pathname === url.pathname)) return fetch(event.request);
     const cache = await caches.open(DATA_PREFIX + manifest.revision);
-    const image = await cache.match(event.request);
+    const image = await cache.match(url);
     if (image) return image;
-    const response = await fetch(event.request);
-    if (valid(response, relative)) await cache.put(event.request, response.clone());
+    const response = await fetch(url);
+    if (valid(response, relative)) await cache.put(url, response.clone());
     return response;
   })());
 });

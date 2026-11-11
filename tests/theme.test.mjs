@@ -98,7 +98,7 @@ test('static manifest and initial meta match the light canvas; bootstrap precede
   const dark = palette(themes.match(/:root\[data-theme="dark"\]\s*\{([^}]+)/)[1]);
   assert.equal(manifest.theme_color, light.bg); assert.equal(manifest.background_color, light.bg);
   assert.ok(html.includes(`name="theme-color" content="${light.bg}"`));
-  assert.ok(html.indexOf('src="./theme-init.js?v=5"') < html.indexOf('rel="stylesheet"'));
+  assert.ok(html.indexOf('src="./theme-init.js?v=6"') < html.indexOf('rel="stylesheet"'));
   assert.equal(harness({ preference: 'dark' }).meta.values.get('content'), dark.bg);
   const luminance = hex => {
     const rgb = [1, 3, 5].map(index => parseInt(hex.slice(index, index + 2), 16) / 255).map(c => c <= .04045 ? c / 12.92 : ((c + .055) / 1.055) ** 2.4);
