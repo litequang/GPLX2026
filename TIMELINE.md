@@ -59,6 +59,8 @@ Browser inventory vẫn báo The browser access host is unavailable; không coi 
 | Icon offline header | Consent1lần, tải nền, progress/ready/retry, resume lần mở sau; chưa Android thật |
 | Vùng native Android | Người dùng mở PWA bằng icon; trên đúng, dưới Back/Home/Recents xanh. Đã sửa manifest fetch/theme resume/canvas, chưa xác nhận màu thực tế |
 | Kiểm tra | 36 nhóm, 1.500 bài quota, 674 HTTP, 666 file output qua |
-| Publish | Đang hoàn tất; kết quả ghi DEPLOYMENT sau tool trả success |
+| Publish | GitHub a7c30f1 đã push; Sites appgdep_6af428bdbeb88191af22f0fb237ceedb succeeded, xem DEPLOYMENT |
 
 Chi tiết cho AI tiếp theo: OFFICIAL_AUDIT.md, OFFLINE.md, PROJECT_MAP.md, VALIDATION.md; còn119 ứng viên text và QA browser/Android.
+
+Người dùng gửi ảnh PWA sau cài lại: giao diện sáng hết xanh và nền dưới đồng bộ; giao diện tối native gesture/Home bar còn trắng. Ảnh còn0/592, chưa có icon offline nên chưa kiểm chứng runtime v4. Không ghi lỗi màu native đã được giải quyết hoàn toàn.

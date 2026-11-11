@@ -24,7 +24,7 @@
 | Output scan | 666 file, 29.577.339 byte, lớn nhất 790.894 byte, không file cấm, dưới 25 MiB/file |
 | HTTP | 674 URL gồm root + mọi file dist + app/CSS/theme/core/data versioned v4, tất cả 200, không rỗng, MIME đúng; 30.509.739 byte ≈ 29,1 MiB |
 | Comparison | 139 text/147 options, gộp 242; 0 answer-ID/global critical đổi; 600 giải thích khác |
-| Triển khai trước đợt này | Sites private shell v3 succeeded, runtime commit bc75d3b; đợt v4 ghi kết quả riêng ở DEPLOYMENT sau khi thành công |
+| Triển khai | Sites private shell v4 succeeded, runtime a7c30f1a5db001966b36ec3e2c2586ad818a9e8c; GitHub main đã push, xem DEPLOYMENT |
 
 ## Chưa xác nhận
 
@@ -65,3 +65,5 @@ Scan lần đầu phát hiện dist/index.zip 28.495.820 byte; giữ nguyên fil
 - Năm nhóm offline controller: chưa consent không tải lớn, confirm1post, resume/ready/clear, message đúngrevision/retry, storageblocked, chờ worker mới. Worker VM kiểm manifest network-first/offline/auth fallback và tài nguyênv4. Đây là mô phỏng Node, không chứng minh chạy nền Android thật.
 - Theme resume kiểm body/meta/color-scheme sau pageshow/visible. Theo người dùng: status bar đã đúng; vùng native Back/Home/Recents còn xanh trong PWA mở bằng icon màn hình chính. Chưa xác nhận mã mới sửa được màu native trên thiết bị.
 - Chưa có browser/visual/Android QA mới trong đợt này; hạn chế công cụ đã ghi phía trên vẫn còn.
+
+Ảnh người dùng gửi sau cài lại xác nhận phần nền native dưới ở chế độ sáng đồng bộ, nhưng chế độ tối vẫn sáng. Ảnh đang dùng bộ lọcB592, không có icon offline; chưa xác nhận sau runtimev4. Đây là bằng chứng do người dùng cung cấp, không phải browser automation/QA do agent thực hiện.

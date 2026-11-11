@@ -1,3 +1,17 @@
+# Bản đang chạy — shell v4
+
+Ngày 11/11/2026, native Sites tool trả status succeeded. Web riêng tư: https://gplx2026-on-thi-quang.quartzcello4.chatgpt.site
+
+- Runtime commit: `a7c30f1a5db001966b36ec3e2c2586ad818a9e8c`, đã push GitHub main và source repository của Site.
+- Deployment: `appgdep_6af428bdbeb88191af22f0fb237ceedb`.
+- Saved version: `appgprj_6af3da19926881918b14804d80550a09~appgver_75c0105ba35c819192575af12a54ae76`.
+- Archive: ../.tools/gplx2026-official-v4-site.tar.gz, đóng gói đúng runtime commit; không nằm trong Git/dist.
+- B600/60, quota CV2262, vá13 lựa chọn; icon offline tải nền/consent/resume; bỏ3 mục nguồn trong UI; manifest network-first, theme resume/canvas. 36 nhóm test và674 URL HTTP qua.
+- User gửi ảnh bản còn B592: sau cài lại nền gesture/Home bar sáng đã đồng bộ, chuyển tối vẫn trắng. Đây là bằng chứng người dùng của phiên trước runtime v4, không xác nhận v4 hết lỗi native. Chưa có browser/device QA cho v4, ADB hiện không có thiết bị.
+- Commit tài liệu sau runtime không thay dist/hosting; không cần publish lại chỉ vì ghi biên bản.
+
+## Lịch sử triển khai trước
+
 # Chạy và triển khai
 
 ## Bản hiện tại — shell v3, sáng/tối, 11/11/2026
