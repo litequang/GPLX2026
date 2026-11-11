@@ -22,7 +22,7 @@
 | Output scan | 663 file, 29.559.020 byte, lớn nhất 787.889 byte, không file cấm, dưới 25 MiB/file |
 | HTTP | 666 URL gồm root + mọi file dist + app/CSS ?v=2, tất cả 200, không rỗng, MIME ảnh/module/CSS/font đúng; 29.664.134 byte ≈ 28,3 MiB |
 | Comparison | 139 text/147 options, gộp 242; 0 answer-ID/global critical đổi; 600 giải thích khác |
-| Triển khai | Sites private succeeded, runtime commit 033d63e; GitHub main push thành công, xem DEPLOYMENT |
+| Triển khai | Sites private shell v2 succeeded, runtime commit a444871; GitHub main push thành công, xem DEPLOYMENT |
 
 ## Chưa xác nhận
 

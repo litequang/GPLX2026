@@ -35,6 +35,6 @@ Không dùng dữ liệu của dự án GPLX cũ để giả định đã trích
 | Shell v2, URL app/CSS versioned và precache module mới | Worker mô phỏng qua |
 | Kiểm thử | 21 nhóm pass, HTTP/output xem VALIDATION |
 | ZIP ngoài source | dist/index.zip 28.495.820 byte giữ ở ../.tools/gplx2026-index-preserved-20261111-scroll.zip, không đóng gói |
-| GitHub/hosting bản cập nhật | Đang chuẩn bị |
+| GitHub/hosting bản cập nhật | Hoàn tất: a444871 đã push; deployment appgdep_6af41d3b864c8191b7374d4f29df35d7 succeeded |
 
 Browser inventory vẫn báo The browser access host is unavailable; không coi unit/EventTarget/worker mock là visual/Android QA. Bản đồ chi tiết và checklist tại UI_UPDATE.md.

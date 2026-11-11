@@ -1,5 +1,19 @@
 # Chạy và triển khai
 
+## Bản hiện tại — shell v2, 11/11/2026
+
+Đã triển khai riêng tư thành công: https://gplx2026-on-thi-quang.quartzcello4.chatgpt.site
+
+- Runtime commit: `a444871b18643b6fa02115859a0e890262c7329b` (GitHub main đã push).
+- Deployment: `appgdep_6af41d3b864c8191b7374d4f29df35d7`, status succeeded.
+- Saved version: `appgprj_6af3da19926881918b14804d80550a09~appgver_27eeda97d9a48191902af65b95e66a8b`.
+- Shell gplx2026-shell-v2, app/CSS ?v=2; 21 test groups và 666 HTTP URL qua. UI/Android thật chưa xác nhận, xem VALIDATION/UI_UPDATE.
+- Archive ngoài checkout: ../.tools/gplx2026-scroll-v2-site.tar.gz. ZIP phát hiện trong dist được giữ riêng ngoài output; không đóng gói/commit.
+
+Commit tiếp theo chỉ ghi tài liệu triển khai, không đổi dist hoặc snapshot dữ liệu. Các ID/commit bên dưới là lịch sử bản đầu.
+
+## Hướng dẫn và lịch sử bản đầu
+
 Node≥22.13, `npm start` → http://localhost:4174, không cần npm install. Server127.0.0.1; không exposeLAN/firewall. Có PORT và PREVIEW_URL nếu thay cổng.
 
 Production: staticHTTPS phục vụ nội dung dist, đúng MIMEJS/CSS/JSON/webmanifest/ảnh/WOFF2; hashrouter không cần rewrite. Scope/URL tương đối hỗ trợ subpath. Không cần Node/backend ở production. localStorage/CacheStorage riêng mỗi origin/browser; đổi origin phải export/import.
