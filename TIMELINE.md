@@ -8,7 +8,7 @@
 | Theme / màu mép ngoài | Mã hoàn tất: meta/manifest bỏ xanh, canvas/safe-area khớp sáng/tối, toggle header một chạm |
 | Kiểm thử | 27 nhóm pass; 670 HTTP URL và output scan qua, xem VALIDATION |
 | Browser / Android | Chưa xác nhận: browser access host unavailable; chi tiết giới hạn THEME.md |
-| GitHub / web shell v3 | Đang chuẩn bị |
+| GitHub / web shell v3 | Hoàn tất: bc75d3b đã push, deployment appgdep_6af4219bb3c88191b2e5b8f4da18e42a succeeded |
 
 Ngày: 11/11/2026 (Asia/Saigon).
 

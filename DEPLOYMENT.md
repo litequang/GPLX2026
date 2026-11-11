@@ -1,6 +1,17 @@
 # Chạy và triển khai
 
-## Bản hiện tại — shell v2, 11/11/2026
+## Bản hiện tại — shell v3, sáng/tối, 11/11/2026
+
+Đã triển khai riêng tư thành công: https://gplx2026-on-thi-quang.quartzcello4.chatgpt.site
+
+- Runtime commit: `bc75d3b5e28b2404e8cd318b42a774e3ad68b73d`, đã push GitHub main.
+- Deployment: `appgdep_6af4219bb3c88191b2e5b8f4da18e42a`, succeeded.
+- Saved version: `appgprj_6af3da19926881918b14804d80550a09~appgver_59e276623afc8191a64c5e2aa45f8fe3`.
+- Archive: ../.tools/gplx2026-theme-v3-site.tar.gz; shell-v3 precache cả theme bootstrap/CSS.
+- 27 nhóm test và 670 URL HTTP qua. Chưa visual/Android native bar QA; giới hạn manifest/splash/OS được ghi rõ trong THEME.md.
+- Commit tài liệu sau runtime không thay đổi dist hoặc dữ liệu học.
+
+## Lịch sử shell v2, 11/11/2026
 
 Đã triển khai riêng tư thành công: https://gplx2026-on-thi-quang.quartzcello4.chatgpt.site
 
